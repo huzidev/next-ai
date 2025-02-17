@@ -5,12 +5,12 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model Admin {
   id            String   @id @default(uuid())
-  name          String
+  username      String
   email         String   @unique
   password      String
   role          String
@@ -23,7 +23,7 @@ model Admin {
 
 model User {
   id         String  @id @default(uuid())
-  name       String
+  username   String
   email      String  @unique
   password   String
   createdAt  DateTime @default(now())
@@ -32,7 +32,7 @@ model User {
   plan       Plan?    @relation(fields: [planId], references: [id])
   
   remainingTries Int  @default(50)
-  verificationCode VerificationCode?
+  verificationCode VerificationCode? @relation
 
   @@index([email])
 }
@@ -44,8 +44,11 @@ model VerificationCode {
   expiresAt  DateTime 
   isActive   Boolean  @default(false)
 
-  userId     String   @unique 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?  @unique 
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  adminId    String?  @unique
+  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([code])
 }
