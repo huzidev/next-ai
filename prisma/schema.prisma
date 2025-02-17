@@ -1,0 +1,59 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String
+  role          String
+  
+  verificationCode VerificationCode? @relation
+  createdAt     DateTime @default(now())
+
+  @@index([email])
+}
+
+model User {
+  id         String  @id @default(uuid())
+  name       String
+  email      String  @unique
+  password   String
+  createdAt  DateTime @default(now())
+  
+  planId     String?  
+  plan       Plan?    @relation(fields: [planId], references: [id])
+  
+  remainingTries Int  @default(50)
+  verificationCode VerificationCode?
+
+  @@index([email])
+}
+
+model VerificationCode {
+  id         String   @id @default(uuid())
+  code       String   
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime 
+  isActive   Boolean  @default(false)
+
+  userId     String   @unique 
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+}
+
+model Plan {
+  id         String  @id @default(uuid())
+  name       String  @unique
+  tries      Int
+  price      Float   @default(0.0)
+  users      User[]
+}
