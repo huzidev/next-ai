@@ -15,7 +15,7 @@ model Admin {
   password      String
   role          String
   
-  verificationCode VerificationCode? @relation
+  verificationCodes VerificationCode[]
   createdAt     DateTime @default(now())
 
   @@index([email])
@@ -27,27 +27,29 @@ model User {
   email      String  @unique
   password   String
   createdAt  DateTime @default(now())
+  isBan      Boolean @default(false)
+  isVerified Boolean @default(false)
   
   planId     String?  
   plan       Plan?    @relation(fields: [planId], references: [id])
   
   remainingTries Int  @default(50)
-  verificationCode VerificationCode? @relation
+  verificationCodes VerificationCode[]
 
   @@index([email])
 }
 
 model VerificationCode {
   id         String   @id @default(uuid())
-  code       String   
+  code       Int   
   createdAt  DateTime @default(now())
   expiresAt  DateTime 
   isActive   Boolean  @default(false)
 
-  userId     String?  @unique 
+  userId     String?  
   user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  adminId    String?  @unique
+  adminId    String?  
   admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([code])

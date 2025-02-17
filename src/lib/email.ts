@@ -19,7 +19,7 @@ async function sendErrorEmail(error: unknown) {
   });
 }
 
-export async function sendEmail(values: EmailValues) {
+export async function sendEmail(values: EmailValues): Promise<boolean> {
   try {
     const { to, subject, html } = values;
     const response = await resend.emails.send({
@@ -29,10 +29,10 @@ export async function sendEmail(values: EmailValues) {
       html,
     });
 
-    return response;
+    return response ? true : false;
   } catch (error: unknown) {
     console.error("Error sending email:", error);
     await sendErrorEmail(error);
-    throw new Error("Failed to send email");
+    return false;
   }
 }
