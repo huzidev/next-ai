@@ -6,24 +6,29 @@ import { getUserByEmail, getUserById } from "./User.server";
 
 interface UserParams {
   email: string;
-  confirmPassword: string;
+  confirmPassword?: string;
   password: string;
 }
 
 const emailExistsMessage = {
-  message: 'Invalid credentials',
+  message: "Invalid credentials",
   status: 400,
-}
+};
+
+const emailOrPasswordIncorrect = {
+  message: "Email or Password is incorrect",
+  status: 400,
+};
 
 const passwordMismatchMessage = {
-  message: 'Passwords do not match',
+  message: "Passwords do not match",
   status: 400,
-}
+};
 
 const errorMessage = {
-  message: 'Something went wrong',
+  message: "Something went wrong",
   status: 500,
-}
+};
 
 async function hashPassword(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(10);
@@ -35,7 +40,7 @@ async function getVerificationCode(code: number) {
     where: {
       code,
     },
-  })
+  });
 
   if (!response) {
     return { isValid: false, message: "Invalid verification code" };
@@ -50,9 +55,9 @@ async function getVerificationCode(code: number) {
     return { isValid: false, message: "Verification code has expired" };
   }
 
-  return { 
-    isValid: true, 
-    message: "Code is valid" 
+  return {
+    isValid: true,
+    message: "Code is valid",
   };
 }
 
@@ -64,7 +69,7 @@ async function updateVerificationCode(code: number) {
     data: {
       isActive: false,
     },
-  })
+  });
 }
 
 export async function verifyUser(userId: string, code: number) {
@@ -89,7 +94,6 @@ export async function verifyUser(userId: string, code: number) {
       },
     });
 
-
     await updateVerificationCode(code);
 
     return { message: "User verified successfully", status: 200 };
@@ -99,8 +103,9 @@ export async function verifyUser(userId: string, code: number) {
   }
 }
 
-
-async function generateVerificationCode(userId: string): Promise<number | null> {
+async function generateVerificationCode(
+  userId: string
+): Promise<number | null> {
   try {
     // Generate 6 digit random code
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -166,7 +171,36 @@ export async function createUser(values: UserParams) {
     });
 
     return {
-      message: 'User registered successfully',
+      message: "User registered successfully",
+      status: 200,
+    };
+  } catch (e: unknown) {
+    console.log("Error :", (e as Error).stack);
+    return errorMessage;
+  }
+}
+
+
+export async function loginUser(values: UserParams) {
+  try {
+    const { email, password } = values;
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      return emailOrPasswordIncorrect;
+    }
+
+    const isPasswordMatch: boolean = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordMatch) {
+      return emailOrPasswordIncorrect;
+    }
+
+    return {
+      message: "User logged in successfully",
       status: 200,
     };
   } catch (e: unknown) {
