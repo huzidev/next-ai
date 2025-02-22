@@ -1,9 +1,13 @@
+'use client'
+
 import { useState } from "react";
-import { Button, Input, Label, Text } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { postRequest } from "@/services/api";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type FormValues = {
   email: string;
@@ -42,7 +46,13 @@ export default function Signin() {
               {...register("email", { required: "Email is required" })}
               className="mt-2 p-3 border rounded w-full"
             />
-            {errors.email && <Text className="text-red-500 text-xs">{errors.email.message}</Text>}
+            {errors.email && (
+              <p className="text-red-500 text-xs">
+                {errors.email.message}
+              </p>
+            // <Text className="text-red-500 text-xs">{errors.email.message}</Text>
+            )}
+
           </div>
 
           <div className="mb-6">
@@ -73,7 +83,14 @@ export default function Signin() {
                 )}
               </button>
             </div>
-            {errors.password && <Text className="text-red-500 text-xs">{errors.password.message}</Text>}
+            {errors.password && (
+              <p className="text-red-500 text-xs">
+                {errors.password.message}
+              </p>
+            // <Text className="text-red-500 text-xs">
+            //     {errors.password.message}
+            //     </Text>
+            )}
           </div>
 
           <Button type="submit" variant="primary" className="w-full mb-4">
@@ -87,12 +104,18 @@ export default function Signin() {
           </div>
 
           <div className="mt-4 text-center">
-            <Text className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500">
               Already have an account?{" "}
               <Link href="/signup" className="text-blue-600 hover:underline">
                 Sign Up
               </Link>
-            </Text>
+            </p>
+            {/* <Text className="text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link href="/signup" className="text-blue-600 hover:underline">
+                Sign Up
+              </Link>
+            </Text> */}
           </div>
         </form>
       </div>
