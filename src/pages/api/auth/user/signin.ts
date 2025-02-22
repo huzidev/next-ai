@@ -3,13 +3,16 @@ import { setCookie } from "@/lib/cookie";
 import { generateToken } from "@/lib/jwt";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest,res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { email, password } = req.body;
 
-    const response = await loginUser({
-        email,
-        password,
-    })
+  const response = await loginUser({
+    email,
+    password,
+  });
 
   if (response) {
     const token = generateToken(response.id);

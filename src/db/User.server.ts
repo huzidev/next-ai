@@ -76,7 +76,7 @@ export async function getUserByEmailOrUsername(email: string, username: string):
     };
   } catch (e: unknown) {
     console.log("Error :", (e as Error).stack);
-    return { message: "Internal Server Error", user: null };
+    return { message: "Internal Server Error", status: 500 };
   }
 }
 

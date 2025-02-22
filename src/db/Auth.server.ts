@@ -3,8 +3,6 @@ import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { getUser, getUserByEmail, getUserByEmailOrUsername, getUserById } from "./User.server";
-import { generateToken } from "@/lib/jwt";
-import { setCookie } from "@/lib/cookie";
 
 interface UserParams {
   email: string;
@@ -13,14 +11,9 @@ interface UserParams {
   password: string;
 }
 
-const emailExistsMessage = {
-  message: "Email already exists",
-  status: 400,
-};
-
-const usernameExistsMessage = {
-  message: "Username already exists",
-  status: 400,
+const userNotExistsMessage = {
+  message: "User does not exist",
+  status: 404,
 }
 
 const emailOrPasswordIncorrect = {
@@ -160,7 +153,7 @@ async function generateVerificationCode(userId: string): Promise<number | null> 
 
 export async function createUser(values: UserParams) {
   try {
-    const { email, username, confirmPassword, password } = values;
+    const { email, username, password, confirmPassword } = values;
 
     const { message, status } = await getUserByEmailOrUsername(email, username!);
     
@@ -178,6 +171,7 @@ export async function createUser(values: UserParams) {
     const response = await prisma.user.create({
       data: {
         email,
+        username,
         password: hashPassword(password),
       },
     });
@@ -213,11 +207,12 @@ export async function createUser(values: UserParams) {
 
 export async function loginUser(values: UserParams): Promise<User | Object> {
   try {
-    const { password } = values;
-    const user = await getUser(values);
+    const { email, password } = values;
+
+    const user = await getUserByEmail(email);
 
     if (!user) {
-      return emailOrPasswordIncorrect;
+      return userNotExistsMessage;
     }
 
     const isPasswordMatch: boolean = await bcrypt.compare(
@@ -229,11 +224,13 @@ export async function loginUser(values: UserParams): Promise<User | Object> {
       return emailOrPasswordIncorrect;
     }
 
-    if (!user.isVerified) {
+    const { isVerified, isBan } = user;
+
+    if (!isVerified) {
       return userNotVerifiedMessage;
     }
 
-    if (user.isBan) {
+    if (isBan) {
       return userBannedMessage;
     }
 
