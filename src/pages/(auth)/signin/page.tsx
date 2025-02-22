@@ -3,11 +3,14 @@ import { Button, Input, Label, Text } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { postRequest } from "@/services/api";
 
 type FormValues = {
   email: string;
   password: string;
 };
+
+const SIGNIN_USER_URL = '/api/auth/signin';
 
 export default function Signin() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
@@ -16,7 +19,10 @@ export default function Signin() {
 
   async function onSubmit(data: FormValues) {
     console.log(data);
-    router.push("/dashboard");
+    console.log("SW data for signin", data);
+    const response = await postRequest(SIGNIN_USER_URL, data);
+    console.log("SW response on signin request", response);
+    
   };
 
   return (
