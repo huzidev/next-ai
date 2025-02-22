@@ -14,13 +14,13 @@ export default async function handler(
     password,
   });
 
-  if (response) {
+  if (response?.status === 200) {
     const token = generateToken(response.id);
 
     setCookie(token, res);
 
     return res.status(200).json({ data: response });
   } else {
-    return res.status(404).json(null);
+    return res.status(response.status).json({ message: response.message });
   }
 }
