@@ -3,7 +3,7 @@ import { User } from "@prisma/client";
 
 interface UserParams {
   email: string;
-  confirmPassword: string;
+  confirmPassword?: string;
   password: string;
 }
 
@@ -45,11 +45,11 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   }
 }
 
-export async function getUser(params: UserParams) {
+export async function getUser(values: UserParams): Promise<User | null> {
   try {
-    const response = await prisma.user.findFirst({
+    const response = await prisma.user.findUnique({
       where: {
-        ...params,
+        ...values,
       },
     });
 

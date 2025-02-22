@@ -2,7 +2,7 @@ import { sendEmail } from "@/lib/email";
 import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { getUserByEmail, getUserById } from "./User.server";
+import { getUser, getUserByEmail, getUserById } from "./User.server";
 
 interface UserParams {
   email: string;
@@ -30,12 +30,27 @@ const errorMessage = {
   status: 500,
 };
 
+const userNotFoundMessage = {
+  message: "User not found",
+  status: 404,
+}
+
+const userNotVerifiedMessage = {
+  message: "User not verified",
+  status: 400,
+}
+
+const userBannedMessage = {
+  message: "User is banned",
+  status: 400,
+}
+
 async function hashPassword(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(password, salt);
 }
 
-async function getVerificationCode(code: number) {
+async function checkVerificationCode(code: number) {
   const response = await prisma.verificationCode.findFirst({
     where: {
       code,
@@ -80,9 +95,12 @@ export async function verifyUser(userId: string, code: number) {
       return { message: "User not found", status: 404 };
     }
 
-    const codeStatus = await getVerificationCode(code);
+    const codeStatus = await checkVerificationCode(code);
     if (!codeStatus?.isValid) {
-      return { message: codeStatus?.message, status: 400 };
+      return { 
+        message: codeStatus?.message, 
+        status: 400 
+      };
     }
 
     await prisma.user.update({
@@ -96,16 +114,17 @@ export async function verifyUser(userId: string, code: number) {
 
     await updateVerificationCode(code);
 
-    return { message: "User verified successfully", status: 200 };
+    return { 
+      message: "User verified successfully", 
+      status: 200 
+    };
   } catch (e: unknown) {
     console.log("Error :", (e as Error).stack);
     return null;
   }
 }
 
-async function generateVerificationCode(
-  userId: string
-): Promise<number | null> {
+async function generateVerificationCode(userId: string): Promise<number | null> {
   try {
     // Generate 6 digit random code
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -183,8 +202,8 @@ export async function createUser(values: UserParams) {
 
 export async function loginUser(values: UserParams) {
   try {
-    const { email, password } = values;
-    const user = await getUserByEmail(email);
+    const { password } = values;
+    const user = await getUser(values);
 
     if (!user) {
       return emailOrPasswordIncorrect;
@@ -199,8 +218,60 @@ export async function loginUser(values: UserParams) {
       return emailOrPasswordIncorrect;
     }
 
+    if (!user.isVerified) {
+      return userNotVerifiedMessage;
+    }
+
+    if (user.isBan) {
+      return userBannedMessage;
+    }
+
     return {
       message: "User logged in successfully",
+      status: 200,
+    };
+  } catch (e: unknown) {
+    console.log("Error :", (e as Error).stack);
+    return errorMessage;
+  }
+}
+
+export async function logout() {
+  try {
+    return {
+      message: "User logged out successfully",
+      status: 200,
+    };
+  } catch (e: unknown) {
+    console.log("Error :", (e as Error).stack);
+    return errorMessage;
+  }
+}
+
+export async function forgotPassword(email: string) {
+  try {
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      return userNotFoundMessage;
+    }
+
+    const verificationCode = await generateVerificationCode(user.id);
+
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your password",
+      html: `
+        <p>You have requested to reset your password. Your verification code is <strong>${verificationCode}</strong>.</p>
+        <p>To reset your password, click the button below:</p>
+        <a href="https://yourwebsite.com/reset-password?code=${verificationCode}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+        <p>If the button doesn't work, copy and paste the following link in your browser:</p>
+        <p><a href="https://yourwebsite.com/reset-password?code=${verificationCode}">https://yourwebsite.com/reset-password?code=${verificationCode}</a></p>
+      `,
+    });
+
+    return {
+      message: "Verification code sent successfully",
       status: 200,
     };
   } catch (e: unknown) {

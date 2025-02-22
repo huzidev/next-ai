@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,56 +8,51 @@ datasource db {
 }
 
 model Admin {
-  id            String   @id @default(uuid())
-  username      String
-  email         String   @unique
-  password      String
-  role          String
-  
+  id                String             @id @default(uuid())
+  username          String
+  email             String             @unique
+  password          String
+  role              String
+  createdAt         DateTime           @default(now())
   verificationCodes VerificationCode[]
-  createdAt     DateTime @default(now())
 
   @@index([email])
 }
 
 model User {
-  id         String  @id @default(uuid())
-  username   String
-  email      String  @unique
-  password   String
-  createdAt  DateTime @default(now())
-  isBan      Boolean @default(false)
-  isVerified Boolean @default(false)
-  
-  planId     String?  
-  plan       Plan?    @relation(fields: [planId], references: [id])
-  
-  remainingTries Int  @default(50)
+  id                String             @id @default(uuid())
+  username          String
+  email             String             @unique
+  password          String
+  createdAt         DateTime           @default(now())
+  isBan             Boolean            @default(false)
+  isVerified        Boolean            @default(false)
+  planId            String?
+  remainingTries    Int                @default(50)
+  plan              Plan?              @relation(fields: [planId], references: [id])
   verificationCodes VerificationCode[]
 
   @@index([email])
 }
 
 model VerificationCode {
-  id         String   @id @default(uuid())
-  code       Int   
-  createdAt  DateTime @default(now())
-  expiresAt  DateTime 
-  isActive   Boolean  @default(false)
-
-  userId     String?  
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  adminId    String?  
-  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  code      Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  isActive  Boolean  @default(false)
+  userId    String?
+  adminId   String?
+  admin     Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([code])
 }
 
 model Plan {
-  id         String  @id @default(uuid())
-  name       String  @unique
-  tries      Int
-  price      Float   @default(0.0)
-  users      User[]
+  id    String @id @default(uuid())
+  name  String @unique
+  tries Int
+  price Float  @default(0.0)
+  users User[]
 }
