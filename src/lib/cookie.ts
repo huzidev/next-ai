@@ -1,12 +1,23 @@
 import { serialize, parse } from 'cookie';
 
+interface ConfigValues {
+    httpOnly: boolean;
+    secure: boolean;
+    sameSite: "strict" | "lax" | "none";
+    path: string;
+}
+
+const config: ConfigValues = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  path: "/",
+};
+
 // Function to set the JWT in cookie
 export function setCookie(token: string, res: any) {
   const cookie = serialize('token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
+    ...config,
     maxAge: 60 * 60, // 1 hour
   });
 
@@ -16,10 +27,7 @@ export function setCookie(token: string, res: any) {
 // Function to remove the JWT from cookie (logout)
 export function removeCookie(res: any) {
   const cookie = serialize('token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
+    ...config,
     maxAge: -1, // Expire immediately
   });
 
