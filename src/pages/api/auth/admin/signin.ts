@@ -1,5 +1,3 @@
-import { LikePost } from "@/db/Post.server";
-import { getUserById } from "@/db/User.server";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest,res: NextApiResponse) {

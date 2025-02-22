@@ -2,19 +2,26 @@ import { sendEmail } from "@/lib/email";
 import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { getUser, getUserByEmail, getUserById } from "./User.server";
+import { getUser, getUserByEmail, getUserByEmailOrUsername, getUserById } from "./User.server";
 import { generateToken } from "@/lib/jwt";
+import { setCookie } from "@/lib/cookie";
 
 interface UserParams {
   email: string;
+  username?: string;
   confirmPassword?: string;
   password: string;
 }
 
 const emailExistsMessage = {
-  message: "Invalid credentials",
+  message: "Email already exists",
   status: 400,
 };
+
+const usernameExistsMessage = {
+  message: "Username already exists",
+  status: 400,
+}
 
 const emailOrPasswordIncorrect = {
   message: "Email or Password is incorrect",
@@ -153,12 +160,15 @@ async function generateVerificationCode(userId: string): Promise<number | null> 
 
 export async function createUser(values: UserParams) {
   try {
-    const { email, confirmPassword, password } = values;
+    const { email, username, confirmPassword, password } = values;
 
-    const emailExists = await getUserByEmail(email);
-
-    if (emailExists) {
-      return emailExistsMessage;
+    const { message, status } = await getUserByEmailOrUsername(email, username!);
+    
+    if (status === 400) {
+      return {
+        message,
+        status
+      };
     }
 
     if (password !== confirmPassword) {
@@ -201,7 +211,7 @@ export async function createUser(values: UserParams) {
 }
 
 
-export async function loginUser(values: UserParams) {
+export async function loginUser(values: UserParams): Promise<User | Object> {
   try {
     const { password } = values;
     const user = await getUser(values);
@@ -226,8 +236,6 @@ export async function loginUser(values: UserParams) {
     if (user.isBan) {
       return userBannedMessage;
     }
-
-    const token = generateToken(user);
 
     return {
       message: "User logged in successfully",
