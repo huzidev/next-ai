@@ -3,6 +3,7 @@ import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { getUser, getUserByEmail, getUserById } from "./User.server";
+import { generateToken } from "@/lib/jwt";
 
 interface UserParams {
   email: string;
@@ -225,6 +226,8 @@ export async function loginUser(values: UserParams) {
     if (user.isBan) {
       return userBannedMessage;
     }
+
+    const token = generateToken(user);
 
     return {
       message: "User logged in successfully",
