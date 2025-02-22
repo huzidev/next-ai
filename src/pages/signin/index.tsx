@@ -14,7 +14,7 @@ type FormValues = {
   password: string;
 };
 
-const SIGNIN_USER_URL = '/api/auth/signin';
+const SIGNIN_USER_URL = '/api/auth/user/signin';
 
 export default function Signin() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
