@@ -172,7 +172,7 @@ export async function createUser(values: UserParams) {
       data: {
         email,
         username,
-        password: hashPassword(password),
+        password: await hashPassword(password),
       },
     });
 
@@ -181,6 +181,9 @@ export async function createUser(values: UserParams) {
     }
 
     const verificationCode = await generateVerificationCode(response?.id);
+
+    console.log("SW what is response of create User", response);
+    
 
     await sendEmail({
       to: response?.email,
