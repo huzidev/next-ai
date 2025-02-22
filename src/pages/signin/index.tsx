@@ -26,7 +26,6 @@ export default function Signin() {
     console.log("SW data for signin", data);
     const response = await postRequest(SIGNIN_USER_URL, data);
     console.log("SW response on signin request", response);
-    
   };
 
   return (
