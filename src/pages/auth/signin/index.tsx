@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { postRequest } from "@/services/api";
+import { post } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -24,7 +24,7 @@ export default function Signin() {
   async function onSubmit(data: FormValues) {
     console.log(data);
     console.log("SW data for signin", data);
-    const response = await postRequest(SIGNIN_USER_URL, data);
+    const response = await post(SIGNIN_USER_URL, data);
     console.log("SW response on signin request", response);
   };
 

@@ -2,7 +2,7 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-export async function postRequest(url: string, body: object) {
+export async function post(url: string, body: object) {
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -17,7 +17,7 @@ export async function postRequest(url: string, body: object) {
   }
 }
 
-export async function getRequest(url: string) {
+export async function get(url: string) {
   try {
     const response = await fetch(url, {
       method: "GET",
