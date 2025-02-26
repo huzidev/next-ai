@@ -3,6 +3,14 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { post } from "@/services/api";
+
+interface FormValues {
+    email: string;
+    otp: string;
+}
+
+const VERIFY_USER_URL = "/api/auth/user/verify";
 
 export default function Verify() {
   const router = useRouter();
@@ -35,6 +43,18 @@ export default function Verify() {
       }
     }
   };
+
+  async function onSubmit(data: FormValues) {
+    console.log("Signup data:", data);
+    const response = await post(VERIFY_USER_URL, data);
+
+    console.log("SW what is response on register", response);
+
+    if (response) {
+        router.push('/')
+    }
+    console.log("Signup response:", response);
+}
 
   return (
     <div className="flex items-center justify-center min-h-screen">
