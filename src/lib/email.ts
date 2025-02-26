@@ -10,7 +10,7 @@ interface EmailValues {
 
 async function sendErrorEmail(error: unknown) {
   await resend.emails.send({
-    from: "huzaifa.iqdev@gmail.com",
+    from: "onboarding@resend.dev",
     to: "huzaifa.iqdev@gmail.com",
     subject: "Email Sending Error Alert 🚨",
     html: `<p><strong>Error:</strong> ${
@@ -23,11 +23,13 @@ export async function sendEmail(values: EmailValues): Promise<boolean> {
   try {
     const { to, subject, html } = values;
     const response = await resend.emails.send({
-      from: "huzaifa.iqdev@gmail.com",
-      to,
+      from: "onboarding@resend.dev",
+      to: [to],
       subject,
       html,
     });
+
+    console.log("SW what is response for send email", response);
 
     return response ? true : false;
   } catch (error: unknown) {
