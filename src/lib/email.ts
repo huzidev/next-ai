@@ -11,7 +11,7 @@ interface EmailValues {
 async function sendErrorEmail(error: unknown) {
   await resend.emails.send({
     from: "onboarding@resend.dev",
-    to: "huzaifa.iqdev@gmail.com",
+    to: ["huzaifa.iqdev@gmail.com"],
     subject: "Email Sending Error Alert 🚨",
     html: `<p><strong>Error:</strong> ${
       error instanceof Error ? error.message : "Unknown error occurred"
