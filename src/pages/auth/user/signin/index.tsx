@@ -9,9 +9,9 @@ import { post } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import * as ENDPOINTS from "@/api/auth/endpoints";
+import * as ENDPOINTS from "@/api/auth/user/endpoints";
 import { FormValues } from "@/types/auth/types";
-import  * as ROUTES  from "@/routes/auth/route";
+import  * as ROUTES  from "@/routes/auth/user/route";
 
 export default function Signin() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
@@ -20,7 +20,7 @@ export default function Signin() {
 
   async function onSubmit(data: FormValues) {
     console.log("SW data for signin user", data);
-    const response = await post(ENDPOINTS.SIGNIN_USER, data);
+    const response = await post(ENDPOINTS.SIGNIN, data);
     console.log("SW response on signin request", response);
   };
 
@@ -48,7 +48,7 @@ export default function Signin() {
               <Label htmlFor="password" className="block text-sm font-medium text-gray-300">
                 Password
               </Label>
-              <Link href="/auth/forgot-password" className="text-blue-400 hover:text-blue-500 text-sm">
+              <Link href={ROUTES.FORGOT_PASSWORD} className="text-blue-400 hover:text-blue-500 text-sm">
                 Forgot Password?
               </Link>
             </div>
@@ -78,7 +78,7 @@ export default function Signin() {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-400">
               Don't have an account? {" "}
-              <Link href={ROUTES.AUTH_SIGNUP} className="text-blue-400 hover:text-blue-500">
+              <Link href={ROUTES.SIGNUP} className="text-blue-400 hover:text-blue-500">
                 Sign Up
               </Link>
             </p>

@@ -4,10 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { post } from "@/services/api";
+import * as ENDPOINTS from "@/api/auth/user/endpoints";
 
 interface FormValues {
-    email: string;
-    otp: string;
+  email: string;
+  otp: string;
 }
 
 const VERIFY_USER_URL = "/api/auth/user/verify";
@@ -18,7 +19,10 @@ export default function Verify() {
 
   const [otp, setOtp] = useState(Array(6).fill(""));
 
-  function handleOtpChange(e: React.ChangeEvent<HTMLInputElement>, index: number) {
+  function handleOtpChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) {
     const value = e.target.value;
 
     if (/^\d$/.test(value)) {
@@ -42,27 +46,32 @@ export default function Verify() {
         document.getElementById(`otp-${index - 1}`)?.focus();
       }
     }
-  };
+  }
 
   async function onSubmit(data: FormValues) {
     console.log("Signup data:", data);
-    const response = await post(VERIFY_USER_URL, data);
+    const response = await post(ENDPOINTS.VERIFY, data);
 
     console.log("SW what is response on register", response);
 
     if (response) {
-        router.push('/')
+      router.push("/");
     }
     console.log("Signup response:", response);
-}
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-sm p-8 shadow-md rounded-lg bg-gray-900">
-        <h1 className="text-2xl font-semibold mb-6 text-white">Verify Your Email</h1>
+        <h1 className="text-2xl font-semibold mb-6 text-white">
+          Verify Your Email
+        </h1>
         <form>
           <div className="mb-4">
-            <Label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            <Label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-300"
+            >
               Email Address
             </Label>
             <Input
@@ -75,7 +84,10 @@ export default function Verify() {
           </div>
 
           <div className="mb-6">
-            <Label htmlFor="otp" className="block text-sm font-medium text-gray-300">
+            <Label
+              htmlFor="otp"
+              className="block text-sm font-medium text-gray-300"
+            >
               Enter Verification Code
             </Label>
             <div className="flex space-x-2 mt-2">
@@ -94,7 +106,10 @@ export default function Verify() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-md">
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-3 rounded-md"
+          >
             Verify
           </Button>
         </form>

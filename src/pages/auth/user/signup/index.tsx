@@ -8,7 +8,8 @@ import Link from "next/link";
 import { post } from "@/services/api";
 import { Eye, EyeOff } from "lucide-react";
 import { FormValues, PasswordState } from "@/types/auth/types";
-import { SIGNUP_USER_URL } from "@/api/auth/endpoints";
+import * as ENDPOINTS from "@/api/auth/user/endpoints";
+import  * as ROUTES  from "@/routes/auth/user/route";
 
 export default function Signup() {
   const {
@@ -25,7 +26,7 @@ export default function Signup() {
 
   async function onSubmit(data: FormValues) {
     console.log("Signup data:", data);
-    const response = await post(SIGNUP_USER_URL, data);
+    const response = await post(ENDPOINTS.SIGNUP, data);
 
     console.log("SW what is response on register", response);
 
@@ -174,7 +175,7 @@ export default function Signup() {
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
               <Link
-                href="/auth/signin"
+                href={ROUTES.SIGNIN}
                 className="text-blue-400 hover:text-blue-500"
               >
                 Sign In
