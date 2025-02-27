@@ -8,10 +8,7 @@ import Link from "next/link";
 import { post } from "@/services/api";
 import { Eye, EyeOff } from "lucide-react";
 import { FormValues, PasswordState } from "@/types/auth/types";
-
-
-
-const SIGNUP_USER_URL = "/api/auth/user/signup";
+import { SIGNUP_USER_URL } from "@/api/auth/endpoints";
 
 export default function Signup() {
   const {

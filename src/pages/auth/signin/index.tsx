@@ -9,13 +9,8 @@ import { post } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-
-type FormValues = {
-  email: string;
-  password: string;
-};
-
-const SIGNIN_USER_URL = '/api/auth/user/signin';
+import { SIGNIN_USER_URL } from "@/api/auth/endpoints";
+import { FormValues } from "@/types/auth/types";
 
 export default function Signin() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
@@ -23,7 +18,7 @@ export default function Signin() {
   const router = useRouter();
 
   async function onSubmit(data: FormValues) {
-    console.log(data);
+    console.log("SW data for signin user", data);
     console.log("SW data for signin", data);
     const response = await post(SIGNIN_USER_URL, data);
     console.log("SW response on signin request", response);

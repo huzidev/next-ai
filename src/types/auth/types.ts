@@ -5,8 +5,8 @@ export interface PasswordState {
 }
 
 export interface FormValues {
-  username: string;
+  username?: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 };
