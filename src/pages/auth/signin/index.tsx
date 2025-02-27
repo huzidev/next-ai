@@ -9,8 +9,9 @@ import { post } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import { SIGNIN_USER_URL } from "@/api/auth/endpoints";
+import * as ENDPOINTS from "@/api/auth/endpoints";
 import { FormValues } from "@/types/auth/types";
+import  * as ROUTES  from "@/routes/auth/route";
 
 export default function Signin() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
@@ -19,8 +20,7 @@ export default function Signin() {
 
   async function onSubmit(data: FormValues) {
     console.log("SW data for signin user", data);
-    console.log("SW data for signin", data);
-    const response = await post(SIGNIN_USER_URL, data);
+    const response = await post(ENDPOINTS.SIGNIN_USER, data);
     console.log("SW response on signin request", response);
   };
 
@@ -78,7 +78,7 @@ export default function Signin() {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-400">
               Don't have an account? {" "}
-              <Link href="/auth/signup" className="text-blue-400 hover:text-blue-500">
+              <Link href={ROUTES.AUTH_SIGNUP} className="text-blue-400 hover:text-blue-500">
                 Sign Up
               </Link>
             </p>
