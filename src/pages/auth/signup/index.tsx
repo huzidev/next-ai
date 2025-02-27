@@ -7,18 +7,9 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { post } from "@/services/api";
 import { Eye, EyeOff } from "lucide-react";
+import { FormValues, PasswordState } from "@/types/auth/types";
 
-type FormValues = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
 
-interface PasswordState {
-  password: boolean;
-  confirmPassword: boolean;
-}
 
 const SIGNUP_USER_URL = "/api/auth/user/signup";
 
@@ -186,7 +177,7 @@ export default function Signup() {
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
               <Link
-                href="/signin"
+                href="/auth/signin"
                 className="text-blue-400 hover:text-blue-500"
               >
                 Sign In

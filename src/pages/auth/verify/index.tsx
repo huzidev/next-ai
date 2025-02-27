@@ -70,7 +70,7 @@ export default function Verify() {
               type="email"
               value={email}
               disabled
-              className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white opacity-70" // Added opacity for un-editable look
+              className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white opacity-70"
             />
           </div>
 
