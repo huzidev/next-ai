@@ -7,16 +7,43 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
+
+enum NotificationType {
+  CHAT_MESSAGE
+  USER_SIGNUP
+  USER_VERIFICATION
+  ADMIN_ACTION
+}
+
 model Admin {
   id                String             @id @default(uuid())
   username          String             @unique
   email             String             @unique
   password          String
-  role              String
+  role              AdminRole          @default(ADMIN)
+  isActive          Boolean            @default(true)
   createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  createdBy         String?            // ID of super admin who created this admin
+  creator           Admin?             @relation("AdminCreator", fields: [createdBy], references: [id])
+  createdAdmins     Admin[]            @relation("AdminCreator")
   verificationCodes VerificationCode[]
+  sentMessages      ChatMessage[]      @relation("AdminSentMessages")
+  receivedMessages  ChatMessage[]      @relation("AdminReceivedMessages")
+  notifications     Notification[]
 
   @@index([email])
+  @@index([role])
 }
 
 model User {
@@ -25,28 +52,37 @@ model User {
   email             String             @unique
   password          String
   createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   isBan             Boolean            @default(false)
   isVerified        Boolean            @default(false)
   planId            String?
   remainingTries    Int                @default(50)
+  lastActiveAt      DateTime?
   plan              Plan?              @relation(fields: [planId], references: [id])
   verificationCodes VerificationCode[]
+  chatSessions      ChatSession[]
+  sentMessages      ChatMessage[]      @relation("UserSentMessages")
+  receivedMessages  ChatMessage[]      @relation("UserReceivedMessages")
+  notifications     Notification[]
 
   @@index([email])
+  @@index([isVerified])
+  @@index([isBan])
 }
 
 model VerificationCode {
   id        String   @id @default(uuid())
-  code      Int
+  code      String   // Changed to String for more flexibility
   createdAt DateTime @default(now())
   expiresAt DateTime
-  isActive  Boolean  @default(false)
+  isUsed    Boolean  @default(false)
   userId    String?
   adminId   String?
   admin     Admin?   @relation(fields: [adminId], references: [id], onDelete: Cascade)
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([code])
+  @@index([expiresAt])
 }
 
 model Plan {
@@ -55,4 +91,81 @@ model Plan {
   tries Int
   price Float  @default(0.0)
   users User[]
+}
+
+// Chat Session for AI conversations
+model ChatSession {
+  id          String        @id @default(uuid())
+  title       String        @default("New Chat")
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  isActive    Boolean       @default(true)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    AiMessage[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// AI Conversation Messages
+model AiMessage {
+  id            String      @id @default(uuid())
+  content       String
+  role          String      // "user" or "assistant"
+  messageType   MessageType @default(TEXT)
+  imageUrl      String?     // For image uploads
+  sessionId     String
+  createdAt     DateTime    @default(now())
+  session       ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+// Chat Messages between Users and Admins
+model ChatMessage {
+  id              String      @id @default(uuid())
+  content         String
+  messageType     MessageType @default(TEXT)
+  imageUrl        String?
+  senderId        String
+  senderType      String      // "user" or "admin"
+  receiverId      String?
+  receiverType    String?     // "user" or "admin"
+  isRead          Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  // Relations for sender
+  userSender      User?       @relation("UserSentMessages", fields: [senderId], references: [id], map: "ChatMessage_userSender")
+  adminSender     Admin?      @relation("AdminSentMessages", fields: [senderId], references: [id], map: "ChatMessage_adminSender")
+  // Relations for receiver
+  userReceiver    User?       @relation("UserReceivedMessages", fields: [receiverId], references: [id], map: "ChatMessage_userReceiver")
+  adminReceiver   Admin?      @relation("AdminReceivedMessages", fields: [receiverId], references: [id], map: "ChatMessage_adminReceiver")
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+  @@index([isRead])
+}
+
+// Notifications System
+model Notification {
+  id          String           @id @default(uuid())
+  title       String
+  message     String
+  type        NotificationType
+  isRead      Boolean          @default(false)
+  userId      String?
+  adminId     String?
+  relatedId   String?          // ID of related entity (message, user, etc.)
+  createdAt   DateTime         @default(now())
+  user        User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin       Admin?           @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([adminId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([type])
 }

@@ -1,188 +1,235 @@
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Bot, Eye, EyeOff, Lock, Mail, User, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { post } from "@/services/api";
-import { Eye, EyeOff } from "lucide-react";
-import { FormValues, PasswordState } from "@/types/auth/types";
-import * as ENDPOINTS from "@/api/auth/user/endpoints";
-import  * as ROUTES  from "@/routes/auth/user/route";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
-export default function Signup() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<FormValues>();
-  const [showPassword, setShowPassword] = useState<PasswordState>({
-    password: false,
-    confirmPassword: false,
+export default function UserSignup() {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
 
-  async function onSubmit(data: FormValues) {
-    console.log("Signup data:", data);
-    const response = await post(ENDPOINTS.SIGNUP, data);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
-    console.log("SW what is response on register", response);
-
-    if (response) {
-      router.push(`/auth/verify?email=${encodeURIComponent(response?.email)}`);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
     }
-    console.log("Signup response:", response);
-  }
 
-  function toggleShowPassword(field: keyof PasswordState) {
-    setShowPassword((prevState) => ({
-      ...prevState,
-      [field]: !prevState[field],
-    }));
-  }
+    if (formData.password.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // TODO: Implement actual signup API call
+      // const response = await fetch('/api/auth/user/signup', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(formData)
+      // });
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: "Account Created!",
+        description: "Please check your email for verification code",
+      });
+
+      // Redirect to verification page
+      router.push('/auth/user/verify');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-sm p-8 shadow-md rounded-lg border border-gray-600 bg-gray-900">
-        <h1 className="text-2xl font-semibold mb-6 text-white">
-          Sign Up
-        </h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <Label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Username
-            </Label>
-            <Input
-              id="username"
-              type="text"
-              placeholder="Enter your username"
-              {...register("username", { required: "Username is required" })}
-              className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.username && (
-              <p className="text-red-500 text-xs">{errors.username.message}</p>
-            )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Home</span>
+          </Link>
+          
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Bot className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Next-AI
+            </span>
           </div>
+          
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Create Your Account</h1>
+          <p className="text-slate-600">Join thousands of users exploring AI possibilities</p>
+        </div>
 
-          <div className="mb-4">
-            <Label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              {...register("email", { required: "Email is required" })}
-              className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs">{errors.email.message}</p>
-            )}
-          </div>
+        {/* Signup Form */}
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-xl font-semibold flex items-center">
+              <UserPlus className="h-5 w-5 mr-2 text-blue-600" />
+              Sign Up
+            </CardTitle>
+            <CardDescription>
+              Enter your details to create your account
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-sm font-medium flex items-center">
+                  <User className="h-4 w-4 mr-2" />
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  className="h-11"
+                />
+              </div>
 
-          <div className="mb-4">
-            <Label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Password
-            </Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword.password ? "text" : "password"}
-                placeholder="Enter your password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
-                  },
-                })}
-                className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
-                onClick={() => toggleShowPassword("password")}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium flex items-center">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium flex items-center">
+                  <Lock className="h-4 w-4 mr-2" />
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="h-11 pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-11 px-3 py-2"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center">
+                  <Lock className="h-4 w-4 mr-2" />
+                  Confirm Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="h-11 pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-11 px-3 py-2"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                disabled={isLoading}
               >
-                {showPassword.password ? (
-                  <EyeOff size={16} />
-                ) : (
-                  <Eye size={16} />
-                )}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs">{errors.password.message}</p>
-            )}
-          </div>
+                {isLoading ? "Creating Account..." : "Create Account"}
+              </Button>
+            </form>
 
-          <div className="mb-6">
-            <Label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Confirm Password
-            </Label>
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showPassword.confirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
-                {...register("confirmPassword", {
-                  required: "Confirm Password is required",
-                  validate: (value) =>
-                    value === watch("password") || "Passwords do not match",
-                })}
-                className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
-                onClick={() => toggleShowPassword("confirmPassword")}
-              >
-                {showPassword.confirmPassword ? (
-                  <EyeOff size={16} />
-                ) : (
-                  <Eye size={16} />
-                )}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
-          >
-            Sign Up
-          </Button>
-
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-400">
-              Already have an account?{" "}
-              <Link
-                href={ROUTES.SIGNIN}
-                className="text-blue-400 hover:text-blue-500"
-              >
-                Sign In
+            <div className="mt-6 text-center text-sm">
+              <span className="text-slate-600">Already have an account? </span>
+              <Link href="/auth/user/signin" className="text-blue-600 hover:text-blue-700 font-medium">
+                Sign in
               </Link>
-            </p>
-          </div>
-        </form>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Additional Info */}
+        <div className="mt-6 text-center text-xs text-slate-500">
+          By creating an account, you agree to our{" "}
+          <Link href="#" className="text-blue-600 hover:text-blue-700">Terms of Service</Link>
+          {" "}and{" "}
+          <Link href="#" className="text-blue-600 hover:text-blue-700">Privacy Policy</Link>
+        </div>
       </div>
     </div>
   );

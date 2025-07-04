@@ -1,118 +1,216 @@
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { post } from "@/services/api";
-import * as ENDPOINTS from "@/api/auth/user/endpoints";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Bot, Mail, RotateCcw, Shield } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useRef, useState } from "react";
 
-interface FormValues {
-  email: string;
-  otp: string;
-}
-
-const VERIFY_USER_URL = "/api/auth/user/verify";
-
-export default function Verify() {
+export default function UserVerify() {
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
-  const { email } = router.query;
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const [otp, setOtp] = useState(Array(6).fill(""));
+  const handleChange = (index: number, value: string) => {
+    if (value.length > 1) return; // Only allow single character
+    
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
 
-  function handleOtpChange(
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) {
-    const value = e.target.value;
+    // Auto-focus next input
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
 
-    if (/^\d$/.test(value)) {
-      setOtp((prevOtp) => {
-        const newOtp = [...prevOtp];
-        newOtp[index] = value;
-        return newOtp;
+  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const verificationCode = code.join("");
+    
+    if (verificationCode.length !== 6) {
+      toast({
+        title: "Error",
+        description: "Please enter the complete 6-digit code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // TODO: Implement actual verification API call
+      // const response = await fetch('/api/auth/user/verify', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ code: verificationCode })
+      // });
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: "Account Verified!",
+        description: "Your account has been successfully verified",
       });
 
-      if (index < otp.length - 1 && value) {
-        document.getElementById(`otp-${index + 1}`)?.focus();
-      }
-    } else if (!value) {
-      setOtp((prevOtp) => {
-        const newOtp = [...prevOtp];
-        newOtp[index] = "";
-        return newOtp;
+      // Redirect to signin or dashboard
+      router.push('/auth/user/signin');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Invalid verification code. Please try again.",
+        variant: "destructive",
       });
-
-      if (index > 0) {
-        document.getElementById(`otp-${index - 1}`)?.focus();
-      }
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  async function onSubmit(data: FormValues) {
-    console.log("Signup data:", data);
-    const response = await post(ENDPOINTS.VERIFY, data);
+  const handleResendCode = async () => {
+    setIsResending(true);
 
-    console.log("SW what is response on register", response);
+    try {
+      // TODO: Implement resend verification code API call
+      // const response = await fetch('/api/auth/user/resend-verification', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' }
+      // });
 
-    if (response) {
-      router.push("/");
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      toast({
+        title: "Code Sent",
+        description: "A new verification code has been sent to your email",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to resend code. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResending(false);
     }
-    console.log("Signup response:", response);
-  }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-sm p-8 shadow-md rounded-lg bg-gray-900">
-        <h1 className="text-2xl font-semibold mb-6 text-white">
-          Verify Your Email
-        </h1>
-        <form>
-          <div className="mb-4">
-            <Label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              disabled
-              className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white opacity-70"
-            />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link href="/auth/user/signup" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Sign Up</span>
+          </Link>
+          
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Bot className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Next-AI
+            </span>
           </div>
+          
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Verify Your Email</h1>
+          <p className="text-slate-600">Enter the 6-digit code sent to your email</p>
+        </div>
 
-          <div className="mb-6">
-            <Label
-              htmlFor="otp"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Enter Verification Code
-            </Label>
-            <div className="flex space-x-2 mt-2">
-              {otp.map((digit, index) => (
-                <Input
-                  key={index}
-                  id={`otp-${index}`}
-                  type="text"
-                  value={digit}
-                  maxLength={1}
-                  onChange={(e) => handleOtpChange(e, index)}
-                  className="w-12 h-12 text-center bg-gray-800 text-white border border-gray-600 rounded focus:ring-2 focus:ring-blue-500"
-                  autoFocus={index === 0}
-                />
-              ))}
+        {/* Verification Form */}
+        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-xl font-semibold flex items-center">
+              <Shield className="h-5 w-5 mr-2 text-green-600" />
+              Email Verification
+            </CardTitle>
+            <CardDescription>
+              We've sent a verification code to your email address
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Code Input */}
+              <div className="space-y-2">
+                <div className="flex justify-center">
+                  <div className="flex space-x-2">
+                    {code.map((digit, index) => (
+                      <Input
+                        key={index}
+                        ref={(el) => {
+                          inputRefs.current[index] = el;
+                        }}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(index, e)}
+                        className="w-12 h-12 text-center text-lg font-semibold"
+                        placeholder="0"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Verifying..." : "Verify Account"}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center space-y-3">
+              <p className="text-sm text-slate-600">
+                Didn't receive the code?
+              </p>
+              <Button
+                variant="outline"
+                onClick={handleResendCode}
+                disabled={isResending}
+                className="text-blue-600 hover:text-blue-700"
+              >
+                {isResending ? (
+                  <>
+                    <RotateCcw className="h-4 w-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="h-4 w-4 mr-2" />
+                    Resend Code
+                  </>
+                )}
+              </Button>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-md"
-          >
-            Verify
-          </Button>
-        </form>
+        {/* Additional Info */}
+        <div className="mt-6 text-center text-xs text-slate-500">
+          <p>
+            The verification code will expire in 10 minutes.
+          </p>
+          <p className="mt-2">
+            Make sure to check your spam folder if you don't see the email.
+          </p>
+        </div>
       </div>
     </div>
   );
