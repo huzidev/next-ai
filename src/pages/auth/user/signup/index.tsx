@@ -1,9 +1,10 @@
+import AuthHeader from "@/components/auth/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Bot, Eye, EyeOff, Lock, Mail, User, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -84,22 +85,12 @@ export default function UserSignup() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Home</span>
-          </Link>
-          
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-blue-400" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-              Next-AI
-            </span>
-          </div>
-          
-          <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
-          <p className="text-gray-300">Join thousands of users exploring AI possibilities</p>
-        </div>
+        <AuthHeader 
+          title="Create Your Account"
+          subtitle="Join thousands of users exploring AI possibilities"
+          backHref="/"
+          backText="Back to Home"
+        />
 
         {/* Signup Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">

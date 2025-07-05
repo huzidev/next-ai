@@ -5,18 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
-    Bell,
-    Bot,
-    Image as ImageIcon,
-    LogOut,
-    MessageSquare,
-    Plus,
-    Send,
-    Settings,
-    Sparkles,
-    Trash2,
-    Upload,
-    User
+  Bell,
+  Bot,
+  Image as ImageIcon,
+  LogOut,
+  MessageSquare,
+  Plus,
+  Send,
+  Settings,
+  Sparkles,
+  Trash2,
+  Upload,
+  User
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

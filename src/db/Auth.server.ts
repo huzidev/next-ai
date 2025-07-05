@@ -2,7 +2,7 @@ import { sendEmail } from "@/lib/email";
 import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { getUser, getUserByEmail, getUserByEmailOrUsername, getUserById } from "./User.server";
+import { getUserByEmail, getUserByEmailOrUsername, getUserById } from "./User.server";
 
 interface UserParams {
   email: string;

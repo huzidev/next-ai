@@ -1,9 +1,10 @@
+import AuthHeader from "@/components/auth/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Bot, KeyRound, Mail } from "lucide-react";
+import { KeyRound, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -61,31 +62,18 @@ export default function UserForgotPassword() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Sign In</span>
-            </Link>
-            
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Bot className="h-8 w-8 text-blue-400" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                Next-AI
-              </span>
-            </div>
-          </div>
+          <AuthHeader 
+            title="Check Your Email"
+            subtitle={`We've sent password reset instructions to ${email}`}
+            backHref="/auth/user/signin"
+            backText="Back to Sign In"
+          />
 
           <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardHeader className="text-center">
               <div className="p-3 bg-green-500/20 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Mail className="h-8 w-8 text-green-400" />
               </div>
-              <CardTitle className="text-xl font-semibold text-white">
-                Check Your Email
-              </CardTitle>
-              <CardDescription className="text-gray-300">
-                We've sent password reset instructions to {email}
-              </CardDescription>
             </CardHeader>
             
             <CardContent className="text-center space-y-4">
@@ -119,22 +107,12 @@ export default function UserForgotPassword() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Sign In</span>
-          </Link>
-          
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-blue-400" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-              Next-AI
-            </span>
-          </div>
-          
-          <h1 className="text-2xl font-bold text-white mb-2">Forgot Password?</h1>
-          <p className="text-gray-300">Enter your email to reset your password</p>
-        </div>
+        <AuthHeader 
+          title="Forgot Password?"
+          subtitle="Enter your email to reset your password"
+          backHref="/auth/user/signin"
+          backText="Back to Sign In"
+        />
 
         {/* Forgot Password Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
