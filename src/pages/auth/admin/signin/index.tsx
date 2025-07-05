@@ -1,14 +1,9 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
-import AuthLink from "@/components/auth/AuthLink";
+import SigninForm from "@/components/auth/SigninForm";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Crown, Eye, EyeOff, Lock, Mail, Shield } from "lucide-react";
-import Link from "next/link";
+import { Crown, Shield } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -90,79 +85,15 @@ export default function AdminSignin() {
           </Badge>
         </div>
 
-        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
-                  <Mail className="h-4 w-4 mr-2" />
-                  Admin Email
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter your admin email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium flex items-center text-gray-200">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Password
-                  </Label>
-                  <Link 
-                    href="/auth/admin/forgot-password" 
-                    className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-11 px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-600"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all duration-200"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing In..." : "Sign In to Dashboard"}
-              </Button>
-            </form>
-
-            <AuthLink 
-              text="Need admin access?"
-              linkText="Contact Super Admin"
-              linkHref="/contact"
-              variant="purple"
-            />
-          </CardContent>
-        </Card>
+        <SigninForm
+          formData={formData}
+          isLoading={isLoading}
+          showPassword={showPassword}
+          onFormDataChange={handleChange}
+          onSubmit={handleSubmit}
+          onTogglePassword={() => setShowPassword(!showPassword)}
+          variant="admin"
+        />
 
         <AuthFooter 
           helpText="Other options"
