@@ -2,21 +2,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    ArrowRight,
-    Brain,
-    Image,
-    MessageSquare,
-    Shield,
-    Sparkles,
-    UserCheck,
-    Zap
+  ArrowRight,
+  Brain,
+  Image,
+  MessageSquare,
+  Shield,
+  Sparkles,
+  UserCheck,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 
 export default function Main() {
   return (
     <main>
-      {/* Hero Section */}
       <section className="px-4 py-20 md:py-32">
         <div className="container mx-auto text-center">
           <div className="mx-auto max-w-4xl">
@@ -172,7 +171,6 @@ export default function Main() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="px-4 py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
         <div className="container mx-auto text-center">
           <div className="mx-auto max-w-3xl text-white">
