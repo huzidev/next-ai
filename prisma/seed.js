@@ -10,7 +10,7 @@ async function seed() {
         username: "huzidev",
         email: "huzaifa.iqdev@gmail.com",
         password: await bcryptjs.hash("huzaifa.iqdev@gmail.com", 10),
-        role: "super-admin",
+        role: "SUPER_ADMIN",
       },
     });
 

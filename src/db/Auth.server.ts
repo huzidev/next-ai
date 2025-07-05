@@ -2,7 +2,7 @@ import { sendEmail } from "@/lib/email";
 import prisma from "@/utils/prisma";
 import { User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { getUser, getUserByEmail, getUserByEmailOrUsername, getUserById } from "./User.server";
+import { getUserByEmail, getUserByEmailOrUsername, getUserById } from "./User.server";
 
 interface UserParams {
   email: string;
@@ -208,7 +208,7 @@ export async function createUser(values: UserParams) {
 }
 
 
-export async function loginUser(values: UserParams): Promise<User | Object> {
+export async function loginUser(values: UserParams): Promise<User | Record<string, any>> {
   try {
     const { email, password } = values;
 
@@ -238,6 +238,7 @@ export async function loginUser(values: UserParams): Promise<User | Object> {
     }
 
     return {
+      ...user,
       message: "User logged in successfully",
       status: 200,
     };

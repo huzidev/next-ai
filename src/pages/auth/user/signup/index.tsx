@@ -1,9 +1,12 @@
+import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Bot, Eye, EyeOff, Lock, Mail, User, UserPlus } from "lucide-react";
+import { api } from "@/lib/api";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -52,24 +55,24 @@ export default function UserSignup() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual signup API call
-      // const response = await fetch('/api/auth/user/signup', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
+      const response = await api.post('/api/auth/user/signup', formData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (response.success) {
+        toast({
+          title: "Account Created!",
+          description: "Please check your email for verification code",
+        });
 
-      toast({
-        title: "Account Created!",
-        description: "Please check your email for verification code",
-      });
-
-      // Redirect to verification page
-      router.push('/auth/user/verify');
-    } catch (error) {
+        // Redirect to verification page with email
+        router.push(`/auth/user/verify?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to create account. Please try again.",
@@ -81,42 +84,22 @@ export default function UserSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Home</span>
-          </Link>
-          
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Next-AI
-            </span>
-          </div>
-          
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Create Your Account</h1>
-          <p className="text-slate-600">Join thousands of users exploring AI possibilities</p>
-        </div>
+        <AuthHeader 
+          title="Create Your Account"
+          subtitle="Join thousands of users exploring AI possibilities"
+          backHref="/"
+          backText="Back to Home"
+        />
 
         {/* Signup Form */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center">
-              <UserPlus className="h-5 w-5 mr-2 text-blue-600" />
-              Sign Up
-            </CardTitle>
-            <CardDescription>
-              Enter your details to create your account
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
+        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
+          <CardContent className="p-6 space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-medium flex items-center">
+                <Label htmlFor="username" className="text-sm font-medium flex items-center text-gray-200">
                   <User className="h-4 w-4 mr-2" />
                   Username
                 </Label>
@@ -128,12 +111,12 @@ export default function UserSignup() {
                   value={formData.username}
                   onChange={handleChange}
                   required
-                  className="h-11"
+                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium flex items-center">
+                <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
                   <Mail className="h-4 w-4 mr-2" />
                   Email
                 </Label>
@@ -145,12 +128,12 @@ export default function UserSignup() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="h-11"
+                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium flex items-center">
+                <Label htmlFor="password" className="text-sm font-medium flex items-center text-gray-200">
                   <Lock className="h-4 w-4 mr-2" />
                   Password
                 </Label>
@@ -163,13 +146,13 @@ export default function UserSignup() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="h-11 pr-10"
+                    className="h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-11 px-3 py-2"
+                    className="absolute right-0 top-0 h-11 px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-600"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -178,7 +161,7 @@ export default function UserSignup() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center text-gray-200">
                   <Lock className="h-4 w-4 mr-2" />
                   Confirm Password
                 </Label>
@@ -191,13 +174,13 @@ export default function UserSignup() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="h-11 pr-10"
+                    className="h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-11 px-3 py-2"
+                    className="absolute right-0 top-0 h-11 px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-600"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -207,28 +190,27 @@ export default function UserSignup() {
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="w-full h-11 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-slate-600">Already have an account? </span>
-              <Link href="/auth/user/signin" className="text-blue-600 hover:text-blue-700 font-medium">
-                Sign in
-              </Link>
-            </div>
+            <AuthLink 
+              text="Already have an account?"
+              linkText="Sign in"
+              linkHref="/auth/user/signin"
+            />
           </CardContent>
         </Card>
 
         {/* Additional Info */}
-        <div className="mt-6 text-center text-xs text-slate-500">
+        <div className="mt-6 text-center text-xs text-gray-400">
           By creating an account, you agree to our{" "}
-          <Link href="#" className="text-blue-600 hover:text-blue-700">Terms of Service</Link>
+          <Link href="#" className="text-blue-400 hover:text-blue-300 transition-colors">Terms of Service</Link>
           {" "}and{" "}
-          <Link href="#" className="text-blue-600 hover:text-blue-700">Privacy Policy</Link>
+          <Link href="#" className="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</Link>
         </div>
       </div>
     </div>

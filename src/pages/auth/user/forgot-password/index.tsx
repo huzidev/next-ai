@@ -1,11 +1,13 @@
+import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Bot, KeyRound, Mail } from "lucide-react";
+import { api } from "@/lib/api";
+import { KeyRound, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function UserForgotPassword() {
@@ -13,7 +15,6 @@ export default function UserForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,23 +31,22 @@ export default function UserForgotPassword() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual forgot password API call
-      // const response = await fetch('/api/auth/user/forgot-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // });
+      const response = await api.post('/api/auth/user/forgot-password', { email });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      setIsEmailSent(true);
-      toast({
-        title: "Reset Link Sent",
-        description: "Check your email for password reset instructions",
-      });
-
-    } catch (error) {
+      if (response.success) {
+        setIsEmailSent(true);
+        toast({
+          title: "Reset Link Sent",
+          description: "Check your email for password reset instructions",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to send reset email. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to send reset email. Please try again.",
@@ -59,37 +59,24 @@ export default function UserForgotPassword() {
 
   if (isEmailSent) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Sign In</span>
-            </Link>
-            
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Bot className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Next-AI
-              </span>
-            </div>
-          </div>
+          <AuthHeader 
+            title="Check Your Email"
+            subtitle={`We've sent password reset instructions to ${email}`}
+            backHref="/auth/user/signin"
+            backText="Back to Sign In"
+          />
 
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+          <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardHeader className="text-center">
-              <div className="p-3 bg-green-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Mail className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-green-500/20 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Mail className="h-8 w-8 text-green-400" />
               </div>
-              <CardTitle className="text-xl font-semibold text-slate-900">
-                Check Your Email
-              </CardTitle>
-              <CardDescription>
-                We've sent password reset instructions to {email}
-              </CardDescription>
             </CardHeader>
             
             <CardContent className="text-center space-y-4">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-gray-300">
                 If you don't see the email, check your spam folder or try again with a different email address.
               </p>
               
@@ -97,13 +84,13 @@ export default function UserForgotPassword() {
                 <Button 
                   onClick={() => setIsEmailSent(false)} 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full text-gray-300 border-gray-600 hover:bg-gray-700 hover:text-white bg-transparent"
                 >
                   Try Different Email
                 </Button>
                 
                 <Link href="/auth/user/signin" className="block">
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                  <Button className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200">
                     Back to Sign In
                   </Button>
                 </Link>
@@ -116,42 +103,32 @@ export default function UserForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Sign In</span>
-          </Link>
-          
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Next-AI
-            </span>
-          </div>
-          
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Forgot Password?</h1>
-          <p className="text-slate-600">Enter your email to reset your password</p>
-        </div>
+        <AuthHeader 
+          title="Forgot Password?"
+          subtitle="Enter your email to reset your password"
+          backHref="/auth/user/signin"
+          backText="Back to Sign In"
+        />
 
         {/* Forgot Password Form */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center">
-              <KeyRound className="h-5 w-5 mr-2 text-blue-600" />
+            <CardTitle className="text-xl font-semibold flex items-center text-white">
+              <KeyRound className="h-5 w-5 mr-2 text-blue-400" />
               Reset Password
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               We'll send you a link to reset your password
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium flex items-center">
+                <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
                   <Mail className="h-4 w-4 mr-2" />
                   Email Address
                 </Label>
@@ -163,30 +140,29 @@ export default function UserForgotPassword() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-11"
+                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="w-full h-11 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200"
                 disabled={isLoading}
               >
                 {isLoading ? "Sending Reset Link..." : "Send Reset Link"}
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-slate-600">Remember your password? </span>
-              <Link href="/auth/user/signin" className="text-blue-600 hover:text-blue-700 font-medium">
-                Sign in
-              </Link>
-            </div>
+            <AuthLink 
+              text="Remember your password?"
+              linkText="Sign in"
+              linkHref="/auth/user/signin"
+            />
           </CardContent>
         </Card>
 
         {/* Additional Info */}
-        <div className="mt-6 text-center text-xs text-slate-500">
+        <div className="mt-6 text-center text-xs text-gray-400">
           <p>
             If you're having trouble, please contact our support team for assistance.
           </p>

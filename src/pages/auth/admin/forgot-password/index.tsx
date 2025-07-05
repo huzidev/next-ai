@@ -1,75 +1,143 @@
-import { useState } from "react";
+import * as ENDPOINTS from "@/api/auth/admin/endpoints";
+import AuthFooter from "@/components/auth/AuthFooter";
+import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import Link from "next/link";
-import { post } from "@/services/api";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import * as ENDPOINTS from "@/api/auth/admin/endpoints";
-import { FormValues } from "@/types/auth/types";
+import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import * as ROUTES from "@/routes/auth/admin/route";
+import { FormValues } from "@/types/auth/types";
+import { Crown, Mail, Shield } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-export default function index() {
+export default function AdminForgotPassword() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   async function onSubmit(data: FormValues) {
-    console.log("SW data for signin user", data);
-    const response = await post(ENDPOINTS.FORGOT_PASSWORD, data);
-    console.log("SW response on signin request", response);
+    setIsLoading(true);
+    try {
+      console.log("Admin forgot password data", data);
+      const response = await api.post(ENDPOINTS.FORGOT_PASSWORD, data);
+      console.log("Response:", response);
+      
+      if (response.success) {
+        toast({
+          title: "Reset Link Sent",
+          description: "Password reset instructions have been sent to your email",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to send reset email. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to send reset email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
-      <div className="w-full max-w-sm p-8 shadow-md rounded-lg border border-gray-600 bg-gray-900">
-        <h1 className="text-2xl font-semibold mb-6 text-white">
-          Forgot Password
-        </h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <Label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-300"
-            >
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              {...register("email", { required: "Email is required" })}
-              className="mt-2 p-3 border border-gray-600 rounded w-full bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs">{errors.email.message}</p>
-            )}
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <AuthHeader 
+          title="Admin Password Reset"
+          subtitle="Enter your admin email to reset your password"
+          backHref="/auth/admin/signin"
+          backText="Back to Admin Sign In"
+        />
+        
+        <div className="flex items-center justify-center mb-6">
+          <Badge variant="secondary" className="bg-purple-900/50 text-purple-300 border-purple-400">
+            <Crown className="h-3 w-3 mr-1" />
+            Admin Portal
+          </Badge>
+        </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg"
-          >
-            Reset Password
-          </Button>
+        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-xl font-semibold flex items-center text-white">
+              <Shield className="h-5 w-5 mr-2 text-purple-400" />
+              Reset Admin Password
+            </CardTitle>
+            <CardDescription className="text-gray-300">
+              We'll send reset instructions to your admin email
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Admin Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your admin email"
+                  {...register("email", { required: "Email is required" })}
+                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400"
+                />
+                {errors.email && (
+                  <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
+                )}
+              </div>
 
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-400">
-              Remember your password?{" "}
-              <Link
-                href={ROUTES.SIGNIN}
-                className="text-blue-400 hover:text-blue-500"
+              <Button
+                type="submit"
+                className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all duration-200"
+                disabled={isLoading}
               >
-                Sign In
-              </Link>
-            </p>
+                {isLoading ? "Sending Reset Link..." : "Send Reset Link"}
+              </Button>
+            </form>
+
+            <AuthLink 
+              text="Remember your password?"
+              linkText="Sign In"
+              linkHref={ROUTES.SIGNIN}
+              variant="purple"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Additional Options */}
+        <AuthFooter 
+          links={[
+            { href: "/auth/user/signin", text: "User Login" },
+            { href: "/support", text: "Contact Support" }
+          ]}
+        />
+
+        {/* Security Notice */}
+        <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+          <div className="flex items-start space-x-3">
+            <Shield className="h-5 w-5 text-amber-400 mt-0.5" />
+            <div className="text-sm text-gray-300">
+              <p className="font-medium text-amber-400 mb-1">Security Notice</p>
+              <p>Only valid admin email addresses will receive password reset instructions.</p>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
