@@ -15,7 +15,7 @@ export default function AuthHeader({
   backText = "Back to Home" 
 }: AuthHeaderProps) {
   return (
-    <div className="text-center mb-8 relative">
+    <div className="text-center mb-4 relative">
       <div className="absolute top-0 left-0">
         <Link href={backHref} className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 transition-colors">
           <ArrowLeft className="h-4 w-4" />

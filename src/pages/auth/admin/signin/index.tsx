@@ -1,3 +1,4 @@
+import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -162,20 +163,14 @@ export default function AdminSignin() {
           </CardContent>
         </Card>
 
-        {/* Additional Options */}
-        <div className="mt-6 text-center">
-          <div className="space-x-4 text-sm">
-            <Link href="/auth/user/signin" className="text-purple-400 hover:text-purple-300 transition-colors">
-              User Login
-            </Link>
-            <span className="text-gray-600">•</span>
-            <Link href="/support" className="text-purple-400 hover:text-purple-300 transition-colors">
-              Get Help
-            </Link>
-          </div>
-        </div>
+        <AuthFooter 
+          helpText="Other options"
+          links={[
+            { href: "/auth/user/signin", text: "User Login" },
+            { href: "/support", text: "Get Help" }
+          ]}
+        />
 
-        {/* Security Notice */}
         <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
           <div className="flex items-start space-x-3">
             <Shield className="h-5 w-5 text-amber-400 mt-0.5" />

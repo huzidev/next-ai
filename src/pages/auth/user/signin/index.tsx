@@ -1,3 +1,4 @@
+import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -154,18 +155,7 @@ export default function UserSignin() {
         </Card>
 
         {/* Additional Options */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-400 mb-2">Need help?</p>
-          <div className="space-x-4 text-sm">
-            <Link href="/support" className="text-blue-400 hover:text-blue-300 transition-colors">
-              Contact Support
-            </Link>
-            <span className="text-gray-600">•</span>
-            <Link href="/auth/admin/signin" className="text-blue-400 hover:text-blue-300 transition-colors">
-              Admin Login
-            </Link>
-          </div>
-        </div>
+        <AuthFooter />
       </div>
     </div>
   );

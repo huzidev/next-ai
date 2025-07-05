@@ -1,4 +1,5 @@
 import * as ENDPOINTS from "@/api/auth/admin/endpoints";
+import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -117,18 +118,12 @@ export default function AdminForgotPassword() {
         </Card>
 
         {/* Additional Options */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-400 mb-2">Need help?</p>
-          <div className="space-x-4 text-sm">
-            <Link href="/auth/user/signin" className="text-purple-400 hover:text-purple-300 transition-colors">
-              User Login
-            </Link>
-            <span className="text-gray-600">•</span>
-            <Link href="/support" className="text-purple-400 hover:text-purple-300 transition-colors">
-              Contact Support
-            </Link>
-          </div>
-        </div>
+        <AuthFooter 
+          links={[
+            { href: "/auth/user/signin", text: "User Login" },
+            { href: "/support", text: "Contact Support" }
+          ]}
+        />
 
         {/* Security Notice */}
         <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
