@@ -8,11 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import * as ROUTES from "@/routes/auth/admin/route";
-import { post } from "@/services/api";
 import { FormValues } from "@/types/auth/types";
 import { Crown, Mail, Shield } from "lucide-react";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -24,20 +23,27 @@ export default function AdminForgotPassword() {
   } = useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   async function onSubmit(data: FormValues) {
     setIsLoading(true);
     try {
       console.log("Admin forgot password data", data);
-      const response = await post(ENDPOINTS.FORGOT_PASSWORD, data);
+      const response = await api.post(ENDPOINTS.FORGOT_PASSWORD, data);
       console.log("Response:", response);
       
-      toast({
-        title: "Reset Link Sent",
-        description: "Password reset instructions have been sent to your email",
-      });
-    } catch (error) {
+      if (response.success) {
+        toast({
+          title: "Reset Link Sent",
+          description: "Password reset instructions have been sent to your email",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to send reset email. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to send reset email. Please try again.",

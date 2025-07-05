@@ -5,9 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { KeyRound, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function UserForgotPassword() {
@@ -15,7 +15,6 @@ export default function UserForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,23 +31,22 @@ export default function UserForgotPassword() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual forgot password API call
-      // const response = await fetch('/api/auth/user/forgot-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // });
+      const response = await api.post('/api/auth/user/forgot-password', { email });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      setIsEmailSent(true);
-      toast({
-        title: "Reset Link Sent",
-        description: "Check your email for password reset instructions",
-      });
-
-    } catch (error) {
+      if (response.success) {
+        setIsEmailSent(true);
+        toast({
+          title: "Reset Link Sent",
+          description: "Check your email for password reset instructions",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to send reset email. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to send reset email. Please try again.",

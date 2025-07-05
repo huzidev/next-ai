@@ -2,6 +2,7 @@ import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import SigninForm from "@/components/auth/SigninForm";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -37,23 +38,24 @@ export default function UserSignin() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual signin API call
-      // const response = await fetch('/api/auth/user/signin', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
+      // Call signin API using the reusable api utility
+      const response = await api.post('/api/auth/user/signin', formData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (response.success) {
+        toast({
+          title: "Welcome back!",
+          description: response.message || "You have been signed in successfully",
+        });
 
-      toast({
-        title: "Welcome back!",
-        description: "You have been signed in successfully",
-      });
-
-      router.push('/dashboard/user');
-    } catch (error) {
+        router.push('/dashboard/user');
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to sign in. Please check your credentials.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to sign in. Please check your credentials.",

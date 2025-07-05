@@ -3,6 +3,7 @@ import AuthHeader from "@/components/auth/AuthHeader";
 import SigninForm from "@/components/auth/SigninForm";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { Crown, Shield } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -39,24 +40,25 @@ export default function AdminSignin() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual admin signin API call
-      // const response = await fetch('/api/auth/admin/signin', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
+      // Call admin signin API using the reusable api utility
+      const response = await api.post('/api/auth/admin/signin', formData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (response.success) {
+        toast({
+          title: "Welcome back, Admin!",
+          description: response.message || "You have been signed in successfully",
+        });
 
-      toast({
-        title: "Welcome back, Admin!",
-        description: "You have been signed in successfully",
-      });
-
-      // Redirect to admin dashboard
-      router.push('/dashboard/admin');
-    } catch (error) {
+        // Redirect to admin dashboard
+        router.push('/dashboard/admin');
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to sign in. Please check your credentials.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to sign in. Please check your credentials.",

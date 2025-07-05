@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { Mail, RotateCcw, Shield } from "lucide-react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
@@ -54,24 +55,27 @@ export default function UserVerify() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual verification API call
-      // const response = await fetch('/api/auth/user/verify', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ code: verificationCode })
-      // });
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      toast({
-        title: "Account Verified!",
-        description: "Your account has been successfully verified",
+      const response = await api.post('/api/auth/user/verify', { 
+        email,
+        code: verificationCode 
       });
 
-      // Redirect to signin or dashboard
-      router.push('/auth/user/signin');
-    } catch (error) {
+      if (response.success) {
+        toast({
+          title: "Account Verified!",
+          description: "Your account has been successfully verified",
+        });
+
+        // Redirect to signin or dashboard
+        router.push('/auth/user/signin');
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Invalid verification code. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Invalid verification code. Please try again.",
@@ -86,20 +90,21 @@ export default function UserVerify() {
     setIsResending(true);
 
     try {
-      // TODO: Implement resend verification code API call
-      // const response = await fetch('/api/auth/user/resend-verification', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' }
-      // });
+      const response = await api.post('/api/auth/user/resend-verification', { email });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      toast({
-        title: "Code Sent",
-        description: "A new verification code has been sent to your email",
-      });
-    } catch (error) {
+      if (response.success) {
+        toast({
+          title: "Code Sent",
+          description: "A new verification code has been sent to your email",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to resend code. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to resend code. Please try again.",

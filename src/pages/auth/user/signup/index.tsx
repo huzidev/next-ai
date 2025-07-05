@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -54,24 +55,24 @@ export default function UserSignup() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual signup API call
-      // const response = await fetch('/api/auth/user/signup', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
+      const response = await api.post('/api/auth/user/signup', formData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (response.success) {
+        toast({
+          title: "Account Created!",
+          description: "Please check your email for verification code",
+        });
 
-      toast({
-        title: "Account Created!",
-        description: "Please check your email for verification code",
-      });
-
-      // Redirect to verification page with email
-      router.push(`/auth/user/verify?email=${encodeURIComponent(formData.email)}`);
-    } catch (error) {
+        // Redirect to verification page with email
+        router.push(`/auth/user/verify?email=${encodeURIComponent(formData.email)}`);
+      } else {
+        toast({
+          title: "Error",
+          description: response.error || "Failed to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch {
       toast({
         title: "Error",
         description: "Failed to create account. Please try again.",
