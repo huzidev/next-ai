@@ -80,7 +80,7 @@ export default function UserSignin() {
         />
 
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-            <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">

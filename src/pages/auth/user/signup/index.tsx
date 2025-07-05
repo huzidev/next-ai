@@ -68,8 +68,8 @@ export default function UserSignup() {
         description: "Please check your email for verification code",
       });
 
-      // Redirect to verification page
-      router.push('/auth/user/verify');
+      // Redirect to verification page with email
+      router.push(`/auth/user/verify?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       toast({
         title: "Error",
@@ -94,7 +94,7 @@ export default function UserSignup() {
 
         {/* Signup Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-sm font-medium flex items-center text-gray-200">

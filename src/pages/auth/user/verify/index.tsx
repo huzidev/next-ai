@@ -14,6 +14,9 @@ export default function UserVerify() {
   const { toast } = useToast();
   const router = useRouter();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  
+  // Get email from query params
+  const email = router.query.email as string;
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return; // Only allow single character
@@ -113,7 +116,7 @@ export default function UserVerify() {
         {/* Header */}
         <AuthHeader 
           title="Verify Your Email"
-          subtitle="Enter the 6-digit code sent to your email"
+          subtitle={email ? `Enter the 6-digit code sent to ${email}` : "Enter the 6-digit code sent to your email"}
           backHref="/auth/user/signup"
           backText="Back to Sign Up"
         />
@@ -126,7 +129,7 @@ export default function UserVerify() {
               Email Verification
             </CardTitle>
             <CardDescription className="text-gray-300">
-              We've sent a verification code to your email address
+              {email ? `We've sent a verification code to ${email}` : "We've sent a verification code to your email address"}
             </CardDescription>
           </CardHeader>
           
