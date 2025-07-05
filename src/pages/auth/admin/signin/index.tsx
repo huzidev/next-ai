@@ -164,7 +164,6 @@ export default function AdminSignin() {
 
         {/* Additional Options */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-400 mb-2">Other options</p>
           <div className="space-x-4 text-sm">
             <Link href="/auth/user/signin" className="text-purple-400 hover:text-purple-300 transition-colors">
               User Login
