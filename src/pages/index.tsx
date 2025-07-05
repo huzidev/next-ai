@@ -28,10 +28,10 @@ const geistMono = Geist_Mono({
 export default function Home() {
   return (
     <div
-      className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-[family-name:var(--font-geist-sans)]`}
+      className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 font-[family-name:var(--font-geist-sans)]`}
     >
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b border-slate-700 bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-slate-900/60">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
@@ -44,12 +44,12 @@ export default function Home() {
           
           <nav className="flex items-center space-x-4">
             <Link href="/auth/user/signin">
-              <Button variant="ghost" className="text-slate-600 hover:text-slate-900">
+              <Button variant="ghost" className="text-slate-300 hover:text-white">
                 User Login
               </Button>
             </Link>
             <Link href="/auth/admin/signin">
-              <Button variant="ghost" className="text-slate-600 hover:text-slate-900">
+              <Button variant="ghost" className="text-slate-300 hover:text-white">
                 Admin Login
               </Button>
             </Link>
@@ -72,14 +72,14 @@ export default function Home() {
               Powered by Google Generative AI
             </Badge>
             
-            <h1 className="mb-6 text-4xl font-bold tracking-tight text-slate-900 md:text-6xl lg:text-7xl">
+            <h1 className="mb-6 text-4xl font-bold tracking-tight text-white md:text-6xl lg:text-7xl">
               Your AI Assistant for
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 {" "}Everything
               </span>
             </h1>
             
-            <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-600 md:text-xl">
+            <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-300 md:text-xl">
               Chat with advanced AI, upload images for analysis, and get instant support from our admin team. 
               Experience the future of AI-powered assistance.
             </p>
@@ -102,114 +102,114 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="px-4 py-20 bg-white/50">
+      <section className="px-4 py-20 bg-slate-800/50">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 md:text-4xl mb-4">
+            <h2 className="text-3xl font-bold text-white md:text-4xl mb-4">
               Powerful Features
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
               Everything you need for an intelligent AI experience
             </p>
           </div>
           
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
+            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-slate-700/50 border-slate-600">
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors">
-                    <Brain className="h-6 w-6 text-blue-600" />
+                  <div className="p-2 rounded-lg bg-blue-900/50 group-hover:bg-blue-800/50 transition-colors">
+                    <Brain className="h-6 w-6 text-blue-400" />
                   </div>
-                  <CardTitle className="text-xl">AI Conversations</CardTitle>
+                  <CardTitle className="text-xl text-white">AI Conversations</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base text-slate-300">
                   Chat with Google's advanced AI models. Create multiple chat sessions and 
                   get intelligent responses to any question.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
+            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-slate-700/50 border-slate-600">
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-green-100 group-hover:bg-green-200 transition-colors">
-                    <Image className="h-6 w-6 text-green-600" />
+                  <div className="p-2 rounded-lg bg-green-900/50 group-hover:bg-green-800/50 transition-colors">
+                    <Image className="h-6 w-6 text-green-400" />
                   </div>
-                  <CardTitle className="text-xl">Image Analysis</CardTitle>
+                  <CardTitle className="text-xl text-white">Image Analysis</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base text-slate-300">
                   Upload images and get AI-powered analysis, descriptions, and insights. 
                   Perfect for visual learning and exploration.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
+            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-slate-700/50 border-slate-600">
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-purple-100 group-hover:bg-purple-200 transition-colors">
-                    <MessageSquare className="h-6 w-6 text-purple-600" />
+                  <div className="p-2 rounded-lg bg-purple-900/50 group-hover:bg-purple-800/50 transition-colors">
+                    <MessageSquare className="h-6 w-6 text-purple-400" />
                   </div>
-                  <CardTitle className="text-xl">Live Admin Support</CardTitle>
+                  <CardTitle className="text-xl text-white">Live Admin Support</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base text-slate-300">
                   Get real-time help from our admin team through integrated chat. 
                   Socket.IO powered for instant communication.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
+            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-slate-700/50 border-slate-600">
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                    <UserCheck className="h-6 w-6 text-orange-600" />
+                  <div className="p-2 rounded-lg bg-orange-900/50 group-hover:bg-orange-800/50 transition-colors">
+                    <UserCheck className="h-6 w-6 text-orange-400" />
                   </div>
-                  <CardTitle className="text-xl">Secure Authentication</CardTitle>
+                  <CardTitle className="text-xl text-white">Secure Authentication</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base text-slate-300">
                   Secure signup with email verification. Toast notifications keep you 
                   informed of all account activities.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
+            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-slate-700/50 border-slate-600">
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors">
-                    <Shield className="h-6 w-6 text-red-600" />
+                  <div className="p-2 rounded-lg bg-red-900/50 group-hover:bg-red-800/50 transition-colors">
+                    <Shield className="h-6 w-6 text-red-400" />
                   </div>
-                  <CardTitle className="text-xl">Admin Dashboard</CardTitle>
+                  <CardTitle className="text-xl text-white">Admin Dashboard</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base text-slate-300">
                   Comprehensive admin panel with user management, real-time notifications, 
                   and advanced controls for super-admins.
                 </CardDescription>
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-shadow duration-300">
+            <Card className="group hover:shadow-lg transition-shadow duration-300 bg-slate-700/50 border-slate-600">
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-cyan-100 group-hover:bg-cyan-200 transition-colors">
-                    <Zap className="h-6 w-6 text-cyan-600" />
+                  <div className="p-2 rounded-lg bg-cyan-900/50 group-hover:bg-cyan-800/50 transition-colors">
+                    <Zap className="h-6 w-6 text-cyan-400" />
                   </div>
-                  <CardTitle className="text-xl">Usage Plans</CardTitle>
+                  <CardTitle className="text-xl text-white">Usage Plans</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
+                <CardDescription className="text-base text-slate-300">
                   Flexible usage plans with customizable limits. Track your AI 
                   interactions and upgrade when you need more.
                 </CardDescription>
@@ -240,7 +240,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur">
+      <footer className="border-t border-slate-700 bg-slate-800/80 backdrop-blur">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center space-x-2">

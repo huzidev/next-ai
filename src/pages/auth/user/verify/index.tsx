@@ -108,39 +108,39 @@ export default function UserVerify() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/auth/user/signup" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
+          <Link href="/auth/user/signup" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Sign Up</span>
           </Link>
           
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <Bot className="h-8 w-8 text-blue-400" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
               Next-AI
             </span>
           </div>
           
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Verify Your Email</h1>
-          <p className="text-slate-600">Enter the 6-digit code sent to your email</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Verify Your Email</h1>
+          <p className="text-gray-300">Enter the 6-digit code sent to your email</p>
         </div>
 
         {/* Verification Form */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center">
-              <Shield className="h-5 w-5 mr-2 text-green-600" />
+            <CardTitle className="text-xl font-semibold flex items-center text-white">
+              <Shield className="h-5 w-5 mr-2 text-green-400" />
               Email Verification
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               We've sent a verification code to your email address
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Code Input */}
               <div className="space-y-2">
@@ -159,7 +159,7 @@ export default function UserVerify() {
                         value={digit}
                         onChange={(e) => handleChange(index, e.target.value)}
                         onKeyDown={(e) => handleKeyDown(index, e)}
-                        className="w-12 h-12 text-center text-lg font-semibold"
+                        className="w-12 h-12 text-center text-lg font-semibold bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400"
                         placeholder="0"
                       />
                     ))}
@@ -169,7 +169,7 @@ export default function UserVerify() {
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                className="w-full h-11 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium transition-all duration-200"
                 disabled={isLoading}
               >
                 {isLoading ? "Verifying..." : "Verify Account"}
@@ -177,14 +177,14 @@ export default function UserVerify() {
             </form>
 
             <div className="mt-6 text-center space-y-3">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-gray-300">
                 Didn't receive the code?
               </p>
               <Button
                 variant="outline"
                 onClick={handleResendCode}
                 disabled={isResending}
-                className="text-blue-600 hover:text-blue-700"
+                className="text-blue-400 hover:text-blue-300 border-gray-600 hover:bg-gray-700 bg-transparent"
               >
                 {isResending ? (
                   <>
@@ -203,7 +203,7 @@ export default function UserVerify() {
         </Card>
 
         {/* Additional Info */}
-        <div className="mt-6 text-center text-xs text-slate-500">
+        <div className="mt-6 text-center text-xs text-gray-400">
           <p>
             The verification code will expire in 10 minutes.
           </p>

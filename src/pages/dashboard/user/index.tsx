@@ -179,20 +179,20 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="flex h-screen">
         {/* Sidebar */}
-        <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+        <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-slate-200">
+          <div className="p-4 border-b border-gray-600">
             <div className="flex items-center space-x-2 mb-4">
-              <Bot className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <Bot className="h-8 w-8 text-blue-400" />
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 Next-AI
               </span>
             </div>
             
-            <Button onClick={createNewSession} className="w-full" size="sm">
+            <Button onClick={createNewSession} className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
               <Plus className="h-4 w-4 mr-2" />
               New Chat
             </Button>
@@ -205,17 +205,17 @@ export default function UserDashboard() {
                 key={session.id}
                 className={`p-3 rounded-lg cursor-pointer transition-colors group ${
                   session.id === activeSessionId 
-                    ? "bg-blue-100 border border-blue-200" 
-                    : "bg-slate-50 hover:bg-slate-100"
+                    ? "bg-blue-600/20 border border-blue-500/30" 
+                    : "bg-gray-700 hover:bg-gray-600"
                 }`}
                 onClick={() => setActiveSessionId(session.id)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">
+                    <p className="text-sm font-medium text-gray-200 truncate">
                       {session.title}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-gray-400">
                       {session.messages.length} messages
                     </p>
                   </div>
@@ -244,8 +244,8 @@ export default function UserDashboard() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900">John Doe</p>
-                <p className="text-xs text-slate-500">Free Plan • 45 remaining</p>
+                <p className="text-sm font-medium text-gray-200">John Doe</p>
+                <p className="text-xs text-gray-400">Free Plan • 45 remaining</p>
               </div>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <Settings className="h-4 w-4" />
@@ -269,17 +269,17 @@ export default function UserDashboard() {
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col">
           {/* Chat Header */}
-          <div className="p-4 border-b border-slate-200 bg-white">
+          <div className="p-4 border-b border-gray-600 bg-gray-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Sparkles className="h-5 w-5 text-blue-600" />
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Sparkles className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-semibold text-slate-900">
+                  <h1 className="text-lg font-semibold text-white">
                     {activeSession?.title || "New Chat"}
                   </h1>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-gray-400">
                     Powered by Google Generative AI
                   </p>
                 </div>
@@ -307,10 +307,10 @@ export default function UserDashboard() {
                 <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <Bot className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-200 mb-2">
                   Start a conversation
                 </h3>
-                <p className="text-slate-600 max-w-md mx-auto">
+                <p className="text-gray-400 max-w-md mx-auto">
                   Ask me anything! I can help with questions, analyze images, or just have a chat.
                 </p>
               </div>
@@ -324,7 +324,7 @@ export default function UserDashboard() {
                     className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                       msg.role === "user"
                         ? "bg-blue-600 text-white"
-                        : "bg-white border border-slate-200"
+                        : "bg-gray-700 border border-gray-600 text-white"
                     }`}
                   >
                     {msg.imageUrl && (
@@ -336,7 +336,7 @@ export default function UserDashboard() {
                     )}
                     <p className="text-sm">{msg.content}</p>
                     <p className={`text-xs mt-1 ${
-                      msg.role === "user" ? "text-blue-100" : "text-slate-500"
+                      msg.role === "user" ? "text-blue-100" : "text-gray-300"
                     }`}>
                       {msg.timestamp.toLocaleTimeString()}
                     </p>
@@ -347,11 +347,11 @@ export default function UserDashboard() {
             
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-slate-200 px-4 py-2 rounded-lg">
+                <div className="bg-gray-700 border border-gray-600 px-4 py-2 rounded-lg">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: "0.1s"}}></div>
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: "0.2s"}}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: "0.1s"}}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: "0.2s"}}></div>
                   </div>
                 </div>
               </div>
@@ -361,13 +361,13 @@ export default function UserDashboard() {
           </div>
 
           {/* Message Input */}
-          <div className="p-4 border-t border-slate-200 bg-white">
+          <div className="p-4 border-t border-gray-600 bg-gray-800">
             {selectedImage && (
-              <div className="mb-3 p-3 bg-slate-50 rounded-lg">
+              <div className="mb-3 p-3 bg-gray-700 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <ImageIcon className="h-4 w-4 text-slate-500" />
-                    <span className="text-sm text-slate-700">{selectedImage.name}</span>
+                    <ImageIcon className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm text-gray-200">{selectedImage.name}</span>
                   </div>
                   <Button
                     variant="ghost"

@@ -69,42 +69,42 @@ export default function UserSignin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
+          <Link href="/" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Home</span>
           </Link>
           
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <Bot className="h-8 w-8 text-blue-400" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
               Next-AI
             </span>
           </div>
           
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Welcome Back</h1>
-          <p className="text-slate-600">Sign in to continue your AI journey</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-gray-300">Sign in to continue your AI journey</p>
         </div>
 
         {/* Signin Form */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center">
-              <LogIn className="h-5 w-5 mr-2 text-blue-600" />
+            <CardTitle className="text-xl font-semibold flex items-center text-white">
+              <LogIn className="h-5 w-5 mr-2 text-blue-400" />
               Sign In
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium flex items-center">
+                <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
                   <Mail className="h-4 w-4 mr-2" />
                   Email
                 </Label>
@@ -116,19 +116,19 @@ export default function UserSignin() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="h-11"
+                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium flex items-center">
+                  <Label htmlFor="password" className="text-sm font-medium flex items-center text-gray-200">
                     <Lock className="h-4 w-4 mr-2" />
                     Password
                   </Label>
                   <Link 
                     href="/auth/user/forgot-password" 
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -142,13 +142,13 @@ export default function UserSignin() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="h-11 pr-10"
+                    className="h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-11 px-3 py-2"
+                    className="absolute right-0 top-0 h-11 px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-600"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -158,7 +158,7 @@ export default function UserSignin() {
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="w-full h-11 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing In..." : "Sign In"}
@@ -166,8 +166,8 @@ export default function UserSignin() {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-slate-600">Don't have an account? </span>
-              <Link href="/auth/user/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+              <span className="text-gray-300">Don't have an account? </span>
+              <Link href="/auth/user/signup" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
                 Sign up
               </Link>
             </div>
@@ -176,13 +176,13 @@ export default function UserSignin() {
 
         {/* Additional Options */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-slate-600 mb-2">Need help?</p>
+          <p className="text-sm text-gray-400 mb-2">Need help?</p>
           <div className="space-x-4 text-sm">
-            <Link href="/support" className="text-blue-600 hover:text-blue-700">
+            <Link href="/support" className="text-blue-400 hover:text-blue-300 transition-colors">
               Contact Support
             </Link>
-            <span className="text-slate-400">•</span>
-            <Link href="/auth/admin/signin" className="text-blue-600 hover:text-blue-700">
+            <span className="text-gray-600">•</span>
+            <Link href="/auth/admin/signin" className="text-blue-400 hover:text-blue-300 transition-colors">
               Admin Login
             </Link>
           </div>

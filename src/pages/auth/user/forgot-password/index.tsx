@@ -59,37 +59,37 @@ export default function UserForgotPassword() {
 
   if (isEmailSent) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
+            <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Sign In</span>
             </Link>
             
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <Bot className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <Bot className="h-8 w-8 text-blue-400" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                 Next-AI
               </span>
             </div>
           </div>
 
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+          <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardHeader className="text-center">
-              <div className="p-3 bg-green-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Mail className="h-8 w-8 text-green-600" />
+              <div className="p-3 bg-green-500/20 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Mail className="h-8 w-8 text-green-400" />
               </div>
-              <CardTitle className="text-xl font-semibold text-slate-900">
+              <CardTitle className="text-xl font-semibold text-white">
                 Check Your Email
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-300">
                 We've sent password reset instructions to {email}
               </CardDescription>
             </CardHeader>
             
             <CardContent className="text-center space-y-4">
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-gray-300">
                 If you don't see the email, check your spam folder or try again with a different email address.
               </p>
               
@@ -97,13 +97,13 @@ export default function UserForgotPassword() {
                 <Button 
                   onClick={() => setIsEmailSent(false)} 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full text-gray-300 border-gray-600 hover:bg-gray-700 hover:text-white bg-transparent"
                 >
                   Try Different Email
                 </Button>
                 
                 <Link href="/auth/user/signin" className="block">
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                  <Button className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200">
                     Back to Sign In
                   </Button>
                 </Link>
@@ -116,42 +116,42 @@ export default function UserForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-slate-600 hover:text-slate-900 mb-6">
+          <Link href="/auth/user/signin" className="inline-flex items-center space-x-2 text-gray-400 hover:text-gray-200 mb-6 transition-colors">
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Sign In</span>
           </Link>
           
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <Bot className="h-8 w-8 text-blue-400" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
               Next-AI
             </span>
           </div>
           
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Forgot Password?</h1>
-          <p className="text-slate-600">Enter your email to reset your password</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Forgot Password?</h1>
+          <p className="text-gray-300">Enter your email to reset your password</p>
         </div>
 
         {/* Forgot Password Form */}
-        <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+        <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center">
-              <KeyRound className="h-5 w-5 mr-2 text-blue-600" />
+            <CardTitle className="text-xl font-semibold flex items-center text-white">
+              <KeyRound className="h-5 w-5 mr-2 text-blue-400" />
               Reset Password
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               We'll send you a link to reset your password
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium flex items-center">
+                <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
                   <Mail className="h-4 w-4 mr-2" />
                   Email Address
                 </Label>
@@ -163,13 +163,13 @@ export default function UserForgotPassword() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-11"
+                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                className="w-full h-11 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200"
                 disabled={isLoading}
               >
                 {isLoading ? "Sending Reset Link..." : "Send Reset Link"}
@@ -177,8 +177,8 @@ export default function UserForgotPassword() {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-slate-600">Remember your password? </span>
-              <Link href="/auth/user/signin" className="text-blue-600 hover:text-blue-700 font-medium">
+              <span className="text-gray-300">Remember your password? </span>
+              <Link href="/auth/user/signin" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
                 Sign in
               </Link>
             </div>
@@ -186,7 +186,7 @@ export default function UserForgotPassword() {
         </Card>
 
         {/* Additional Info */}
-        <div className="mt-6 text-center text-xs text-slate-500">
+        <div className="mt-6 text-center text-xs text-gray-400">
           <p>
             If you're having trouble, please contact our support team for assistance.
           </p>
