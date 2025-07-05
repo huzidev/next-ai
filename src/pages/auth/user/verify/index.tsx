@@ -195,7 +195,6 @@ export default function UserVerify() {
           </CardContent>
         </Card>
 
-        {/* Additional Info */}
         <div className="mt-6 text-center text-xs text-gray-400">
           <p>
             The verification code will expire in 10 minutes.

@@ -1,5 +1,6 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -154,12 +155,12 @@ export default function AdminSignin() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-gray-300">Need admin access? </span>
-              <Link href="/contact" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
-                Contact Super Admin
-              </Link>
-            </div>
+            <AuthLink 
+              text="Need admin access?"
+              linkText="Contact Super Admin"
+              linkHref="/contact"
+              variant="purple"
+            />
           </CardContent>
         </Card>
 

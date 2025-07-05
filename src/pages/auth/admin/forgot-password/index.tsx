@@ -1,6 +1,7 @@
 import * as ENDPOINTS from "@/api/auth/admin/endpoints";
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import * as ROUTES from "@/routes/auth/admin/route";
 import { post } from "@/services/api";
 import { FormValues } from "@/types/auth/types";
 import { Crown, Mail, Shield } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -105,15 +105,12 @@ export default function AdminForgotPassword() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-gray-300">Remember your password? </span>
-              <Link
-                href={ROUTES.SIGNIN}
-                className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
-              >
-                Sign In
-              </Link>
-            </div>
+            <AuthLink 
+              text="Remember your password?"
+              linkText="Sign In"
+              linkHref={ROUTES.SIGNIN}
+              variant="purple"
+            />
           </CardContent>
         </Card>
 

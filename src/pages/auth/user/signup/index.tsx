@@ -1,4 +1,5 @@
 import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -195,12 +196,11 @@ export default function UserSignup() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-gray-300">Already have an account? </span>
-              <Link href="/auth/user/signin" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-                Sign in
-              </Link>
-            </div>
+            <AuthLink 
+              text="Already have an account?"
+              linkText="Sign in"
+              linkHref="/auth/user/signin"
+            />
           </CardContent>
         </Card>
 
