@@ -1,10 +1,10 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Lock, LogIn, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -56,7 +56,6 @@ export default function UserSignin() {
         description: "You have been signed in successfully",
       });
 
-      // Redirect to dashboard
       router.push('/dashboard/user');
     } catch (error) {
       toast({
@@ -74,22 +73,14 @@ export default function UserSignin() {
       <div className="w-full max-w-md">
         {/* Header */}
         <AuthHeader 
-          title="Welcome Back"
-          subtitle="Sign in to continue your AI journey"
+          title="Sign In"
+          subtitle="Access your AI-powered workspace"
           backHref="/"
           backText="Back to Home"
         />
 
-        {/* Signin Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center text-white">
-              <LogIn className="h-5 w-5 mr-2 text-blue-400" />
-              Sign In
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
+            <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">

@@ -1,10 +1,10 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Lock, Mail, User, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -94,16 +94,6 @@ export default function UserSignup() {
 
         {/* Signup Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center text-white">
-              <UserPlus className="h-5 w-5 mr-2 text-blue-400" />
-              Sign Up
-            </CardTitle>
-            <CardDescription className="text-gray-300">
-              Enter your details to create your account
-            </CardDescription>
-          </CardHeader>
-          
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
