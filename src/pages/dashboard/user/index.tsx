@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -443,25 +443,17 @@ export default function UserDashboard() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Chat Session</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete "{sessions.find(s => s.id === sessionToDelete)?.title}"? This action cannot be undone and all messages in this chat will be permanently lost.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={cancelDelete}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDeleteSession}>
-              Delete Chat
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmationDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="Delete Chat Session"
+        description={`Are you sure you want to delete "${sessions.find(s => s.id === sessionToDelete)?.title}"? This action cannot be undone and all messages in this chat will be permanently lost.`}
+        confirmText="Delete Chat"
+        cancelText="Cancel"
+        onConfirm={confirmDeleteSession}
+        onCancel={cancelDelete}
+        variant="destructive"
+      />
     </div>
   );
 }
