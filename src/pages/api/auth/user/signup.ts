@@ -1,4 +1,4 @@
-import { createUser } from "@/db/Auth.server";
+import { createUser, generateVerificationCode } from "@/db/User.server";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -28,26 +28,51 @@ export default async function handler(
     });
   }
 
-  try {
-    const response = await createUser({
-      email,
-      username,
-      password,
-      confirmPassword,
+  // Validate password length
+  if (password.length < 6) {
+    return res.status(400).json({ 
+      success: false, 
+      error: 'Password must be at least 6 characters long' 
     });
+  }
 
-    if (response) {
-      return res.status(200).json({ 
-        success: true,
-        data: response,
-        message: "Account created successfully. Please check your email for verification."
-      });
-    } else {
+  try {
+    // Create user
+    const { user, error } = await createUser({ username, email, password });
+
+    if (error) {
       return res.status(400).json({ 
         success: false, 
-        error: "Failed to create account" 
+        error 
       });
     }
+
+    if (!user) {
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to create user" 
+      });
+    }
+
+    // Generate verification code
+    const verificationResult = await generateVerificationCode(user.id);
+
+    if (verificationResult.status !== 200) {
+      return res.status(verificationResult.status).json({ 
+        success: false, 
+        error: verificationResult.message 
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: `Account created successfully! Your verification code is: ${verificationResult.code}`,
+      data: {
+        userId: user.id,
+        email: user.email,
+      },
+    });
+
   } catch (error) {
     console.error("Signup error:", error);
     return res.status(500).json({ 
