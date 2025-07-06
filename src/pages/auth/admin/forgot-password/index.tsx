@@ -2,6 +2,7 @@ import * as ENDPOINTS from "@/api/auth/admin/endpoints";
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -55,15 +56,15 @@ export default function AdminForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <AuthHeader 
-          title="Admin Password Reset"
-          subtitle="Enter your admin email to reset your password"
-          backHref="/auth/admin/signin"
-          backText="Back to Admin Sign In"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <AuthPageHeader />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <AuthHeader 
+            title="Admin Password Reset"
+            subtitle="Enter your admin email to reset your password"
+          />
         
         <div className="flex items-center justify-center mb-6">
           <Badge variant="secondary" className="bg-purple-900/50 text-purple-300 border-purple-400">
@@ -126,6 +127,7 @@ export default function AdminForgotPassword() {
               <p>Only valid admin email addresses will receive password reset instructions.</p>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

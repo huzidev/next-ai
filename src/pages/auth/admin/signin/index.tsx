@@ -1,5 +1,6 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 import SigninForm from "@/components/auth/SigninForm";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -70,15 +71,14 @@ export default function AdminSignin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <AuthHeader 
-          title="Admin Sign In"
-          subtitle="Access the administrative dashboard"
-          backHref="/"
-          backText="Back to Home"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <AuthPageHeader />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <div className="w-full max-w-md">
+          <AuthHeader 
+            title="Admin Sign In"
+            subtitle="Access the administrative dashboard"
+          />
         
         <div className="flex items-center justify-center mb-6">
           <Badge variant="secondary" className="bg-purple-900/50 text-purple-300 border-purple-400">
@@ -113,6 +113,7 @@ export default function AdminSignin() {
               <p>Admin accounts have elevated privileges. Ensure you're on a secure network and never share your credentials.</p>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -59,14 +60,14 @@ export default function UserForgotPassword() {
 
   if (isEmailSent) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <AuthHeader 
-            title="Check Your Email"
-            subtitle={`We've sent password reset instructions to ${email}`}
-            backHref="/auth/user/signin"
-            backText="Back to Sign In"
-          />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+        <AuthPageHeader />
+        <div className="flex items-center justify-center p-4 pt-8">
+          <div className="w-full max-w-md">
+            <AuthHeader 
+              title="Check Your Email"
+              subtitle={`We've sent password reset instructions to ${email}`}
+            />
 
           <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardHeader className="text-center">
@@ -97,21 +98,22 @@ export default function UserForgotPassword() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <AuthHeader 
-          title="Forgot Password?"
-          subtitle="Enter your email to reset your password"
-          backHref="/auth/user/signin"
-          backText="Back to Sign In"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <AuthPageHeader />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <AuthHeader 
+            title="Forgot Password?"
+            subtitle="Enter your email to reset your password"
+          />
 
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
           <CardContent className="space-y-4">
@@ -155,6 +157,7 @@ export default function UserForgotPassword() {
           <p>
             If you're having trouble, please contact our support team for assistance.
           </p>
+        </div>
         </div>
       </div>
     </div>

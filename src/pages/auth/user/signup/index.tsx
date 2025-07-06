@@ -1,5 +1,6 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -84,14 +85,14 @@ export default function UserSignup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <AuthHeader 
-          title="Create Your Account"
-          subtitle="Join thousands of users exploring AI possibilities"
-          backHref="/"
-          backText="Back to Home"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <AuthPageHeader />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <div className="w-full max-w-md">
+          <AuthHeader 
+            title="Create Your Account"
+            subtitle="Join thousands of users exploring AI possibilities"
+          />
 
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
           <CardContent className="p-6 space-y-4">
@@ -209,6 +210,7 @@ export default function UserSignup() {
           <Link href="#" className="text-blue-400 hover:text-blue-300 transition-colors">Terms of Service</Link>
           {" "}and{" "}
           <Link href="#" className="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</Link>
+        </div>
         </div>
       </div>
     </div>

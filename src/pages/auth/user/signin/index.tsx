@@ -1,5 +1,6 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 import SigninForm from "@/components/auth/SigninForm";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
@@ -67,15 +68,14 @@ export default function UserSignin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <AuthHeader 
-          title="Sign In"
-          subtitle="Access your AI-powered workspace"
-          backHref="/"
-          backText="Back to Home"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <AuthPageHeader />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <div className="w-full max-w-md">
+          <AuthHeader 
+            title="Sign In"
+            subtitle="Access your AI-powered workspace"
+          />
 
         <SigninForm
           formData={formData}
@@ -94,6 +94,7 @@ export default function UserSignin() {
             { href: "/auth/admin/signin", text: "Admin Login" }
           ]}
         />
+        </div>
       </div>
     </div>
   );
