@@ -1,3 +1,4 @@
+import { AuthWrapper } from "@/components/auth/AuthWrapper";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,8 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthInitializer } from "@/hooks/useAuthInitializer";
 import {
   Bell,
   Bot,
@@ -37,6 +40,8 @@ interface ChatSession {
 }
 
 export default function UserDashboard() {
+  const { user, isLoading: authLoading, logout, updateCredits } = useAuth();
+  const { initializeAuth } = useAuthInitializer();
   const [sessions, setSessions] = useState<ChatSession[]>([
     {
       id: "1",
@@ -54,6 +59,12 @@ export default function UserDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!user && !authLoading) {
+      initializeAuth();
+    }
+  }, [user, authLoading, initializeAuth]);
 
   const activeSession = sessions.find(s => s.id === activeSessionId);
 
@@ -134,6 +145,16 @@ export default function UserDashboard() {
   const sendMessage = async () => {
     if (!message.trim() && !selectedImage) return;
 
+    // Check if user has credits (for free plan users)
+    if (user && user.plan === 'free' && user.remainingCredits <= 0) {
+      toast({
+        title: "No credits remaining",
+        description: "Please upgrade your plan to continue chatting",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: message,
@@ -185,6 +206,11 @@ export default function UserDashboard() {
           : session
       ));
 
+      // Deduct credits for free users
+      if (user && user.plan === 'free' && user.remainingCredits > 0) {
+        updateCredits(user.remainingCredits - 1);
+      }
+
     } catch (error) {
       toast({
         title: "Error",
@@ -204,7 +230,8 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <AuthWrapper>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="flex h-screen">
         {/* Sidebar */}
         <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col">
@@ -260,17 +287,24 @@ export default function UserDashboard() {
             ))}
           </div>
 
-          {/* User Menu */}
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4 border-t border-gray-600">
             <div className="flex items-center space-x-3">
               <Avatar>
                 <AvatarFallback>
-                  <User className="h-4 w-4" />
+                  {user?.name ? user.name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-200">John Doe</p>
-                <p className="text-xs text-gray-400">Free Plan • 45 remaining</p>
+                <p className="text-sm font-medium text-gray-200">
+                  {user?.name || "Loading..."}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {user ? (
+                    `${user.plan.charAt(0).toUpperCase() + user.plan.slice(1)} Plan • ${user.remainingCredits} remaining`
+                  ) : (
+                    "Loading user data..."
+                  )}
+                </p>
               </div>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <Settings className="h-4 w-4" />
@@ -278,12 +312,17 @@ export default function UserDashboard() {
             </div>
             
             <div className="mt-3 space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700">
                 <Bell className="h-4 w-4 mr-2" />
                 Notifications
                 <Badge variant="destructive" className="ml-auto">3</Badge>
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700"
+                onClick={logout}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
@@ -454,6 +493,7 @@ export default function UserDashboard() {
         onCancel={cancelDelete}
         variant="destructive"
       />
-    </div>
+      </div>
+    </AuthWrapper>
   );
 }
