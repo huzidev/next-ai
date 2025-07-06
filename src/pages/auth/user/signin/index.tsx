@@ -1,7 +1,7 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
-import AuthPageHeader from "@/components/auth/AuthPageHeader";
 import SigninForm from "@/components/auth/SigninForm";
+import Header from "@/components/layout/Header";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { useRouter } from "next/router";
@@ -69,7 +69,7 @@ export default function UserSignin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-      <AuthPageHeader />
+      <Header />
       <div className="flex items-center justify-center p-4 pt-8">
         <div className="w-full max-w-md">
           <AuthHeader 

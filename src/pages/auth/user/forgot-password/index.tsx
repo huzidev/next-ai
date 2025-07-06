@@ -1,6 +1,6 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
-import AuthPageHeader from "@/components/auth/AuthPageHeader";
+import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,7 +61,7 @@ export default function UserForgotPassword() {
   if (isEmailSent) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-        <AuthPageHeader />
+        <Header />
         <div className="flex items-center justify-center p-4 pt-8">
           <div className="w-full max-w-md">
             <AuthHeader 
@@ -106,7 +106,7 @@ export default function UserForgotPassword() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-      <AuthPageHeader />
+      <Header />
       <div className="flex items-center justify-center p-4 pt-8">
         <div className="w-full max-w-md">
           {/* Header */}
