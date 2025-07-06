@@ -10,7 +10,7 @@ import { useState } from "react";
 export default function UserSignin() {
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,13 +20,13 @@ export default function UserSignin() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       toast({
         title: "Error",
@@ -40,19 +40,22 @@ export default function UserSignin() {
 
     try {
       // Call signin API using the reusable api utility
-      const response = await api.post('/api/auth/user/signin', formData);
+      const response = await api.post("/api/auth/user/signin", formData);
 
       if (response.success) {
         toast({
           title: "Welcome back!",
-          description: response.message || "You have been signed in successfully",
+          description:
+            response.message || "You have been signed in successfully",
         });
 
-        router.push('/dashboard/user');
+        router.push("/dashboard/user");
       } else {
         toast({
           title: "Error",
-          description: response.error || "Failed to sign in. Please check your credentials.",
+          description:
+            response.error ||
+            "Failed to sign in. Please check your credentials.",
           variant: "destructive",
         });
       }
@@ -70,30 +73,30 @@ export default function UserSignin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
       <Header />
-      <div className="flex items-center justify-center p-4 pt-8">
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <AuthHeader 
+          <AuthHeader
             title="Sign In"
             subtitle="Access your AI-powered workspace"
           />
 
-        <SigninForm
-          formData={formData}
-          isLoading={isLoading}
-          showPassword={showPassword}
-          onFormDataChange={handleChange}
-          onSubmit={handleSubmit}
-          onTogglePassword={() => setShowPassword(!showPassword)}
-          variant="user"
-        />
+          <SigninForm
+            formData={formData}
+            isLoading={isLoading}
+            showPassword={showPassword}
+            onFormDataChange={handleChange}
+            onSubmit={handleSubmit}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+            variant="user"
+          />
 
-        <AuthFooter 
-          helpText="Need help?"
-          links={[
-            { href: "/support", text: "Contact Support" },
-            { href: "/auth/admin/signin", text: "Admin Login" }
-          ]}
-        />
+          <AuthFooter
+            helpText="Need help?"
+            links={[
+              { href: "/support", text: "Contact Support" },
+              { href: "/auth/admin/signin", text: "Admin Login" },
+            ]}
+          />
         </div>
       </div>
     </div>
