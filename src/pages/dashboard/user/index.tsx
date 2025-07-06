@@ -1,4 +1,4 @@
-import { AuthWrapper } from "@/components/auth/AuthWrapper";
+import { RouteGuard } from "@/components/auth/RouteGuard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
   Upload,
   User
 } from "lucide-react";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 interface Message {
@@ -40,8 +41,9 @@ interface ChatSession {
 }
 
 export default function UserDashboard() {
-  const { user, isLoading: authLoading, logout, updateCredits } = useAuth();
+  const { user, isLoading: authLoading, logout, updateTries } = useAuth();
   const { initializeAuth } = useAuthInitializer();
+  const router = useRouter();
   const [sessions, setSessions] = useState<ChatSession[]>([
     {
       id: "1",
@@ -146,7 +148,7 @@ export default function UserDashboard() {
     if (!message.trim() && !selectedImage) return;
 
     // Check if user has credits (for free plan users)
-    if (user && user.plan === 'free' && user.remainingCredits <= 0) {
+    if (user && user.plan?.name === 'free' && user.remainingTries <= 0) {
       toast({
         title: "No credits remaining",
         description: "Please upgrade your plan to continue chatting",
@@ -207,8 +209,8 @@ export default function UserDashboard() {
       ));
 
       // Deduct credits for free users
-      if (user && user.plan === 'free' && user.remainingCredits > 0) {
-        updateCredits(user.remainingCredits - 1);
+      if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
+        updateTries(user.remainingTries - 1);
       }
 
     } catch (error) {
@@ -230,7 +232,7 @@ export default function UserDashboard() {
   };
 
   return (
-    <AuthWrapper>
+    <RouteGuard requireAuth={true}>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="flex h-screen">
         {/* Sidebar */}
@@ -291,22 +293,27 @@ export default function UserDashboard() {
             <div className="flex items-center space-x-3">
               <Avatar>
                 <AvatarFallback>
-                  {user?.name ? user.name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                  {user?.username ? user.username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-200">
-                  {user?.name || "Loading..."}
+                  {user?.username || "Loading..."}
                 </p>
                 <p className="text-xs text-gray-400">
                   {user ? (
-                    `${user.plan.charAt(0).toUpperCase() + user.plan.slice(1)} Plan • ${user.remainingCredits} remaining`
+                    `${user.plan?.name ? user.plan.name.charAt(0).toUpperCase() + user.plan.name.slice(1) : 'Free'} Plan • ${user.remainingTries} remaining`
                   ) : (
                     "Loading user data..."
                   )}
                 </p>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0"
+                onClick={() => router.push('/settings')}
+              >
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
@@ -494,6 +501,6 @@ export default function UserDashboard() {
         variant="destructive"
       />
       </div>
-    </AuthWrapper>
+    </RouteGuard>
   );
 }

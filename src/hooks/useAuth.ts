@@ -2,32 +2,32 @@ import { AppDispatch, RootState } from '@/store';
 import {
     clearUser,
     setLoading,
+    setToken,
     setUser,
-    updateUserCredits,
     updateUserProfile,
+    updateUserTries,
     User
 } from '@/store/slices/authSlice';
+import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, isLoading, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const router = useRouter();
+  const { user, isLoading, isAuthenticated, token } = useSelector((state: RootState) => state.auth);
 
-  const login = (userData: User) => {
-    dispatch(setUser(userData));
+  const login = (userData: User, authToken: string) => {
+    dispatch(setUser({ user: userData, token: authToken }));
   };
 
   const logout = () => {
     dispatch(clearUser());
-    // Clear any stored tokens or session data
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('authToken');
-      sessionStorage.removeItem('authToken');
-    }
+    // Redirect to home page
+    router.push('/');
   };
 
-  const updateCredits = (credits: number) => {
-    dispatch(updateUserCredits(credits));
+  const updateTries = (tries: number) => {
+    dispatch(updateUserTries(tries));
   };
 
   const updateProfile = (profileData: Partial<User>) => {
@@ -38,27 +38,33 @@ export const useAuth = () => {
     dispatch(setLoading(loading));
   };
 
+  const setAuthToken = (authToken: string) => {
+    dispatch(setToken(authToken));
+  };
+
   // Helper functions
-  const isPremiumUser = user?.plan === 'premium' || user?.plan === 'pro';
-  const hasCreditsRemaining = (user?.remainingCredits || 0) > 0;
-  const canPerformAction = isPremiumUser || hasCreditsRemaining;
+  const isPremiumUser = user?.plan?.name !== 'free';
+  const hasTriesRemaining = (user?.remainingTries || 0) > 0;
+  const canPerformAction = isPremiumUser || hasTriesRemaining;
 
   return {
     // State
     user,
     isLoading,
     isAuthenticated,
+    token,
     
     // Actions
     login,
     logout,
-    updateCredits,
+    updateTries,
     updateProfile,
     setAuthLoading,
+    setAuthToken,
     
     // Computed values
     isPremiumUser,
-    hasCreditsRemaining,
+    hasTriesRemaining,
     canPerformAction,
   };
 };

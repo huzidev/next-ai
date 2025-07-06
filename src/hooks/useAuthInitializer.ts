@@ -1,43 +1,62 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
 
-// This would typically be called after successful authentication
-// or when the app loads to check for existing session
+// This initializes authentication from stored token
 export const useAuthInitializer = () => {
   const { login, setAuthLoading } = useAuth();
 
-  const initializeAuth = () => {
+  const initializeAuth = async () => {
     setAuthLoading(true);
     
-    // TODO: In a real app, you would:
-    // 1. Check for stored auth token
-    // 2. Validate token with server
-    // 3. Fetch user data from API
-    
-    // For now, let's simulate with mock data
-    setTimeout(() => {
-      const mockUser = {
-        id: "user_123",
-        email: "john.doe@example.com",
-        name: "John Doe",
-        isVerified: true,
-        plan: "free" as const,
-        remainingCredits: 45,
-        avatar: undefined
-      };
+    try {
+      const token = typeof window !== 'undefined' ? 
+        localStorage.getItem('authToken') : 
+        null;
       
-      login(mockUser);
-    }, 1000);
+      if (!token) {
+        setAuthLoading(false);
+        return;
+      }
+
+      // Fetch user profile with the stored token
+      const response = await fetch('/api/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user) {
+          login(data.user, token);
+        } else {
+          // Invalid token, remove it
+          localStorage.removeItem('authToken');
+          setAuthLoading(false);
+        }
+      } else {
+        // Invalid token, remove it
+        localStorage.removeItem('authToken');
+        setAuthLoading(false);
+      }
+    } catch (error) {
+      console.error('Auth initialization error:', error);
+      localStorage.removeItem('authToken');
+      setAuthLoading(false);
+    }
   };
 
   useEffect(() => {
     // Check if user is already authenticated on app load
     const token = typeof window !== 'undefined' ? 
-      localStorage.getItem('authToken') || sessionStorage.getItem('authToken') : 
+      localStorage.getItem('authToken') : 
       null;
     
     if (token) {
       initializeAuth();
+    } else {
+      setAuthLoading(false);
     }
   }, []);
 

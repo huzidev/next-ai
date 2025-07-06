@@ -1,6 +1,7 @@
 import { authenticateUser } from "@/db/User.server";
 import { setCookie } from "@/lib/cookie";
 import { generateToken } from "@/lib/jwt";
+import prisma from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -37,13 +38,24 @@ export default async function handler(
     const token = generateToken(user.id);
     setCookie(token, res);
 
+    // Get user with plan information
+    const userWithPlan = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        plan: true,
+        _count: {
+          select: {
+            chatSessions: true,
+          },
+        },
+      },
+    });
+
     return res.status(200).json({ 
       success: true,
       data: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        isVerified: user.isVerified,
+        user: userWithPlan,
+        token,
       },
       message: "Signed in successfully"
     });
