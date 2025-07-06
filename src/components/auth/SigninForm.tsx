@@ -28,7 +28,7 @@ export default function SigninForm({
   onTogglePassword,
   variant
 }: SigninFormProps) {
-  const isAdmin = variant === 'admin';
+  const isAdmin: boolean = variant === 'admin';
   
   const colorClasses = isAdmin ? {
     focusColor: "focus:border-purple-400 focus:ring-purple-400",
