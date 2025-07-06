@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +49,8 @@ export default function UserDashboard() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -83,12 +86,34 @@ export default function UserDashboard() {
       return;
     }
     
-    const updatedSessions = sessions.filter(s => s.id !== sessionId);
+    // Open confirmation modal
+    setSessionToDelete(sessionId);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDeleteSession = () => {
+    if (!sessionToDelete) return;
+
+    const updatedSessions = sessions.filter(s => s.id !== sessionToDelete);
     setSessions(updatedSessions);
     
-    if (sessionId === activeSessionId) {
+    if (sessionToDelete === activeSessionId) {
       setActiveSessionId(updatedSessions[0].id);
     }
+
+    // Close modal and reset state
+    setDeleteModalOpen(false);
+    setSessionToDelete(null);
+
+    toast({
+      title: "Chat deleted",
+      description: "The chat session has been deleted successfully",
+    });
+  };
+
+  const cancelDelete = () => {
+    setDeleteModalOpen(false);
+    setSessionToDelete(null);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -417,6 +442,26 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Chat Session</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete "{sessions.find(s => s.id === sessionToDelete)?.title}"? This action cannot be undone and all messages in this chat will be permanently lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteSession}>
+              Delete Chat
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

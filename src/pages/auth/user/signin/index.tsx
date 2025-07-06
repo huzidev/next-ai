@@ -44,7 +44,7 @@ export default function UserSignin() {
 
       if (response.success) {
         toast({
-          title: "Welcome back!",
+          title: "Welcome",
           description:
             response.message || "You have been signed in successfully",
         });
