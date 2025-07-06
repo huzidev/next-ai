@@ -87,8 +87,13 @@ export default function UserSignin() {
           variant="user"
         />
 
-        {/* Additional Options */}
-        <AuthFooter />
+        <AuthFooter 
+          helpText="Need help?"
+          links={[
+            { href: "/support", text: "Contact Support" },
+            { href: "/auth/admin/signin", text: "Admin Login" }
+          ]}
+        />
       </div>
     </div>
   );

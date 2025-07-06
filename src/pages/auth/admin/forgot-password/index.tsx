@@ -4,7 +4,7 @@ import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -73,16 +73,6 @@ export default function AdminForgotPassword() {
         </div>
 
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center text-white">
-              <Shield className="h-5 w-5 mr-2 text-purple-400" />
-              Reset Admin Password
-            </CardTitle>
-            <CardDescription className="text-gray-300">
-              We'll send reset instructions to your admin email
-            </CardDescription>
-          </CardHeader>
-          
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
@@ -120,16 +110,15 @@ export default function AdminForgotPassword() {
           </CardContent>
         </Card>
 
-        {/* Additional Options */}
         <AuthFooter 
+          helpText="Other options"
           links={[
             { href: "/auth/user/signin", text: "User Login" },
             { href: "/support", text: "Contact Support" }
           ]}
         />
 
-        {/* Security Notice */}
-        <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+        <div className="mt-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
           <div className="flex items-start space-x-3">
             <Shield className="h-5 w-5 text-amber-400 mt-0.5" />
             <div className="text-sm text-gray-300">

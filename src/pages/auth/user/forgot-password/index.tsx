@@ -1,12 +1,12 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { KeyRound, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -113,18 +113,7 @@ export default function UserForgotPassword() {
           backText="Back to Sign In"
         />
 
-        {/* Forgot Password Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl font-semibold flex items-center text-white">
-              <KeyRound className="h-5 w-5 mr-2 text-blue-400" />
-              Reset Password
-            </CardTitle>
-            <CardDescription className="text-gray-300">
-              We'll send you a link to reset your password
-            </CardDescription>
-          </CardHeader>
-          
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
