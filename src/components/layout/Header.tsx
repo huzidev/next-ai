@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bot } from "lucide-react";
+import { Bot } from "lucide-react";
 import Link from "next/link";
 
 export default function Header() {
@@ -14,7 +14,7 @@ export default function Header() {
             </span>
           </div>
         </div>
-        
+
         <nav className="flex items-center space-x-4">
           <Link href="/auth/user/signin">
             <Button variant="ghost" className="text-slate-300 hover:text-white">
@@ -24,12 +24,6 @@ export default function Header() {
           <Link href="/auth/admin/signin">
             <Button variant="ghost" className="text-slate-300 hover:text-white">
               Admin Login
-            </Button>
-          </Link>
-          <Link href="/auth/user/signup">
-            <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </nav>
