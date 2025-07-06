@@ -1,4 +1,4 @@
-import { Bot } from "lucide-react";
+import Logo from "../ui/logo";
 
 export default function Footer() {
   return (
@@ -6,8 +6,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center space-x-2">
-            <Bot className="h-6 w-6 text-primary" />
-            <span className="text-lg font-semibold">Next-AI</span>
+            <Logo />
           </div>
           <p className="text-sm text-slate-600">
             © 2025 Next-AI. Powered by Google Generative AI.

@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthInitializer } from "@/hooks/useAuthInitializer";
 import {
   Bell,
   Bot,
@@ -42,7 +41,6 @@ interface ChatSession {
 
 export default function UserDashboard() {
   const { user, isLoading: authLoading, logout, updateTries } = useAuth();
-  const { initializeAuth } = useAuthInitializer();
   const router = useRouter();
   const [sessions, setSessions] = useState<ChatSession[]>([
     {
@@ -61,12 +59,6 @@ export default function UserDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (!user && !authLoading) {
-      initializeAuth();
-    }
-  }, [user, authLoading, initializeAuth]);
 
   const activeSession = sessions.find(s => s.id === activeSessionId);
 
