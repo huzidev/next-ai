@@ -176,26 +176,46 @@ export default function UserSignup() {
                 </div>
                 
                 {/* Password Requirements */}
-                {formData.password && (
-                  <div className="space-y-1 mt-2">
-                    <div className={`flex items-center text-xs ${passwordRequirements.length ? 'text-green-400' : 'text-gray-400'}`}>
-                      {passwordRequirements.length ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      At least 8 characters
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  formData.password ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  {formData.password && (
+                    <div className="space-y-1 mt-2">
+                      <div className={`flex items-center text-xs transition-colors duration-200 ${
+                        passwordRequirements.length ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        <div className="transition-transform duration-200">
+                          {passwordRequirements.length ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                        </div>
+                        At least 8 characters
+                      </div>
+                      <div className={`flex items-center text-xs transition-colors duration-200 ${
+                        passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        <div className="transition-transform duration-200">
+                          {passwordRequirements.uppercase ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                        </div>
+                        One uppercase letter
+                      </div>
+                      <div className={`flex items-center text-xs transition-colors duration-200 ${
+                        passwordRequirements.number ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        <div className="transition-transform duration-200">
+                          {passwordRequirements.number ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                        </div>
+                        One number
+                      </div>
+                      <div className={`flex items-center text-xs transition-colors duration-200 ${
+                        passwordRequirements.special ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        <div className="transition-transform duration-200">
+                          {passwordRequirements.special ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                        </div>
+                        One special character
+                      </div>
                     </div>
-                    <div className={`flex items-center text-xs ${passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'}`}>
-                      {passwordRequirements.uppercase ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      One uppercase letter
-                    </div>
-                    <div className={`flex items-center text-xs ${passwordRequirements.number ? 'text-green-400' : 'text-gray-400'}`}>
-                      {passwordRequirements.number ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      One number
-                    </div>
-                    <div className={`flex items-center text-xs ${passwordRequirements.special ? 'text-green-400' : 'text-gray-400'}`}>
-                      {passwordRequirements.special ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      One special character
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -226,12 +246,16 @@ export default function UserSignup() {
                 </div>
                 
                 {/* Password Match Error */}
-                {!passwordsMatch && formData.confirmPassword && (
-                  <div className="flex items-center text-xs text-red-400 mt-1">
-                    <X className="h-3 w-3 mr-1" />
-                    Passwords do not match
-                  </div>
-                )}
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  !passwordsMatch && formData.confirmPassword ? 'max-h-6 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                }`}>
+                  {!passwordsMatch && formData.confirmPassword && (
+                    <div className="flex items-center text-xs text-red-400 animate-in slide-in-from-top-1 duration-200">
+                      <X className="h-3 w-3 mr-1 transition-transform duration-200" />
+                      Passwords do not match
+                    </div>
+                  )}
+                </div>
               </div>
 
               <Button
