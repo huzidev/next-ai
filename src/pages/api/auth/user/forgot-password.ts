@@ -35,6 +35,7 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: `Password reset code sent: ${resetResult.code}`,
+      code: resetResult.code
     });
 
   } catch (error) {
