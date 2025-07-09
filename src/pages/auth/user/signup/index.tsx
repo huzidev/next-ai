@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Check, Eye, EyeOff, Lock, Mail, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -22,63 +22,49 @@ export default function UserSignup() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
   const { toast } = useToast();
   const router = useRouter();
 
+  // Password requirements validation
+  const passwordRequirements = {
+    length: formData.password.length >= 8,
+    uppercase: /[A-Z]/.test(formData.password),
+    number: /[0-9]/.test(formData.password),
+    special: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password)
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
+    const newFormData = {
       ...formData,
       [e.target.name]: e.target.value
-    });
+    };
+    setFormData(newFormData);
+
+    if (e.target.name === 'password' || e.target.name === 'confirmPassword') {
+      if (e.target.name === 'password') {
+        setPasswordsMatch(e.target.value === formData.confirmPassword || formData.confirmPassword === '');
+      } else {
+        setPasswordsMatch(e.target.value === formData.password);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
+      setPasswordsMatch(false);
       return;
     }
 
-    // Enhanced password validation
-    if (formData.password.length < 8) {
-      toast({
-        title: "Password Too Short",
-        description: "Password must be at least 8 characters long",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check for uppercase letter
-    if (!/[A-Z]/.test(formData.password)) {
+    // Check if all password requirements are met
+    const allRequirementsMet = Object.values(passwordRequirements).every(Boolean);
+    if (!allRequirementsMet) {
       toast({
         title: "Password Requirements",
-        description: "Password must contain at least one uppercase letter",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check for number
-    if (!/[0-9]/.test(formData.password)) {
-      toast({
-        title: "Password Requirements",
-        description: "Password must contain at least one number",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check for special character
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
-      toast({
-        title: "Password Requirements",
-        description: "Password must contain at least one special character (!@#$%^&*(),.?\":{}|<>)",
+        description: "Please ensure your password meets all requirements",
         variant: "destructive",
       });
       return;
@@ -188,9 +174,28 @@ export default function UserSignup() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  Password must be at least 8 characters with uppercase, number, and special character
-                </p>
+                
+                {/* Password Requirements */}
+                {formData.password && (
+                  <div className="space-y-1 mt-2">
+                    <div className={`flex items-center text-xs ${passwordRequirements.length ? 'text-green-400' : 'text-gray-400'}`}>
+                      {passwordRequirements.length ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                      At least 8 characters
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'}`}>
+                      {passwordRequirements.uppercase ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                      One uppercase letter
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordRequirements.number ? 'text-green-400' : 'text-gray-400'}`}>
+                      {passwordRequirements.number ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                      One number
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordRequirements.special ? 'text-green-400' : 'text-gray-400'}`}>
+                      {passwordRequirements.special ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                      One special character
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -219,6 +224,14 @@ export default function UserSignup() {
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
+                
+                {/* Password Match Error */}
+                {!passwordsMatch && formData.confirmPassword && (
+                  <div className="flex items-center text-xs text-red-400 mt-1">
+                    <X className="h-3 w-3 mr-1" />
+                    Passwords do not match
+                  </div>
+                )}
               </div>
 
               <Button
