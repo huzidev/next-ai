@@ -1,3 +1,4 @@
+import { generateAdminPasswordResetCode } from "@/db/Admin.server";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,24 +22,27 @@ export default async function handler(
   }
 
   try {
-    // TODO: Implement actual admin forgot password logic
-    // 1. Validate admin email exists in database
-    // 2. Generate reset token
-    // 3. Send reset email
-    // 4. Store reset token with expiration
+    // Generate admin password reset code
+    const resetResult = await generateAdminPasswordResetCode(email);
 
-    console.log("Admin forgot password request for:", email);
+    if (resetResult.status !== 200) {
+      return res.status(resetResult.status).json({ 
+        success: false, 
+        error: resetResult.message 
+      });
+    }
 
-    // Simulate success response
-    res.status(200).json({ 
+    return res.status(200).json({
       success: true,
-      message: "Admin password reset email sent successfully"
+      message: `Admin password reset code sent: ${resetResult.code}`,
+      code: resetResult.code
     });
+
   } catch (error) {
     console.error("Admin forgot password error:", error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
-      error: "Failed to process admin forgot password request" 
+      error: "Internal server error" 
     });
   }
 }

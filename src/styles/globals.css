@@ -111,3 +111,14 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Auth form input styles */
+  .auth-input {
+    @apply h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400;
+  }
+  
+  .auth-input-password {
+    @apply h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400;
+  }
+}

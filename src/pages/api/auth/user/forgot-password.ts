@@ -1,3 +1,4 @@
+import { generatePasswordResetCode } from "@/db/User.server";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,19 +22,22 @@ export default async function handler(
   }
 
   try {
-    // TODO: Implement actual forgot password logic
-    // 1. Validate email exists in database
-    // 2. Generate reset token
-    // 3. Send reset email
-    // 4. Store reset token with expiration
+    // Generate password reset code
+    const resetResult = await generatePasswordResetCode(email);
 
-    console.log("Forgot password request for:", email);
+    if (resetResult.status !== 200) {
+      return res.status(resetResult.status).json({ 
+        success: false, 
+        error: resetResult.message 
+      });
+    }
 
-    // Simulate success response
-    res.status(200).json({ 
+    return res.status(200).json({
       success: true,
-      message: "Password reset email sent successfully"
+      message: `Password reset code sent: ${resetResult.code}`,
+      code: resetResult.code
     });
+
   } catch (error) {
     console.error("Forgot password error:", error);
     res.status(500).json({ 

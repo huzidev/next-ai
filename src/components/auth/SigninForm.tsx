@@ -28,7 +28,7 @@ export default function SigninForm({
   onTogglePassword,
   variant
 }: SigninFormProps) {
-  const isAdmin = variant === 'admin';
+  const isAdmin: boolean = variant === 'admin';
   
   const colorClasses = isAdmin ? {
     focusColor: "focus:border-purple-400 focus:ring-purple-400",
@@ -109,7 +109,7 @@ export default function SigninForm({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-11 px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-600"
+                className="absolute right-0 top-0 h-full px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-transparent"
                 onClick={onTogglePassword}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

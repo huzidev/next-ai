@@ -1,6 +1,7 @@
-import { loginUser } from "@/db/Auth.server";
+import { authenticateUser } from "@/db/User.server";
 import { setCookie } from "@/lib/cookie";
 import { generateToken } from "@/lib/jwt";
+import prisma from "@/utils/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -24,38 +25,41 @@ export default async function handler(
   }
 
   try {
-    const response = await loginUser({
-      email,
-      password,
-    });
+    const { user, message } = await authenticateUser(email, password);
 
-    // Check if response has a status property indicating success/failure
-    if (response && typeof response === 'object' && 'status' in response) {
-      const responseWithStatus = response as Record<string, any>;
-      
-      if (responseWithStatus.status === 200) {
-        // Successful login - response contains user data
-        const token = generateToken(responseWithStatus.id);
-        setCookie(token, res);
-
-        return res.status(200).json({ 
-          success: true,
-          data: responseWithStatus,
-          message: "Signed in successfully"
-        });
-      } else {
-        // Error response
-        return res.status(responseWithStatus.status).json({ 
-          success: false,
-          error: responseWithStatus.message
-        });
-      }
-    } else {
-      return res.status(401).json({ 
-        success: false,
-        error: "Invalid email or password"
+    if (!user) {
+      return res.status(400).json({ 
+        success: false, 
+        error: message 
       });
     }
+
+    // Generate JWT token
+    const token = generateToken(user.id);
+    setCookie(token, res);
+
+    // Get user with plan information
+    const userWithPlan = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        plan: true,
+        _count: {
+          select: {
+            chatSessions: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json({ 
+      success: true,
+      data: {
+        user: userWithPlan,
+        token,
+      },
+      message: "Signed in successfully"
+    });
+
   } catch (error) {
     console.error("Signin error:", error);
     return res.status(500).json({ 

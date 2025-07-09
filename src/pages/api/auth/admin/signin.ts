@@ -1,3 +1,6 @@
+import { authenticateAdmin } from "@/db/Admin.server";
+import { setCookie } from "@/lib/cookie";
+import { generateToken } from "@/lib/jwt";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,35 +24,32 @@ export default async function handler(
   }
 
   try {
-    // TODO: Implement actual admin signin logic
-    // 1. Validate admin credentials
-    // 2. Check admin permissions
-    // 3. Generate admin token
-    // 4. Set admin cookie
+    const { admin, message } = await authenticateAdmin(email, password);
 
-    console.log("Admin signin attempt for:", email);
-
-    // Simulate success for demo purposes
-    // In production, implement proper admin authentication
-    if (email.includes("admin") && password === "admin123") {
-      const adminData = {
-        id: "admin-1",
-        email,
-        role: "admin",
-        permissions: ["read", "write", "delete", "manage"]
-      };
-
-      return res.status(200).json({ 
-        success: true,
-        data: adminData,
-        message: "Admin signed in successfully"
-      });
-    } else {
-      return res.status(401).json({ 
-        success: false,
-        error: "Invalid admin credentials"
+    if (!admin) {
+      return res.status(400).json({ 
+        success: false, 
+        error: message 
       });
     }
+
+    const { id, username, email: adminEmail, role, isActive } = admin;
+
+    const token = generateToken(id);
+    setCookie(token, res);
+
+    return res.status(200).json({ 
+      success: true,
+      data: {
+      id,
+      username,
+      email: adminEmail,
+      role,
+      isActive,
+      },
+      message: "Admin signed in successfully"
+    });
+
   } catch (error) {
     console.error("Admin signin error:", error);
     return res.status(500).json({ 

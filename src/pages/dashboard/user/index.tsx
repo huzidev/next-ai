@@ -1,9 +1,12 @@
+import { RouteGuard } from "@/components/auth/RouteGuard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Bell,
   Bot,
@@ -18,6 +21,7 @@ import {
   Upload,
   User
 } from "lucide-react";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 interface Message {
@@ -36,6 +40,8 @@ interface ChatSession {
 }
 
 export default function UserDashboard() {
+  const { user, isLoading: authLoading, logout, updateTries } = useAuth();
+  const router = useRouter();
   const [sessions, setSessions] = useState<ChatSession[]>([
     {
       id: "1",
@@ -48,6 +54,8 @@ export default function UserDashboard() {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -83,12 +91,34 @@ export default function UserDashboard() {
       return;
     }
     
-    const updatedSessions = sessions.filter(s => s.id !== sessionId);
+    // Open confirmation modal
+    setSessionToDelete(sessionId);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDeleteSession = () => {
+    if (!sessionToDelete) return;
+
+    const updatedSessions = sessions.filter(s => s.id !== sessionToDelete);
     setSessions(updatedSessions);
     
-    if (sessionId === activeSessionId) {
+    if (sessionToDelete === activeSessionId) {
       setActiveSessionId(updatedSessions[0].id);
     }
+
+    // Close modal and reset state
+    setDeleteModalOpen(false);
+    setSessionToDelete(null);
+
+    toast({
+      title: "Chat deleted",
+      description: "The chat session has been deleted successfully",
+    });
+  };
+
+  const cancelDelete = () => {
+    setDeleteModalOpen(false);
+    setSessionToDelete(null);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +138,16 @@ export default function UserDashboard() {
 
   const sendMessage = async () => {
     if (!message.trim() && !selectedImage) return;
+
+    // Check if user has credits (for free plan users)
+    if (user && user.plan?.name === 'free' && user.remainingTries <= 0) {
+      toast({
+        title: "No credits remaining",
+        description: "Please upgrade your plan to continue chatting",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -160,6 +200,11 @@ export default function UserDashboard() {
           : session
       ));
 
+      // Deduct credits for free users
+      if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
+        updateTries(user.remainingTries - 1);
+      }
+
     } catch (error) {
       toast({
         title: "Error",
@@ -179,7 +224,8 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <RouteGuard requireAuth={true}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="flex h-screen">
         {/* Sidebar */}
         <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col">
@@ -235,30 +281,47 @@ export default function UserDashboard() {
             ))}
           </div>
 
-          {/* User Menu */}
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4 border-t border-gray-600">
             <div className="flex items-center space-x-3">
               <Avatar>
                 <AvatarFallback>
-                  <User className="h-4 w-4" />
+                  {user?.username ? user.username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-200">John Doe</p>
-                <p className="text-xs text-gray-400">Free Plan • 45 remaining</p>
+                <p className="text-sm font-medium text-gray-200">
+                  {user?.username || "Loading..."}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {user ? (
+                    `${user.plan?.name ? user.plan.name.charAt(0).toUpperCase() + user.plan.name.slice(1) : 'Free'} Plan • ${user.remainingTries} remaining`
+                  ) : (
+                    "Loading user data..."
+                  )}
+                </p>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0"
+                onClick={() => router.push('/settings')}
+              >
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
             
             <div className="mt-3 space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button variant="outline" size="sm" className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700">
                 <Bell className="h-4 w-4 mr-2" />
                 Notifications
                 <Badge variant="destructive" className="ml-auto">3</Badge>
               </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700"
+                onClick={logout}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </Button>
@@ -417,6 +480,19 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmationDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="Delete Chat Session"
+        description={`Are you sure you want to delete "${sessions.find(s => s.id === sessionToDelete)?.title}"? This action cannot be undone and all messages in this chat will be permanently lost.`}
+        confirmText="Delete Chat"
+        cancelText="Cancel"
+        onConfirm={confirmDeleteSession}
+        onCancel={cancelDelete}
+        variant="destructive"
+      />
+      </div>
+    </RouteGuard>
   );
 }

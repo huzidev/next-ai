@@ -43,11 +43,6 @@ export default function Main() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/auth/user/signin">
-                <Button size="lg" variant="outline" className="h-12 px-8 text-lg">
-                  Sign In
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
@@ -171,17 +166,17 @@ export default function Main() {
         </div>
       </section>
 
-      <section className="px-4 py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <section className="px-4 py-20 bg-slate-700/30">
         <div className="container mx-auto text-center">
           <div className="mx-auto max-w-3xl text-white">
             <h2 className="mb-6 text-3xl font-bold md:text-4xl">
               Ready to Experience Next-Generation AI?
             </h2>
-            <p className="mb-8 text-lg text-blue-100 md:text-xl">
+            <p className="mb-8 text-lg text-slate-300 md:text-xl">
               Join thousands of users who are already exploring the possibilities with our AI platform.
             </p>
             <Link href="/auth/user/signup">
-              <Button size="lg" variant="secondary" className="h-12 px-8 text-lg font-semibold">
+              <Button size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
                 Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

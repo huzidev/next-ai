@@ -1,4 +1,5 @@
 import AuthHeader from "@/components/auth/AuthHeader";
+import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -116,15 +117,15 @@ export default function UserVerify() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <AuthHeader 
-          title="Verify Your Email"
-          subtitle={email ? `Enter the 6-digit code sent to ${email}` : "Enter the 6-digit code sent to your email"}
-          backHref="/auth/user/signup"
-          backText="Back to Sign Up"
-        />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <Header />
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <AuthHeader 
+            title="Verify Your Email"
+            subtitle={email ? `Enter the 6-digit code sent to ${email}` : "Enter the 6-digit code sent to your email"}
+          />
 
         {/* Verification Form */}
         <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
@@ -207,6 +208,7 @@ export default function UserVerify() {
           <p className="mt-2">
             Make sure to check your spam folder if you don't see the email.
           </p>
+        </div>
         </div>
       </div>
     </div>
