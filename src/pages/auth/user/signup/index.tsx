@@ -1,5 +1,6 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
+import PasswordRequirements from "@/components/auth/PasswordRequirements";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { Check, Eye, EyeOff, Lock, Mail, User, X } from "lucide-react";
+import { isPasswordValid } from "@/utils/passwordValidation";
+import { Eye, EyeOff, Lock, Mail, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -25,14 +27,6 @@ export default function UserSignup() {
   const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
   const { toast } = useToast();
   const router = useRouter();
-
-  // Password requirements validation
-  const passwordRequirements = {
-    length: formData.password.length >= 8,
-    uppercase: /[A-Z]/.test(formData.password),
-    number: /[0-9]/.test(formData.password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password)
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFormData = {
@@ -60,8 +54,7 @@ export default function UserSignup() {
     }
 
     // Check if all password requirements are met
-    const allRequirementsMet = Object.values(passwordRequirements).every(Boolean);
-    if (!allRequirementsMet) {
+    if (!isPasswordValid(formData.password)) {
       toast({
         title: "Password Requirements",
         description: "Please ensure your password meets all requirements",
@@ -175,45 +168,7 @@ export default function UserSignup() {
                   </Button>
                 </div>
                 
-                {/* Password Requirements */}
-                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  formData.password ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
-                }`}>
-                  <div className="space-y-1 mt-2">
-                    <div className={`flex items-center text-xs transition-colors duration-200 ${
-                      passwordRequirements.length ? 'text-green-400' : 'text-gray-400'
-                    }`}>
-                      <div className="transition-transform duration-200">
-                        {passwordRequirements.length ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      </div>
-                      At least 8 characters
-                    </div>
-                    <div className={`flex items-center text-xs transition-colors duration-200 ${
-                      passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'
-                    }`}>
-                      <div className="transition-transform duration-200">
-                        {passwordRequirements.uppercase ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      </div>
-                      One uppercase letter
-                    </div>
-                    <div className={`flex items-center text-xs transition-colors duration-200 ${
-                      passwordRequirements.number ? 'text-green-400' : 'text-gray-400'
-                    }`}>
-                      <div className="transition-transform duration-200">
-                        {passwordRequirements.number ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      </div>
-                      One number
-                    </div>
-                    <div className={`flex items-center text-xs transition-colors duration-200 ${
-                      passwordRequirements.special ? 'text-green-400' : 'text-gray-400'
-                    }`}>
-                      <div className="transition-transform duration-200">
-                        {passwordRequirements.special ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                      </div>
-                      One special character
-                    </div>
-                  </div>
-                </div>
+                <PasswordRequirements password={formData.password} show={!!formData.password} />
               </div>
 
               <div className="space-y-2">
