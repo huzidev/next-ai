@@ -118,7 +118,7 @@ export default function OTPInput({
   };
 
   return (
-    <div className={`flex gap-2 justify-center ${className}`}>
+    <div className={`flex gap-3 justify-center ${className}`}>
       {otp.map((digit, index) => (
         <Input
           key={index}
@@ -135,7 +135,7 @@ export default function OTPInput({
           onPaste={handlePaste}
           onFocus={() => handleFocus(index)}
           disabled={disabled}
-          className="w-12 h-12 text-center text-lg font-bold bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400 transition-colors"
+          className="w-16 h-16 text-center text-xl font-bold bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400 transition-colors"
         />
       ))}
     </div>

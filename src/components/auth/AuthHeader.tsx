@@ -1,6 +1,6 @@
 interface AuthHeaderProps {
   title: string;
-  subtitle: string;
+  subtitle: string | React.ReactNode;
 }
 
 export default function AuthHeader({ 

@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield } from "lucide-react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthHeader from "./AuthHeader";
 import AuthLink from "./AuthLink";
 import OTPInput from "./OTPInput";
@@ -36,8 +35,21 @@ export default function VerificationForm({
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(prev => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendTimer]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,9 +94,10 @@ export default function VerificationForm({
   };
 
   const handleResendCode = async () => {
-    if (!email) return;
+    if (!email || resendTimer > 0) return;
 
     setIsResending(true);
+    setResendTimer(10); // Start 10 second timer
 
     try {
       const response = await onResend(email);
@@ -117,17 +130,20 @@ export default function VerificationForm({
     ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
     : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600";
 
-  const resendButtonClass = variant === "purple"
-    ? "text-purple-400 hover:text-purple-300 hover:bg-purple-900/20"
-    : "text-blue-400 hover:text-blue-300 hover:bg-blue-900/20";
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <AuthHeader 
             title={title}
-            subtitle={subtitle}
+            subtitle={
+              <>
+                Enter the 6-digit code sent to{" "}
+                <span className={variant === "purple" ? "text-purple-300 font-medium" : "text-blue-300 font-medium"}>
+                  {email}
+                </span>
+              </>
+            }
           />
           
           {badge && (
@@ -137,24 +153,15 @@ export default function VerificationForm({
           )}
 
           <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-            <CardContent className="p-6 space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium flex items-center text-gray-200">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Verification Code
-                  </label>
+            <CardContent className="p-6 space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-4">
                   <OTPInput
                     value={otp}
                     onChange={setOtp}
                     disabled={isLoading}
-                    className="mb-4"
+                    className="justify-center"
                   />
-                  {email && (
-                    <p className="text-sm text-gray-400 text-center">
-                      Code sent to: <span className={variant === "purple" ? "text-purple-300" : "text-blue-300"}>{email}</span>
-                    </p>
-                  )}
                 </div>
 
                 <Button
@@ -166,18 +173,29 @@ export default function VerificationForm({
                 </Button>
               </form>
 
-              <div className="text-center space-y-2">
-                <p className="text-sm text-gray-400">
-                  Didn't receive the code?
+              <div className="text-center">
+                <p className="text-sm text-gray-400 inline">
+                  Didn't receive the code?{" "}
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={isResending || resendTimer > 0 || !email}
+                    className={`text-sm font-medium transition-colors ${
+                      resendTimer > 0 || isResending
+                        ? "text-gray-500 cursor-not-allowed"
+                        : variant === "purple" 
+                          ? "text-purple-400" 
+                          : "text-blue-400"
+                    }`}
+                  >
+                    {isResending 
+                      ? "Sending..." 
+                      : resendTimer > 0 
+                        ? `Resend Code (${resendTimer}s)` 
+                        : "Resend Code"
+                    }
+                  </button>
                 </p>
-                <Button
-                  variant="ghost"
-                  onClick={handleResendCode}
-                  disabled={isResending || !email}
-                  className={resendButtonClass}
-                >
-                  {isResending ? "Sending..." : "Resend Code"}
-                </Button>
               </div>
 
               <AuthLink 
