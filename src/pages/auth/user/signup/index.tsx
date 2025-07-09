@@ -110,7 +110,7 @@ export default function UserSignup() {
                   value={formData.username}
                   onChange={handleChange}
                   required
-                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
+                  className="auth-input"
                 />
               </div>
 
@@ -127,7 +127,7 @@ export default function UserSignup() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
+                  className="auth-input"
                 />
               </div>
 
@@ -145,7 +145,7 @@ export default function UserSignup() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
+                    className="auth-input-password"
                   />
                   <Button
                     type="button"
@@ -173,7 +173,7 @@ export default function UserSignup() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400"
+                    className="auth-input-password"
                   />
                   <Button
                     type="button"
