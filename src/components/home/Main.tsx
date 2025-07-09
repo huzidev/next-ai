@@ -166,7 +166,7 @@ export default function Main() {
         </div>
       </section>
 
-      <section className="px-4 py-20" style={{ backgroundColor: '#1e293b80' }}>
+      <section className="px-4 py-20 bg-slate-700/30">
         <div className="container mx-auto text-center">
           <div className="mx-auto max-w-3xl text-white">
             <h2 className="mb-6 text-3xl font-bold md:text-4xl">
