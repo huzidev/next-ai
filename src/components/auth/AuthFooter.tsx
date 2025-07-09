@@ -10,7 +10,7 @@ interface AuthFooterProps {
 
 export default function AuthFooter({ helpText, links }: AuthFooterProps) {
   return (
-    <div className="mt-4 text-center">
+    <div className="mt-6 text-center">
       <p className="text-sm text-gray-400 mb-2">{helpText}</p>
       <div className="space-x-4 text-sm">
         {links.map((link, index) => (
