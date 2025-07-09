@@ -44,10 +44,41 @@ export default function UserSignup() {
       return;
     }
 
-    if (formData.password.length < 6) {
+    // Enhanced password validation
+    if (formData.password.length < 8) {
       toast({
-        title: "Error",
-        description: "Password must be at least 6 characters long",
+        title: "Password Too Short",
+        description: "Password must be at least 8 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check for uppercase letter
+    if (!/[A-Z]/.test(formData.password)) {
+      toast({
+        title: "Password Requirements",
+        description: "Password must contain at least one uppercase letter",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check for number
+    if (!/[0-9]/.test(formData.password)) {
+      toast({
+        title: "Password Requirements",
+        description: "Password must contain at least one number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check for special character
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+      toast({
+        title: "Password Requirements",
+        description: "Password must contain at least one special character (!@#$%^&*(),.?\":{}|<>)",
         variant: "destructive",
       });
       return;
@@ -157,6 +188,9 @@ export default function UserSignup() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  Password must be at least 8 characters with uppercase, number, and special character
+                </p>
               </div>
 
               <div className="space-y-2">
