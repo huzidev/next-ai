@@ -23,7 +23,6 @@ export default function PasswordFields({
   onConfirmPasswordChange,
   showPasswordRequirements = true,
   passwordsMatch = true,
-  required = false,
   className = "",
   passwordLabel = "Password",
   confirmPasswordLabel = "Confirm Password",
@@ -40,7 +39,6 @@ export default function PasswordFields({
           placeholder={passwordPlaceholder}
           value={password}
           onChange={onPasswordChange}
-          required={required}
         />
         
         {showPasswordRequirements && (
@@ -58,7 +56,6 @@ export default function PasswordFields({
         placeholder={confirmPasswordPlaceholder}
         value={confirmPassword}
         onChange={onConfirmPasswordChange}
-        required={required}
         showMismatchError={!passwordsMatch && !!confirmPassword}
         className="mt-4"
       />

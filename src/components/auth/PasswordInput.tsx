@@ -24,7 +24,6 @@ export default function PasswordInput({
   placeholder,
   value,
   onChange,
-  required = false,
   showMismatchError = false,
   mismatchErrorMessage = "Passwords do not match",
   className = "",
@@ -48,7 +47,7 @@ export default function PasswordInput({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          required={required}
+          required={true}
           className="password-input-field"
         />
         <Button
@@ -66,7 +65,6 @@ export default function PasswordInput({
         </Button>
       </div>
 
-      {/* Password mismatch error */}
       <div
         className={`password-mismatch-container ${
           showMismatchError
