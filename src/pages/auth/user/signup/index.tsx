@@ -14,8 +14,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
+type FormData = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export default function UserSignup() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     password: "",
@@ -164,7 +171,7 @@ export default function UserSignup() {
             <Button
               type="submit"
               className="w-full h-11 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200"
-              disabled={isLoading}
+              disabled={isLoading || !passwordsMatch || !isPasswordValid(formData.password)}
             >
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
