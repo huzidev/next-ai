@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import AuthHeader from "./AuthHeader";
 import AuthLink from "./AuthLink";
 import OTPInput from "./OTPInput";
-import SecurityNotice from "./SecurityNotice";
 
 interface VerificationFormProps {
   title: string;
@@ -30,7 +29,6 @@ export default function VerificationForm({
   successRedirectPath,
   backLinkText,
   backLinkHref,
-  variant = "default",
 }: VerificationFormProps) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +137,7 @@ export default function VerificationForm({
             subtitle={
               <>
                 Enter the 6-digit code sent to{" "}
-                <span className={variant === "purple" ? "text-purple-300 font-medium" : "text-blue-300 font-medium"}>
+                <span className="text-purple-300 font-medium">
                   {email}
                 </span>
               </>
@@ -205,8 +203,6 @@ export default function VerificationForm({
               Make sure to check your spam folder if you don't see the email.
             </p>
           </div>
-
-          <SecurityNotice message="Only valid admin email addresses will receive verification codes." />
         </div>
       </div>
     </div>

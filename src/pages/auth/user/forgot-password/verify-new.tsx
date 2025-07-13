@@ -49,7 +49,6 @@ export default function UserVerifyOTP() {
         successRedirectPath="/auth/user/forgot-password/reset"
         backLinkText="Sign in"
         backLinkHref="/auth/user/signin"
-        variant="default"
       />
     </div>
   );

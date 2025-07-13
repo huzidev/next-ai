@@ -58,7 +58,6 @@ export default function AdminVerifyOTP() {
         successRedirectPath="/auth/admin/forgot-password/reset"
         backLinkText="Sign In"
         backLinkHref="/auth/admin/signin"
-        variant="purple"
       />
     </div>
   );
