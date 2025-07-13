@@ -97,9 +97,7 @@ export default function AdminSignin() {
         ]}
       />
 
-      <SecurityNotice
-        message="Admin accounts have elevated privileges. Ensure you're on a secure network and never share your credentials."
-      />
+      <SecurityNotice />
     </FormLayout>
   );
 }

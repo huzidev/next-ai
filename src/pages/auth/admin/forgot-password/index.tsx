@@ -125,7 +125,7 @@ export default function AdminForgotPassword() {
         ]}
       />
 
-      <SecurityNotice message="Only valid admin email addresses will receive verification codes." />
+      <SecurityNotice />
     </FormLayout>
   );
 }

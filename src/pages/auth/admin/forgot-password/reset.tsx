@@ -1,8 +1,8 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
+import FormLayout from "@/components/auth/FormLayout";
 import PasswordFields from "@/components/auth/PasswordFields";
 import SecurityNotice from "@/components/auth/SecurityNotice";
-import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -105,68 +105,61 @@ export default function AdminResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-      <Header />
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <AuthHeader
-            title="Reset Admin Password"
-            subtitle="Create a new secure password for your admin account"
+    <FormLayout>
+      <AuthHeader
+        title="Reset Admin Password"
+        subtitle={
+          <>
+            Create a new secure password for your account {" "}
+            <span className="text-blue-300 font-medium">{email}</span>
+          </>
+        }
+      />
+
+      <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
+        <CardContent className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-2">
+            <PasswordFields
+              password={formData.password}
+              confirmPassword={formData.confirmPassword}
+              onPasswordChange={(e) => handlePasswordChange(e, "password")}
+              onConfirmPasswordChange={(e) =>
+                handlePasswordChange(e, "confirmPassword")
+              }
+              passwordsMatch={passwordsMatch}
+              required={true}
+              passwordLabel="New Password"
+              confirmPasswordLabel="Confirm New Password"
+              passwordPlaceholder="Enter your new password"
+              confirmPasswordPlaceholder="Confirm your new password"
+            />
+
+            <Button
+              type="submit"
+              className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all duration-200"
+              disabled={
+                isLoading ||
+                !passwordsMatch ||
+                !isPasswordValid(formData.password)
+              }
+            >
+              {isLoading ? "Resetting Password..." : "Reset Password"}
+            </Button>
+          </form>
+
+          <AuthLink
+            text="Remember your password?"
+            linkText="Sign In"
+            linkHref={ROUTES.SIGNIN}
+            variant="purple"
           />
+        </CardContent>
+      </Card>
 
-          <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-            <CardContent className="p-6 space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <PasswordFields
-                  password={formData.password}
-                  confirmPassword={formData.confirmPassword}
-                  onPasswordChange={(e) => handlePasswordChange(e, "password")}
-                  onConfirmPasswordChange={(e) =>
-                    handlePasswordChange(e, "confirmPassword")
-                  }
-                  passwordsMatch={passwordsMatch}
-                  required={true}
-                  passwordLabel="New Password"
-                  confirmPasswordLabel="Confirm New Password"
-                  passwordPlaceholder="Enter your new password"
-                  confirmPasswordPlaceholder="Confirm your new password"
-                />
-
-                {email && (
-                  <p className="text-sm text-gray-400">
-                    Resetting password for:{" "}
-                    <span className="text-purple-300">{email}</span>
-                  </p>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full h-11 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium transition-all duration-200"
-                  disabled={
-                    isLoading ||
-                    !passwordsMatch ||
-                    !isPasswordValid(formData.password)
-                  }
-                >
-                  {isLoading ? "Resetting Password..." : "Reset Password"}
-                </Button>
-              </form>
-
-              <AuthLink
-                text="Remember your password?"
-                linkText="Sign In"
-                linkHref={ROUTES.SIGNIN}
-                variant="purple"
-              />
-            </CardContent>
-          </Card>
-
-          <div className="mt-6 text-center text-xs text-gray-400">
-            <p>Your new password will be used for all future admin logins.</p>
-          </div>
-          <SecurityNotice message="Admin accounts have elevated privileges. Ensure you're on a secure network and never share your credentials." />
-        </div>
+      <div className="mt-6 text-center text-xs text-gray-400">
+        <p>Your new password will be used for all future admin logins.</p>
       </div>
-    </div>
+      <SecurityNotice />
+    </FormLayout>
   );
 }
