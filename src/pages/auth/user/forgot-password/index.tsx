@@ -110,7 +110,6 @@ export default function UserForgotPassword() {
         </CardContent>
       </Card>
 
-      {/* Additional Info */}
       <div className="mt-6 text-center text-xs text-gray-400">
         <p>We'll send you a verification code to reset your password.</p>
       </div>

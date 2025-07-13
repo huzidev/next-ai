@@ -121,4 +121,29 @@ body {
   .auth-input-password {
     @apply h-11 pr-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-400 focus:ring-blue-400;
   }
+
+  /* Password requirements component styles */
+  .password-requirements-container {
+    @apply transition-all duration-300 ease-in-out overflow-hidden;
+  }
+
+  .password-requirements-list {
+    @apply space-y-1 mt-2;
+  }
+
+  .password-requirement-item {
+    @apply flex items-center text-xs transition-colors duration-200;
+  }
+
+  .password-requirement-valid {
+    @apply text-green-400;
+  }
+
+  .password-requirement-invalid {
+    @apply text-gray-400;
+  }
+
+  .password-requirement-icon {
+    @apply h-3 w-3 mr-1 transition-transform duration-200;
+  }
 }
