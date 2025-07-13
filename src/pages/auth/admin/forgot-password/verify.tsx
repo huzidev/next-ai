@@ -1,5 +1,4 @@
 import VerificationForm from "@/components/auth/VerificationForm";
-import Header from "@/components/layout/Header";
 import { api } from "@/lib/api";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -38,18 +37,15 @@ export default function AdminVerifyOTP() {
   };
 
   return (
-    <div>
-      <Header />
-      <VerificationForm
-        title="Verify Admin Code"
-        subtitle="Enter the 6-digit code sent to your email"
-        email={email}
-        onVerify={handleVerify}
-        onResend={handleResend}
-        successRedirectPath="/auth/admin/forgot-password/reset"
-        backLinkText="Sign In"
-        backLinkHref="/auth/admin/signin"
-      />
-    </div>
+    <VerificationForm
+      title="Verify Admin Code"
+      subtitle="Enter the 6-digit code sent to your email"
+      email={email}
+      onVerify={handleVerify}
+      onResend={handleResend}
+      successRedirectPath="/auth/admin/forgot-password/reset"
+      backLinkText="Sign In"
+      backLinkHref="/auth/admin/signin"
+    />
   );
 }
