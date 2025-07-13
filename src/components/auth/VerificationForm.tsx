@@ -29,14 +29,12 @@ interface VerificationFormProps {
 
 export default function VerificationForm({
   title,
-  subtitle,
   email,
   onVerify,
   onResend,
   successRedirectPath,
   backLinkText,
   backLinkHref,
-  variant = "default",
   type = "verification",
 }: VerificationFormProps) {
   const [otp, setOtp] = useState("");
@@ -138,11 +136,6 @@ export default function VerificationForm({
     }
   };
 
-  const buttonClass =
-    variant === "purple"
-      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-      : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600";
-
   return (
     <FormLayout>
       <AuthHeader
@@ -150,13 +143,7 @@ export default function VerificationForm({
         subtitle={
           <>
             Enter the 6-digit code sent to{" "}
-            <span
-              className={
-                variant === "purple"
-                  ? "text-purple-300 font-medium"
-                  : "text-blue-300 font-medium"
-              }
-            >
+            <span className="text-blue-300 font-medium">
               {email}
             </span>
           </>
@@ -177,7 +164,7 @@ export default function VerificationForm({
 
             <Button
               type="submit"
-              className={`w-full h-11 ${buttonClass} text-white font-medium transition-all duration-200`}
+              className={`w-full h-11 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium transition-all duration-200`}
               disabled={isLoading || otp.length !== 6}
             >
               {isLoading ? "Verifying..." : "Verify Code"}
