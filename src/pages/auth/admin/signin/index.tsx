@@ -3,10 +3,8 @@ import AuthHeader from "@/components/auth/AuthHeader";
 import FormLayout from "@/components/auth/FormLayout";
 import SecurityNotice from "@/components/auth/SecurityNotice";
 import SigninForm from "@/components/auth/SigninForm";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { Crown } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -80,16 +78,6 @@ export default function AdminSignin() {
         title="Admin Sign In"
         subtitle="Access the administrative dashboard"
       />
-
-      <div className="flex items-center justify-center mb-6">
-        <Badge
-          variant="secondary"
-          className="bg-purple-900/50 text-purple-300 border-purple-400"
-        >
-          <Crown className="h-3 w-3 mr-1" />
-          Admin Portal
-        </Badge>
-      </div>
 
       <SigninForm
         formData={formData}
