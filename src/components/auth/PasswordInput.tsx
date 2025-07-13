@@ -54,7 +54,7 @@ export default function PasswordInput({
           type="button"
           variant="ghost"
           size="sm"
-          className="password-toggle-button"
+          className="absolute right-0 top-0 h-full px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-transparent"
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? (
@@ -67,9 +67,7 @@ export default function PasswordInput({
 
       <div
         className={`password-mismatch-container ${
-          showMismatchError
-            ? "max-h-6 opacity-100 mt-1"
-            : "max-h-0 opacity-0"
+          showMismatchError ? "max-h-6 opacity-100 mt-1" : "max-h-0 opacity-0"
         }`}
       >
         <div className="password-mismatch-message">
