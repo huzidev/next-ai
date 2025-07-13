@@ -1,8 +1,6 @@
 import VerificationForm from "@/components/auth/VerificationForm";
 import Header from "@/components/layout/Header";
-import { Badge } from "@/components/ui/badge";
 import { api } from "@/lib/api";
-import { Crown } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -38,13 +36,6 @@ export default function AdminVerifyOTP() {
       error: response.error
     };
   };
-
-  const adminBadge = (
-    <Badge variant="secondary" className="bg-purple-900/50 text-purple-300 border-purple-400">
-      <Crown className="h-3 w-3 mr-1" />
-      Admin Portal
-    </Badge>
-  );
 
   return (
     <div>

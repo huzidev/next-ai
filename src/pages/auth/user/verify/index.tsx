@@ -48,6 +48,8 @@ export default function UserVerify() {
       successRedirectPath="/auth/user/signin"
       backLinkText="Back to Sign In"
       backLinkHref="/auth/user/signin"
+      variant="default"
+      type="verification"
     />
   );
 }

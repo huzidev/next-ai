@@ -5,19 +5,26 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import AuthHeader from "./AuthHeader";
 import AuthLink from "./AuthLink";
+import FormLayout from "./FormLayout";
 import OTPInput from "./OTPInput";
 
 interface VerificationFormProps {
   title: string;
   subtitle: string;
   email: string;
-  onVerify: (email: string, code: string) => Promise<{ success: boolean; error?: string }>;
-  onResend: (email: string) => Promise<{ success: boolean; code?: string; error?: string }>;
+  onVerify: (
+    email: string,
+    code: string
+  ) => Promise<{ success: boolean; error?: string }>;
+  onResend: (
+    email: string
+  ) => Promise<{ success: boolean; code?: string; error?: string }>;
   successRedirectPath: string;
   backLinkText: string;
   backLinkHref: string;
   variant?: "default" | "purple";
   badge?: React.ReactNode;
+  type?: "verification" | "password-reset";
 }
 
 export default function VerificationForm({
@@ -29,6 +36,8 @@ export default function VerificationForm({
   successRedirectPath,
   backLinkText,
   backLinkHref,
+  variant = "default",
+  type = "verification",
 }: VerificationFormProps) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +50,7 @@ export default function VerificationForm({
     let interval: NodeJS.Timeout;
     if (resendTimer > 0) {
       interval = setInterval(() => {
-        setResendTimer(prev => prev - 1);
+        setResendTimer((prev) => prev - 1);
       }, 1000);
     }
     return () => {
@@ -51,7 +60,7 @@ export default function VerificationForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!otp || otp.length !== 6) {
       toast({
         title: "Invalid Code",
@@ -72,11 +81,14 @@ export default function VerificationForm({
           description: "You can now proceed to the next step",
         });
         // Redirect to success page
-        router.push(`${successRedirectPath}?email=${encodeURIComponent(email)}`);
+        router.push(
+          `${successRedirectPath}?email=${encodeURIComponent(email)}`
+        );
       } else {
         toast({
           title: "Invalid Code",
-          description: response.error || "The verification code is incorrect or expired",
+          description:
+            response.error || "The verification code is incorrect or expired",
           variant: "destructive",
         });
       }
@@ -103,7 +115,9 @@ export default function VerificationForm({
       if (response.success) {
         toast({
           title: "New Code Sent",
-          description: response.code ? `Your new verification code is: ${response.code}` : "A new verification code has been sent to your email",
+          description: response.code
+            ? `Your new verification code is: ${response.code}`
+            : "A new verification code has been sent to your email",
         });
         setOtp(""); // Clear the input
       } else {
@@ -124,87 +138,91 @@ export default function VerificationForm({
     }
   };
 
-  const buttonClass = variant === "purple" 
-    ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-    : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600";
+  const buttonClass =
+    variant === "purple"
+      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+      : "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <AuthHeader 
-            title={title}
-            subtitle={
-              <>
-                Enter the 6-digit code sent to{" "}
-                <span className="text-purple-300 font-medium">
-                  {email}
-                </span>
-              </>
-            }
-          />
-          
-          <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-            <CardContent className="p-6 space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <OTPInput
-                    value={otp}
-                    onChange={setOtp}
-                    disabled={isLoading}
-                    className="justify-center"
-                  />
-                </div>
+    <FormLayout>
+      <AuthHeader
+        title={title}
+        subtitle={
+          <>
+            Enter the 6-digit code sent to{" "}
+            <span
+              className={
+                variant === "purple"
+                  ? "text-purple-300 font-medium"
+                  : "text-blue-300 font-medium"
+              }
+            >
+              {email}
+            </span>
+          </>
+        }
+      />
 
-                <Button
-                  type="submit"
-                  className={`w-full h-11 ${buttonClass} text-white font-medium transition-all duration-200`}
-                  disabled={isLoading || otp.length !== 6}
-                >
-                  {isLoading ? "Verifying..." : "Verify Code"}
-                </Button>
-              </form>
-
-              <div className="text-center">
-                <p className="text-sm text-gray-400 inline">
-                  Haven't received the code?{" "}
-                  <button
-                    type="button"
-                    onClick={handleResendCode}
-                    disabled={isResending || resendTimer > 0 || !email}
-                    className={`text-sm font-medium transition-colors ${
-                      resendTimer > 0 || isResending
-                        ? "text-gray-500 cursor-not-allowed"
-                        : "text-green-400"
-                    }`}
-                  >
-                    {isResending 
-                      ? "Sending..." 
-                      : resendTimer > 0 
-                        ? `Resend Code (${resendTimer}s)` 
-                        : "Resend Code"
-                    }
-                  </button>
-                </p>
-              </div>
-
-              <AuthLink 
-                text="Remember your password?"
-                linkText={backLinkText}
-                linkHref={backLinkHref}
-                variant="purple"
+      <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
+        <CardContent className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <OTPInput
+                value={otp}
+                onChange={setOtp}
+                disabled={isLoading}
+                className="justify-center"
               />
-            </CardContent>
-          </Card>
+            </div>
 
-          <div className="mt-6 text-center text-xs text-gray-400">
-            <p>The verification code will expire in 10 minutes.</p>
-            <p className="mt-2">
-              Make sure to check your spam folder if you don't see the email.
+            <Button
+              type="submit"
+              className={`w-full h-11 ${buttonClass} text-white font-medium transition-all duration-200`}
+              disabled={isLoading || otp.length !== 6}
+            >
+              {isLoading ? "Verifying..." : "Verify Code"}
+            </Button>
+          </form>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-400 inline">
+              Haven't received the code?{" "}
+              <button
+                type="button"
+                onClick={handleResendCode}
+                disabled={isResending || resendTimer > 0 || !email}
+                className={`text-sm font-medium transition-colors ${
+                  resendTimer > 0 || isResending
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "text-green-400"
+                }`}
+              >
+                {isResending
+                  ? "Sending..."
+                  : resendTimer > 0
+                  ? `Resend Code (${resendTimer}s)`
+                  : "Resend Code"}
+              </button>
             </p>
           </div>
-        </div>
+
+          {type === "password-reset" && (
+            <AuthLink
+              text="Remember your password?"
+              linkText={backLinkText}
+              linkHref={backLinkHref}
+              variant={variant === "purple" ? "purple" : "blue"}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="mt-6 text-center text-xs text-gray-400">
+        <p>The verification code will expire in 10 minutes.</p>
+        <p className="mt-2">
+          Make sure to check your spam folder if you don't see the email.
+        </p>
       </div>
-    </div>
+    </FormLayout>
   );
 }
