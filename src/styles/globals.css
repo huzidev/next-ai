@@ -128,7 +128,7 @@ body {
   }
 
   .password-requirements-list {
-    @apply space-y-1 mt-2;
+    @apply space-y-1 mt-1;
   }
 
   .password-requirement-item {
