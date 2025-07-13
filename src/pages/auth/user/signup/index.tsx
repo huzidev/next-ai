@@ -188,7 +188,6 @@ export default function UserSignup() {
         </CardContent>
       </Card>
 
-      {/* Additional Info */}
       <div className="mt-6 text-center text-xs text-gray-400">
         By creating an account, you agree to our{" "}
         <Link

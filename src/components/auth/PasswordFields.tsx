@@ -32,8 +32,7 @@ export default function PasswordFields({
 }: PasswordFieldsProps) {
   return (
     <div className={className}>
-      {/* Password Field */}
-      <div className="space-y-2">
+      <>
         <PasswordInput
           id="password"
           name="password"
@@ -44,16 +43,14 @@ export default function PasswordFields({
           required={required}
         />
         
-        {/* Show password requirements if enabled */}
         {showPasswordRequirements && (
           <PasswordRequirements
             password={password}
             show={!!password}
           />
         )}
-      </div>
+      </>
 
-      {/* Confirm Password Field */}
       <PasswordInput
         id="confirmPassword"
         name="confirmPassword"
