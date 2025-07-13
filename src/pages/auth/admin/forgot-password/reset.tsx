@@ -17,9 +17,9 @@ export default function AdminResetPassword() {
     password: "",
     confirmPassword: "",
   });
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [email, setEmail] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -43,8 +43,7 @@ export default function AdminResetPassword() {
     // Check if passwords match based on field type
     if (fieldType === "password") {
       setPasswordsMatch(
-        e.target.value === formData.confirmPassword ||
-          formData.confirmPassword === ""
+        e.target.value === formData.confirmPassword
       );
     } else {
       setPasswordsMatch(e.target.value === formData.password);
@@ -159,6 +158,7 @@ export default function AdminResetPassword() {
       <div className="mt-6 text-center text-xs text-gray-400">
         <p>Your new password will be used for all future admin logins.</p>
       </div>
+      
       <SecurityNotice />
     </FormLayout>
   );
