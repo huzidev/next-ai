@@ -19,7 +19,6 @@ export default function OTPInput({
   const [otp, setOtp] = useState<string[]>(new Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Update local state when value prop changes
   useEffect(() => {
     if (value.length <= length) {
       const newOtp = value.split("").concat(new Array(length - value.length).fill(""));
