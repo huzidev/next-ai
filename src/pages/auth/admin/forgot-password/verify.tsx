@@ -59,7 +59,6 @@ export default function AdminVerifyOTP() {
         backLinkText="Sign In"
         backLinkHref="/auth/admin/signin"
         variant="purple"
-        badge={adminBadge}
       />
     </div>
   );

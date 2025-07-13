@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import AuthHeader from "./AuthHeader";
 import AuthLink from "./AuthLink";
 import OTPInput from "./OTPInput";
+import SecurityNotice from "./SecurityNotice";
 
 interface VerificationFormProps {
   title: string;
@@ -30,7 +31,6 @@ export default function VerificationForm({
   backLinkText,
   backLinkHref,
   variant = "default",
-  badge
 }: VerificationFormProps) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -146,12 +146,6 @@ export default function VerificationForm({
             }
           />
           
-          {badge && (
-            <div className="flex items-center justify-center mb-6">
-              {badge}
-            </div>
-          )}
-
           <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardContent className="p-6 space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -175,7 +169,7 @@ export default function VerificationForm({
 
               <div className="text-center">
                 <p className="text-sm text-gray-400 inline">
-                  Didn't receive the code?{" "}
+                  Haven't received the code?{" "}
                   <button
                     type="button"
                     onClick={handleResendCode}
@@ -183,9 +177,7 @@ export default function VerificationForm({
                     className={`text-sm font-medium transition-colors ${
                       resendTimer > 0 || isResending
                         ? "text-gray-500 cursor-not-allowed"
-                        : variant === "purple" 
-                          ? "text-purple-400" 
-                          : "text-blue-400"
+                        : "text-green-400"
                     }`}
                   >
                     {isResending 
@@ -207,12 +199,14 @@ export default function VerificationForm({
             </CardContent>
           </Card>
 
-          {/* Additional Info */}
           <div className="mt-6 text-center text-xs text-gray-400">
-            <p>
-              The verification code will expire in 10 minutes.
+            <p>The verification code will expire in 10 minutes.</p>
+            <p className="mt-2">
+              Make sure to check your spam folder if you don't see the email.
             </p>
           </div>
+
+          <SecurityNotice message="Only valid admin email addresses will receive verification codes." />
         </div>
       </div>
     </div>
