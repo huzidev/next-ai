@@ -57,7 +57,7 @@ export default function PasswordFields({
         value={confirmPassword}
         onChange={onConfirmPasswordChange}
         showMismatchError={!passwordsMatch && !!confirmPassword}
-        className="mt-4"
+        className="mt-3"
       />
     </div>
   );
