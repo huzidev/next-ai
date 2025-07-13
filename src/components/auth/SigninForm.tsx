@@ -41,7 +41,6 @@ export default function SigninForm({
   };
 
   const config = isAdmin ? {
-    emailLabel: "Admin Email",
     emailPlaceholder: "Enter your admin email",
     forgotPasswordHref: "/auth/admin/forgot-password",
     buttonText: isLoading ? "Signing In..." : "Sign In to Dashboard",
@@ -50,7 +49,6 @@ export default function SigninForm({
     authLinkHref: "/contact",
     authLinkVariant: "purple" as const
   } : {
-    emailLabel: "Email",
     emailPlaceholder: "Enter your email",
     forgotPasswordHref: "/auth/user/forgot-password",
     buttonText: isLoading ? "Signing In..." : "Sign In",
@@ -67,7 +65,7 @@ export default function SigninForm({
           <div className="space-y-2">
             <Label htmlFor="email" className="text-sm font-medium flex items-center text-gray-200">
               <Mail className="h-4 w-4 mr-2" />
-              {config.emailLabel}
+              Email
             </Label>
             <Input
               id="email"
