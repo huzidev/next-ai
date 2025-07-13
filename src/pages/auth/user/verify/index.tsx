@@ -1,5 +1,4 @@
 import AuthHeader from "@/components/auth/AuthHeader";
-import AuthLink from "@/components/auth/AuthLink";
 import FormLayout from "@/components/auth/FormLayout";
 import OTPInput from "@/components/auth/OTPInput";
 import { Button } from "@/components/ui/button";
@@ -128,7 +127,7 @@ export default function UserVerify() {
 
       <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
 
-        <CardContent className="p-6 space-y-6">
+        <CardContent className="p-6 space-y-4">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <OTPInput
@@ -150,7 +149,7 @@ export default function UserVerify() {
 
           <div className="text-center">
             <p className="text-sm text-gray-400 inline">
-              Didn't receive the code?{" "}
+              Haven't received the code?{" "}
               <button
                 type="button"
                 onClick={handleResendCode}
@@ -170,13 +169,6 @@ export default function UserVerify() {
               </button>
             </p>
           </div>
-
-          <AuthLink 
-            text="Remember your password?"
-            linkText="Sign In"
-            linkHref="/auth/user/signin"
-            variant="blue"
-          />
         </CardContent>
       </Card>
 

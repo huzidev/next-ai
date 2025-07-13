@@ -51,6 +51,18 @@ export default function UserSignin() {
 
         router.push("/dashboard/user");
       } else {
+        // Check if the error is due to unverified account
+        if (response.error && response.error.includes("not verified")) {
+          router.push(`/auth/user/verify?email=${encodeURIComponent(formData.email)}`);
+
+          toast({
+            title: "Account Not Verified",
+            description: "Please verify your account to continue. Redirecting to verification page...",
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
           title: "Error",
           description:
