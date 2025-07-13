@@ -34,41 +34,31 @@ export default function UserSignup() {
     setFormData(newFormData);
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>, fieldType: 'password' | 'confirmPassword') => {
     const newFormData = {
       ...formData,
-      password: e.target.value,
+      [fieldType]: e.target.value,
     };
     setFormData(newFormData);
     
-    // Check if passwords match
-    setPasswordsMatch(
-      e.target.value === formData.confirmPassword ||
-      formData.confirmPassword === ""
-    );
-  };
-
-  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFormData = {
-      ...formData,
-      confirmPassword: e.target.value,
-    };
-    setFormData(newFormData);
-    
-    // Check if passwords match
-    setPasswordsMatch(e.target.value === formData.password);
+    if (fieldType === 'password') {
+      setPasswordsMatch(
+        e.target.value === formData.confirmPassword ||
+        formData.confirmPassword === ""
+      );
+    } else {
+      setPasswordsMatch(e.target.value === formData.password);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setPasswordsMatch(false);
       return;
     }
 
-    // Check if all password requirements are met
     if (!isPasswordValid(formData.password)) {
       toast({
         title: "Password Requirements",
@@ -165,8 +155,8 @@ export default function UserSignup() {
             <PasswordFields
               password={formData.password}
               confirmPassword={formData.confirmPassword}
-              onPasswordChange={handlePasswordChange}
-              onConfirmPasswordChange={handleConfirmPasswordChange}
+              onPasswordChange={(e) => handlePasswordChange(e, 'password')}
+              onConfirmPasswordChange={(e) => handlePasswordChange(e, 'confirmPassword')}
               passwordsMatch={passwordsMatch}
               required={true}
             />

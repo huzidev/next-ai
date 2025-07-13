@@ -31,29 +31,22 @@ export default function AdminResetPassword() {
     }
   }, [router.query]);
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>, fieldType: 'password' | 'confirmPassword') => {
     const newFormData = {
       ...formData,
-      password: e.target.value,
+      [fieldType]: e.target.value,
     };
     setFormData(newFormData);
     
-    // Check if passwords match
-    setPasswordsMatch(
-      e.target.value === formData.confirmPassword ||
-      formData.confirmPassword === ""
-    );
-  };
-
-  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFormData = {
-      ...formData,
-      confirmPassword: e.target.value,
-    };
-    setFormData(newFormData);
-    
-    // Check if passwords match
-    setPasswordsMatch(e.target.value === formData.password);
+    // Check if passwords match based on field type
+    if (fieldType === 'password') {
+      setPasswordsMatch(
+        e.target.value === formData.confirmPassword ||
+        formData.confirmPassword === ""
+      );
+    } else {
+      setPasswordsMatch(e.target.value === formData.password);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,8 +124,8 @@ export default function AdminResetPassword() {
                 <PasswordFields
                   password={formData.password}
                   confirmPassword={formData.confirmPassword}
-                  onPasswordChange={handlePasswordChange}
-                  onConfirmPasswordChange={handleConfirmPasswordChange}
+                  onPasswordChange={(e) => handlePasswordChange(e, 'password')}
+                  onConfirmPasswordChange={(e) => handlePasswordChange(e, 'confirmPassword')}
                   passwordsMatch={passwordsMatch}
                   required={true}
                   passwordLabel="New Password"
