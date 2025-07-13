@@ -50,8 +50,7 @@ export default function UserSignup() {
     
     if (fieldType === 'password') {
       setPasswordsMatch(
-        e.target.value === formData.confirmPassword ||
-        formData.confirmPassword === ""
+        e.target.value === formData.confirmPassword
       );
     } else {
       setPasswordsMatch(e.target.value === formData.password);
