@@ -155,7 +155,7 @@ export default function VerificationForm({
           <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardContent className="p-6 space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4">
+                <div>
                   <OTPInput
                     value={otp}
                     onChange={setOtp}

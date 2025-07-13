@@ -120,23 +120,23 @@ export default function OTPInput({
   return (
     <div className={`flex gap-3 justify-center ${className}`}>
       {otp.map((digit, index) => (
-        <Input
-          key={index}
-          ref={(el) => {
-            inputRefs.current[index] = el;
-          }}
-          type="text"
-          inputMode="numeric"
-          pattern="\d*"
-          maxLength={1}
-          value={digit}
-          onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
-          onPaste={handlePaste}
-          onFocus={() => handleFocus(index)}
-          disabled={disabled}
-          className="w-16 h-16 text-center text-xl font-bold bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400 transition-colors"
-        />
+      <Input
+        key={index}
+        ref={(el) => {
+        inputRefs.current[index] = el;
+        }}
+        type="text"
+        inputMode="numeric"
+        pattern="\d*"
+        maxLength={1}
+        value={digit}
+        onChange={(e) => handleChange(index, e.target.value)}
+        onKeyDown={(e) => handleKeyDown(index, e)}
+        onPaste={handlePaste}
+        onFocus={() => handleFocus(index)}
+        disabled={disabled}
+        className="!h-12 text-center !text-lg font-bold bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400 transition-colors"
+      />
       ))}
     </div>
   );
