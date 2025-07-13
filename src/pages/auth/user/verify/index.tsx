@@ -129,7 +129,7 @@ export default function UserVerify() {
 
         <CardContent className="p-6 space-y-4">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
+            <div>
               <OTPInput
                 value={otp}
                 onChange={setOtp}
