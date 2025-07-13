@@ -192,7 +192,7 @@ export default function VerificationForm({
                 text="Remember your password?"
                 linkText={backLinkText}
                 linkHref={backLinkHref}
-                variant={variant === "purple" ? "purple" : "blue"}
+                variant="purple"
               />
             </CardContent>
           </Card>
