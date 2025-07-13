@@ -3,15 +3,12 @@ import FormLayout from "@/components/auth/FormLayout";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { Mail, RotateCcw, Shield } from "lucide-react";
+import { Mail, RotateCcw } from "lucide-react";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 
@@ -73,7 +70,6 @@ export default function UserVerify() {
           description: "Your account has been successfully verified",
         });
 
-        // Redirect to signin or dashboard
         router.push("/auth/user/signin");
       } else {
         toast({
@@ -137,19 +133,7 @@ export default function UserVerify() {
         }
       />
 
-      {/* Verification Form */}
       <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
-        <CardHeader className="space-y-1 pb-4">
-          <CardTitle className="text-xl font-semibold flex items-center text-white">
-            <Shield className="h-5 w-5 mr-2 text-green-400" />
-            Email Verification
-          </CardTitle>
-          <CardDescription className="text-gray-300">
-            {email
-              ? `We've sent a verification code to ${email}`
-              : "We've sent a verification code to your email address"}
-          </CardDescription>
-        </CardHeader>
 
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
