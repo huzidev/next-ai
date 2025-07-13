@@ -1,6 +1,7 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
+import SecurityNotice from "@/components/auth/SecurityNotice";
 import Header from "@/components/layout/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import * as ROUTES from "@/routes/auth/admin/route";
-import { Crown, Mail, Shield } from "lucide-react";
+import { Crown, Mail } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -40,7 +41,7 @@ export default function AdminForgotPassword() {
       if (response.success) {
         toast({
           title: "Verification Code Sent",
-          description: `Your verification code is: ${response.code}`,
+          description: "A verification code has been sent to your email address",
         });
         // Redirect to OTP verification page
         router.push(`/auth/admin/forgot-password/verify?email=${encodeURIComponent(email)}`);
@@ -126,15 +127,9 @@ export default function AdminForgotPassword() {
           ]}
         />
 
-        <div className="mt-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-          <div className="flex items-start space-x-3">
-            <Shield className="h-5 w-5 text-amber-400 mt-0.5" />
-            <div className="text-sm text-gray-300">
-              <p className="font-medium text-amber-400 mb-1">Security Notice</p>
-              <p>Only valid admin email addresses will receive verification codes.</p>
-            </div>
-          </div>
-        </div>
+        <SecurityNotice
+          message="Only valid admin email addresses will receive verification codes."
+        />
         </div>
       </div>
     </div>

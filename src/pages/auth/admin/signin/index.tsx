@@ -1,11 +1,12 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import FormLayout from "@/components/auth/FormLayout";
+import SecurityNotice from "@/components/auth/SecurityNotice";
 import SigninForm from "@/components/auth/SigninForm";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { Crown, Shield } from "lucide-react";
+import { Crown } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -108,18 +109,9 @@ export default function AdminSignin() {
         ]}
       />
 
-      <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-        <div className="flex items-start space-x-3">
-          <Shield className="h-5 w-5 text-amber-400 mt-0.5" />
-          <div className="text-sm text-gray-300">
-            <p className="font-medium text-amber-400 mb-1">Security Notice</p>
-            <p>
-              Admin accounts have elevated privileges. Ensure you're on a secure
-              network and never share your credentials.
-            </p>
-          </div>
-        </div>
-      </div>
+      <SecurityNotice
+        message="Admin accounts have elevated privileges. Ensure you're on a secure network and never share your credentials."
+      />
     </FormLayout>
   );
 }
