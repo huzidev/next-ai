@@ -45,21 +45,18 @@ export default function PasswordRequirements({
       }`}
     >
       <div className="password-requirements-list">
-        <RequirementItem 
-          isValid={requirements.length} 
-          text="At least 8 characters" 
+        <RequirementItem
+          isValid={requirements.length}
+          text="At least 8 characters"
         />
-        <RequirementItem 
-          isValid={requirements.uppercase} 
-          text="One uppercase letter" 
+        <RequirementItem
+          isValid={requirements.uppercase}
+          text="One uppercase letter"
         />
-        <RequirementItem 
-          isValid={requirements.number} 
-          text="One number" 
-        />
-        <RequirementItem 
-          isValid={requirements.special} 
-          text="One special character" 
+        <RequirementItem isValid={requirements.number} text="One number" />
+        <RequirementItem
+          isValid={requirements.special}
+          text="One special character"
         />
       </div>
     </div>
