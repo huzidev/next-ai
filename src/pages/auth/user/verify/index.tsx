@@ -1,56 +1,45 @@
 import AuthHeader from "@/components/auth/AuthHeader";
+import AuthLink from "@/components/auth/AuthLink";
 import FormLayout from "@/components/auth/FormLayout";
+import OTPInput from "@/components/auth/OTPInput";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { Mail, RotateCcw } from "lucide-react";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function UserVerify() {
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const { toast } = useToast();
   const router = useRouter();
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  // Get email from query params
   const email = router.query.email as string;
 
-  const handleChange = (index: number, value: string) => {
-    if (value.length > 1) return; // Only allow single character
-
-    const newCode = [...code];
-    newCode[index] = value;
-    setCode(newCode);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(prev => prev - 1);
+      }, 1000);
     }
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendTimer]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const verificationCode = code.join("");
-
-    if (verificationCode.length !== 6) {
+    
+    if (!otp || otp.length !== 6) {
       toast({
-        title: "Error",
-        description: "Please enter the complete 6-digit code",
+        title: "Invalid Code",
+        description: "Please enter a valid 6-digit verification code",
         variant: "destructive",
       });
       return;
@@ -61,7 +50,7 @@ export default function UserVerify() {
     try {
       const response = await api.post("/api/auth/user/verify", {
         email,
-        code: verificationCode,
+        code: otp,
       });
 
       if (response.success) {
@@ -91,7 +80,10 @@ export default function UserVerify() {
   };
 
   const handleResendCode = async () => {
+    if (!email || resendTimer > 0) return;
+
     setIsResending(true);
+    setResendTimer(10); // Start 10 second timer
 
     try {
       const response = await api.post("/api/auth/user/resend-verification", {
@@ -100,9 +92,10 @@ export default function UserVerify() {
 
       if (response.success) {
         toast({
-          title: "Code Sent",
+          title: "New Code Sent",
           description: "A new verification code has been sent to your email",
         });
+        setOtp(""); // Clear the input
       } else {
         toast({
           title: "Error",
@@ -135,62 +128,55 @@ export default function UserVerify() {
 
       <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
 
-        <CardContent className="space-y-6">
+        <CardContent className="p-6 space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-center">
-                <div className="flex space-x-2">
-                  {code.map((digit, index) => (
-                    <Input
-                      key={index}
-                      ref={(el) => {
-                        inputRefs.current[index] = el;
-                      }}
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="w-12 h-12 text-center text-lg font-semibold bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring-blue-400"
-                      placeholder="0"
-                    />
-                  ))}
-                </div>
-              </div>
+            <div className="space-y-4">
+              <OTPInput
+                value={otp}
+                onChange={setOtp}
+                disabled={isLoading}
+                className="justify-center"
+              />
             </div>
 
             <Button
               type="submit"
               className="w-full h-11 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium transition-all duration-200"
-              disabled={isLoading}
+              disabled={isLoading || otp.length !== 6}
             >
               {isLoading ? "Verifying..." : "Verify Account"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center space-y-3">
-            <p className="text-sm text-gray-300">Didn't receive the code?</p>
-            <Button
-              variant="outline"
-              onClick={handleResendCode}
-              disabled={isResending}
-              className="text-blue-400 hover:text-blue-300 border-gray-600 hover:bg-gray-700 bg-transparent"
-            >
-              {isResending ? (
-                <>
-                  <RotateCcw className="h-4 w-4 mr-2 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Mail className="h-4 w-4 mr-2" />
-                  Resend Code
-                </>
-              )}
-            </Button>
+          <div className="text-center">
+            <p className="text-sm text-gray-400 inline">
+              Didn't receive the code?{" "}
+              <button
+                type="button"
+                onClick={handleResendCode}
+                disabled={isResending || resendTimer > 0 || !email}
+                className={`text-sm font-medium transition-colors ${
+                  resendTimer > 0 || isResending
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "text-green-400"
+                }`}
+              >
+                {isResending 
+                  ? "Sending..." 
+                  : resendTimer > 0 
+                    ? `Resend Code (${resendTimer}s)` 
+                    : "Resend Code"
+                }
+              </button>
+            </p>
           </div>
+
+          <AuthLink 
+            text="Remember your password?"
+            linkText="Sign In"
+            linkHref="/auth/user/signin"
+            variant="blue"
+          />
         </CardContent>
       </Card>
 

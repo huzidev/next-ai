@@ -142,7 +142,6 @@ export default function ResetPassword() {
                   </Button>
                 </div>
                 
-                {/* Password Requirements */}
                 <PasswordRequirements password={formData.password} show={!!formData.password} />
               </div>
 
@@ -173,7 +172,6 @@ export default function ResetPassword() {
                   </Button>
                 </div>
                 
-                {/* Password Match Error */}
                 <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
                   !passwordsMatch && formData.confirmPassword ? 'max-h-6 opacity-100 mt-1' : 'max-h-0 opacity-0'
                 }`}>
