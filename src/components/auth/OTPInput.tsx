@@ -10,12 +10,12 @@ interface OTPInputProps {
 }
 
 export default function OTPInput({ 
-  length = 6, 
   value, 
   onChange, 
   disabled = false,
   className = ""
 }: OTPInputProps) {
+  const length: number = 6; // Default OTP length
   const [otp, setOtp] = useState<string[]>(new Array(length).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
