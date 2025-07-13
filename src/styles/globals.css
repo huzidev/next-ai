@@ -146,4 +146,29 @@ body {
   .password-requirement-icon {
     @apply h-3 w-3 mr-1 transition-transform duration-200;
   }
+
+  /* Password input component styles */
+  .password-input-container {
+    @apply relative;
+  }
+
+  .password-input-field {
+    @apply auth-input-password;
+  }
+
+  .password-toggle-button {
+    @apply absolute right-0 top-0 h-11 px-3 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-600 transition-colors;
+  }
+
+  .password-mismatch-container {
+    @apply transition-all duration-300 ease-in-out overflow-hidden;
+  }
+
+  .password-mismatch-message {
+    @apply flex items-center text-xs text-red-400;
+  }
+
+  .password-mismatch-icon {
+    @apply h-3 w-3 mr-1 transition-transform duration-200;
+  }
 }

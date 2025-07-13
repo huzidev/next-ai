@@ -1,17 +1,15 @@
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthLink from "@/components/auth/AuthLink";
-import PasswordRequirements from "@/components/auth/PasswordRequirements";
+import PasswordFields from "@/components/auth/PasswordFields";
 import Header from "@/components/layout/Header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import * as ROUTES from "@/routes/auth/admin/route";
 import { isPasswordValid } from "@/utils/passwordValidation";
-import { Crown, Eye, EyeOff, Lock, X } from "lucide-react";
+import { Crown } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -21,8 +19,6 @@ export default function AdminResetPassword() {
     confirmPassword: ""
   });
   const [email, setEmail] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const { toast } = useToast();
@@ -35,21 +31,29 @@ export default function AdminResetPassword() {
     }
   }, [router.query]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFormData = {
       ...formData,
-      [e.target.name]: e.target.value
+      password: e.target.value,
     };
     setFormData(newFormData);
+    
+    // Check if passwords match
+    setPasswordsMatch(
+      e.target.value === formData.confirmPassword ||
+      formData.confirmPassword === ""
+    );
+  };
 
-    // Check if passwords match when either password field changes
-    if (e.target.name === 'password' || e.target.name === 'confirmPassword') {
-      if (e.target.name === 'password') {
-        setPasswordsMatch(e.target.value === formData.confirmPassword || formData.confirmPassword === '');
-      } else {
-        setPasswordsMatch(e.target.value === formData.password);
-      }
-    }
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFormData = {
+      ...formData,
+      confirmPassword: e.target.value,
+    };
+    setFormData(newFormData);
+    
+    // Check if passwords match
+    setPasswordsMatch(e.target.value === formData.password);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,87 +128,18 @@ export default function AdminResetPassword() {
           <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
             <CardContent className="p-6 space-y-4">
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* New Password Field */}
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium flex items-center text-gray-200">
-                    <Lock className="h-4 w-4 mr-2" />
-                    New Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your new password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className="h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400 pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-11 px-3 text-gray-400 hover:text-white"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Password Requirements */}
-                <PasswordRequirements password={formData.password} show={true} />
-
-                {/* Confirm Password Field */}
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium flex items-center text-gray-200">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Confirm New Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your new password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                      className={`h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400 pr-10 transition-all duration-200 ${
-                        !passwordsMatch && formData.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                      }`}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-11 px-3 text-gray-400 hover:text-white"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  
-                  {/* Password Match Indicator */}
-                  {formData.confirmPassword && (
-                    <div className={`flex items-center space-x-2 text-sm transition-all duration-200 ${
-                      passwordsMatch ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {passwordsMatch ? (
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                          Passwords match
-                        </div>
-                      ) : (
-                        <div className="flex items-center">
-                          <X className="h-3 w-3 mr-2" />
-                          Passwords do not match
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <PasswordFields
+                  password={formData.password}
+                  confirmPassword={formData.confirmPassword}
+                  onPasswordChange={handlePasswordChange}
+                  onConfirmPasswordChange={handleConfirmPasswordChange}
+                  passwordsMatch={passwordsMatch}
+                  required={true}
+                  passwordLabel="New Password"
+                  confirmPasswordLabel="Confirm New Password"
+                  passwordPlaceholder="Enter your new password"
+                  confirmPasswordPlaceholder="Confirm your new password"
+                />
 
                 {email && (
                   <p className="text-sm text-gray-400">

@@ -1,0 +1,70 @@
+import PasswordInput from "./PasswordInput";
+import PasswordRequirements from "./PasswordRequirements";
+
+interface PasswordFieldsProps {
+  password: string;
+  confirmPassword: string;
+  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onConfirmPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  showPasswordRequirements?: boolean;
+  passwordsMatch?: boolean;
+  required?: boolean;
+  className?: string;
+  passwordLabel?: string;
+  confirmPasswordLabel?: string;
+  passwordPlaceholder?: string;
+  confirmPasswordPlaceholder?: string;
+}
+
+export default function PasswordFields({
+  password,
+  confirmPassword,
+  onPasswordChange,
+  onConfirmPasswordChange,
+  showPasswordRequirements = true,
+  passwordsMatch = true,
+  required = false,
+  className = "",
+  passwordLabel = "Password",
+  confirmPasswordLabel = "Confirm Password",
+  passwordPlaceholder = "Create a password",
+  confirmPasswordPlaceholder = "Confirm your password",
+}: PasswordFieldsProps) {
+  return (
+    <div className={className}>
+      {/* Password Field */}
+      <div className="space-y-2">
+        <PasswordInput
+          id="password"
+          name="password"
+          label={passwordLabel}
+          placeholder={passwordPlaceholder}
+          value={password}
+          onChange={onPasswordChange}
+          required={required}
+        />
+        
+        {/* Show password requirements if enabled */}
+        {showPasswordRequirements && (
+          <PasswordRequirements
+            password={password}
+            show={!!password}
+          />
+        )}
+      </div>
+
+      {/* Confirm Password Field */}
+      <PasswordInput
+        id="confirmPassword"
+        name="confirmPassword"
+        label={confirmPasswordLabel}
+        placeholder={confirmPasswordPlaceholder}
+        value={confirmPassword}
+        onChange={onConfirmPasswordChange}
+        required={required}
+        showMismatchError={!passwordsMatch && !!confirmPassword}
+        className="mt-4"
+      />
+    </div>
+  );
+}
