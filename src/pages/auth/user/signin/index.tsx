@@ -1,7 +1,7 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
+import FormLayout from "@/components/auth/FormLayout";
 import SigninForm from "@/components/auth/SigninForm";
-import Header from "@/components/layout/Header";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { useRouter } from "next/router";
@@ -71,34 +71,26 @@ export default function UserSignin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
-      <Header />
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <AuthHeader
-            title="Sign In"
-            subtitle="Access your AI-powered workspace"
-          />
+    <FormLayout>
+      <AuthHeader title="Sign In" subtitle="Access your AI-powered workspace" />
 
-          <SigninForm
-            formData={formData}
-            isLoading={isLoading}
-            showPassword={showPassword}
-            onFormDataChange={handleChange}
-            onSubmit={handleSubmit}
-            onTogglePassword={() => setShowPassword(!showPassword)}
-            variant="user"
-          />
+      <SigninForm
+        formData={formData}
+        isLoading={isLoading}
+        showPassword={showPassword}
+        onFormDataChange={handleChange}
+        onSubmit={handleSubmit}
+        onTogglePassword={() => setShowPassword(!showPassword)}
+        variant="user"
+      />
 
-          <AuthFooter
-            helpText="Need help?"
-            links={[
-              { href: "/support", text: "Contact Support" },
-              { href: "/auth/admin/signin", text: "Admin Login" },
-            ]}
-          />
-        </div>
-      </div>
-    </div>
+      <AuthFooter
+        helpText="Need help?"
+        links={[
+          { href: "/support", text: "Contact Support" },
+          { href: "/auth/admin/signin", text: "Admin Login" },
+        ]}
+      />
+    </FormLayout>
   );
 }
