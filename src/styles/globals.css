@@ -171,4 +171,8 @@ body {
   .password-mismatch-icon {
     @apply h-3 w-3 mr-1 transition-transform duration-200;
   }
+
+  .header-nav-button-transparent {
+    @apply text-slate-300 hover:bg-transparent hover:text-white;
+  }
 }

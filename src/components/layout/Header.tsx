@@ -26,12 +26,12 @@ export default function Header() {
         {showNav && (
           <nav className="flex items-center space-x-4">
             <Link href="/auth/user/signin">
-              <Button variant="ghost" className="text-slate-300 hover:text-white">
+              <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-transparent">
                 User Login
               </Button>
             </Link>
             <Link href="/auth/admin/signin">
-              <Button variant="ghost" className="text-slate-300 hover:text-white">
+              <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-transparent">
                 Admin Login
               </Button>
             </Link>
