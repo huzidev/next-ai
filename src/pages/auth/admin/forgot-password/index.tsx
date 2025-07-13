@@ -85,7 +85,7 @@ export default function AdminForgotPassword() {
                 className="text-sm font-medium flex items-center text-gray-200"
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Admin Email Address
+                Email
               </Label>
               <Input
                 id="email"
