@@ -187,14 +187,14 @@ export default function UserSignup() {
       <div className="mt-6 text-center text-xs text-gray-400">
         By creating an account, you agree to our{" "}
         <Link
-          href="#"
+          href="/legal/terms-of-service"
           className="text-blue-400 hover:text-blue-300 transition-colors"
         >
           Terms of Service
         </Link>{" "}
         and{" "}
         <Link
-          href="#"
+          href="/legal/privacy-policy"
           className="text-blue-400 hover:text-blue-300 transition-colors"
         >
           Privacy Policy
