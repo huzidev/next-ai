@@ -14,6 +14,7 @@ export default function Header() {
     "/auth/user/verify",
     "/auth/admin/signin",
     "/auth/admin/forgot-password",
+    "/auth/admin/forgot-password/verify",
   ];
 
   const showNav = !hideNavRoutes.includes(pathname);
