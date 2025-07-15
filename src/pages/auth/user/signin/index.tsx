@@ -13,7 +13,7 @@ type SigninFormData = {
 }
 
 export default function UserSignin() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SigninFormData>({
     email: "",
     password: "",
   });
