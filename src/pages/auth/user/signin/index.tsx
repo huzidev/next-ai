@@ -7,13 +7,13 @@ import { api } from "@/lib/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-type SigninFormData = {
+type FormData = {
   email: string;
   password: string;
 }
 
 export default function UserSignin() {
-  const [formData, setFormData] = useState<SigninFormData>({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
