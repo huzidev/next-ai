@@ -26,7 +26,7 @@ export default function UserVerify() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center">
         <div className="text-center text-white">
           <h1 className="text-2xl font-bold mb-4">Invalid Request</h1>
-          <p className="text-gray-400 mb-6">No email address provided for verification.</p>
+          <p className="text-gray-400 mb-6">No email address provided for verification of this account.</p>
           <button
             onClick={() => router.push("/auth/user/signup")}
             className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-2 rounded-md transition-all duration-200"
