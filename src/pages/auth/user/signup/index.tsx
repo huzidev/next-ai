@@ -112,7 +112,7 @@ export default function UserSignup() {
     <FormLayout>
       <AuthHeader
         title="Create Your Account"
-        subtitle="Join thousands of users exploring AI possibilities"
+        subtitle="Join thousands of users exploring"
       />
 
       <Card className="shadow-2xl border border-gray-700 bg-gray-800/90 backdrop-blur">
