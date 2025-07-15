@@ -31,7 +31,7 @@ export default function UserVerify() {
             onClick={() => router.push("/auth/user/signup")}
             className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-2 rounded-md transition-all duration-200"
           >
-            Sign Up
+            Go to Sign Up
           </button>
         </div>
       </div>
