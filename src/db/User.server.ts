@@ -162,6 +162,66 @@ export async function generateVerificationCode(userId: string): Promise<Verifica
   }
 }
 
+export async function generateVerificationCodeByEmail(email: string): Promise<VerificationCodeResponse> {
+  try {
+    // Check if user exists
+    const user = await getUserByEmail(email);
+    if (!user) {
+      return {
+        code: "",
+        message: "No account found with this email address",
+        status: 404,
+      };
+    }
+
+    // Check if user is already verified
+    if (user.isVerified) {
+      return {
+        code: "",
+        message: "Account is already verified",
+        status: 400,
+      };
+    }
+
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Set expiration time (10 minutes from now)
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+    // Delete any existing unused codes for this user
+    await prisma.verificationCode.deleteMany({
+      where: {
+        userId: user.id,
+        isUsed: false,
+      },
+    });
+
+    // Create new verification code
+    await prisma.verificationCode.create({
+      data: {
+        code,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    return {
+      code,
+      message: "Verification code generated successfully",
+      status: 200,
+    };
+  } catch (e: unknown) {
+    console.log("Error generating verification code:", (e as Error).stack);
+    return {
+      code: "",
+      message: "Failed to generate verification code",
+      status: 500,
+    };
+  }
+}
+
 export async function verifyUserCode(userId: string, code: string): Promise<{ success: boolean; message: string }> {
   try {
     // Find the verification code

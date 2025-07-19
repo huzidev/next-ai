@@ -51,7 +51,6 @@ export default function AdminSignin() {
             response.message || "You have been signed in successfully",
         });
 
-        // Redirect to admin dashboard
         router.push("/dashboard/admin");
       } else {
         toast({

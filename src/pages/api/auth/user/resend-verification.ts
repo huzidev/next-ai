@@ -1,3 +1,4 @@
+import { generateVerificationCodeByEmail } from "@/db/User.server";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,19 +22,22 @@ export default async function handler(
   }
 
   try {
-    // TODO: Implement actual resend verification logic
-    // 1. Check if user exists and is not verified
-    // 2. Generate new verification code
-    // 3. Send verification email
-    // 4. Update verification code in database
+    // Generate verification code
+    const result = await generateVerificationCodeByEmail(email);
 
-    console.log("Resend verification request for:", email);
+    if (result.status !== 200) {
+      return res.status(result.status).json({ 
+        success: false, 
+        error: result.message 
+      });
+    }
 
-    // Simulate success response
-    res.status(200).json({ 
+    return res.status(200).json({
       success: true,
-      message: "Verification code resent successfully"
+      message: `Verification code sent: ${result.code}`,
+      code: result.code
     });
+
   } catch (error) {
     console.error("Resend verification error:", error);
     res.status(500).json({ 

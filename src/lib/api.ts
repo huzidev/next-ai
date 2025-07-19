@@ -11,6 +11,8 @@ export interface ApiResponse<T = any> {
   message?: string;
   success: boolean;
   status: number;
+  needsVerification?: boolean;
+  email?: string;
 }
 
 // Default headers

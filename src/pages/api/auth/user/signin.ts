@@ -28,6 +28,16 @@ export default async function handler(
     const { user, message } = await authenticateUser(email, password);
 
     if (!user) {
+      // Check if the error is specifically about unverified email
+      if (message === "Please verify your email address before signing in") {
+        return res.status(403).json({ 
+          success: false, 
+          error: message,
+          needsVerification: true,
+          email: email
+        });
+      }
+      
       return res.status(400).json({ 
         success: false, 
         error: message 

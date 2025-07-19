@@ -47,6 +47,8 @@ export default function UserSignin() {
       // Call signin API using the reusable api utility
       const response = await api.post("/api/auth/user/signin", formData);
 
+      console.log("SW response on verifycation page", response);
+
       if (response.success) {
         toast({
           title: "Welcome",
@@ -57,8 +59,8 @@ export default function UserSignin() {
         router.push("/dashboard/user");
       } else {
         // Check if the error is due to unverified account
-        if (response.error && response.error.includes("not verified")) {
-          router.push(`/auth/user/verify?email=${encodeURIComponent(formData.email)}`);
+        if (response.needsVerification) {
+          router.push(`/auth/user/verify?email=${encodeURIComponent(response.email || formData.email)}`);
 
           toast({
             title: "Account Not Verified",
