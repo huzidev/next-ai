@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
+import Header from "@/components/layout/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ExternalLink, Github, Linkedin, Twitter } from "lucide-react";
+import { ExternalLink, Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -10,17 +10,18 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
+      <Header />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <Button
+          {/* <Button
             variant="ghost"
             onClick={() => router.back()}
             className="mb-6 text-gray-300 hover:text-white hover:bg-gray-700"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
-          </Button>
+          </Button> */}
           
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white">Privacy Policy</h1>
