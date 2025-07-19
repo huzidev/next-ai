@@ -64,7 +64,7 @@ export default function UserSignin() {
 
           toast({
             title: "Account Not Verified",
-            description: "Please verify your account to continue. Redirecting to verification page...",
+            description: "Please verify your account to continue.",
             variant: "destructive",
           });
           return;

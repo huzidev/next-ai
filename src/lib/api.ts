@@ -73,7 +73,9 @@ export async function apiRequest<T = any>(config: ApiRequestConfig): Promise<Api
         data: responseData,
         success: true,
         status: response.status,
-        message: responseData?.message || 'Success'
+        message: responseData?.message || 'Success',
+        needsVerification: responseData?.needsVerification,
+        email: responseData?.email
       };
     }
 
@@ -82,7 +84,9 @@ export async function apiRequest<T = any>(config: ApiRequestConfig): Promise<Api
       success: false,
       status: response.status,
       error: responseData?.error || responseData?.message || `HTTP ${response.status}: ${response.statusText}`,
-      message: responseData?.message || 'Request failed'
+      message: responseData?.message || 'Request failed',
+      needsVerification: responseData?.needsVerification,
+      email: responseData?.email
     };
 
   } catch (error) {
@@ -200,7 +204,9 @@ async function authenticatedRequest<T = any>(config: ApiRequestConfig, token?: s
         data: responseData,
         success: true,
         status: response.status,
-        message: responseData?.message || 'Success'
+        message: responseData?.message || 'Success',
+        needsVerification: responseData?.needsVerification,
+        email: responseData?.email
       };
     }
 
@@ -209,7 +215,9 @@ async function authenticatedRequest<T = any>(config: ApiRequestConfig, token?: s
       success: false,
       status: response.status,
       error: responseData?.error || responseData?.message || `HTTP ${response.status}: ${response.statusText}`,
-      message: responseData?.message || 'Request failed'
+      message: responseData?.message || 'Request failed',
+      needsVerification: responseData?.needsVerification,
+      email: responseData?.email
     };
 
   } catch (error) {
