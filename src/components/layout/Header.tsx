@@ -17,7 +17,7 @@ export default function Header() {
     "/auth/admin/forgot-password/verify",
     "/auth/admin/forgot-password/reset",
     "/legal/privacy-policy",
-    "/legal/privacy-policy",
+    "/legal/terms-of-service",
   ];
 
   const showNav = !hideNavRoutes.includes(pathname);
