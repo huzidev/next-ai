@@ -13,7 +13,6 @@ export interface LegalSection {
     }>;
   };
   type: 'text' | 'list' | 'developer-info' | 'contact' | 'highlight';
-  icon?: string;
   variant?: 'default' | 'warning' | 'info' | 'success';
 }
 

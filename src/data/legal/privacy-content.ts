@@ -6,7 +6,6 @@ export const privacyPolicyContent: LegalSection[] = [
     title: '1. Introduction',
     content: 'At Next-AI, we take your privacy seriously. This Privacy Policy explains how we collect, use, and protect your personal information when you use our AI-powered platform. By using Next-AI, you consent to the practices described in this policy.',
     type: 'text',
-    icon: 'eye'
   },
   {
     id: 'commitment',
@@ -47,7 +46,6 @@ export const privacyPolicyContent: LegalSection[] = [
       ]
     },
     type: 'list',
-    icon: 'database'
   },
   {
     id: 'how-we-use',
@@ -110,7 +108,6 @@ export const privacyPolicyContent: LegalSection[] = [
       'Monitoring: Continuous monitoring for suspicious activities'
     ],
     type: 'list',
-    icon: 'lock'
   },
   {
     id: 'data-sharing',
