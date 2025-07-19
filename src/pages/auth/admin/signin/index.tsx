@@ -44,8 +44,9 @@ export default function AdminSignin() {
       const response = await api.post("/api/auth/admin/signin", formData);
 
       if (response.success) {
+        const adminName = response.data?.username || response.data?.name || "Admin";
         toast({
-          title: "Welcome back, Admin!",
+          title: `Welcome back, ${adminName}!`,
           description:
             response.message || "You have been signed in successfully",
         });
