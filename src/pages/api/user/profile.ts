@@ -19,6 +19,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('Token received:', token.substring(0, 20) + '...');
     
+    // Handle mock token for development
+    if (token === 'mock-token-for-development') {
+      console.log('Using mock token, returning mock user');
+      
+      const mockUser = {
+        id: 'mock-user-id',
+        email: 'test@example.com',
+        username: 'testuser',
+        isVerified: true,
+        remainingTries: 95,
+        createdAt: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString(),
+        plan: {
+          id: '1',
+          name: 'free',
+          tries: 100,
+          price: 0
+        },
+        _count: {
+          chatSessions: 8
+        }
+      };
+
+      return res.status(200).json({
+        success: true,
+        user: mockUser,
+      });
+    }
+    
     const decoded = verifyToken(token) as any;
     console.log('Token decoded:', decoded);
     

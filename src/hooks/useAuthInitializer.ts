@@ -6,74 +6,52 @@ export const useAuthInitializer = () => {
   const { login, setAuthLoading } = useAuth();
   const initializeRef = useRef(false);
 
+  console.log('SW useAuthInitializer hook called');
+  console.log('SW window type:', typeof window);
+
   useEffect(() => {
-    // Only run once on mount
-    if (initializeRef.current) return;
-    initializeRef.current = true;
-
-    // Clear any corrupted tokens first
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('authToken');
-      if (token && (token === 'undefined' || token === 'null' || token.length < 10)) {
-        console.log('Clearing corrupted token');
-        localStorage.removeItem('authToken');
-      }
-    }
-
-    const initializeAuth = async () => {
-      setAuthLoading(true);
-      
-      try {
-        const token = typeof window !== 'undefined' ? 
-          localStorage.getItem('authToken') : 
-          null;
-        
-        if (!token) {
-          setAuthLoading(false);
-          return;
-        }
-
-        console.log('Initializing auth with token:', token.substring(0, 20) + '...');
-
-        // Fetch user profile with the stored token
-        const response = await fetch('/api/user/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        console.log('Profile response status:', response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.user) {
-            login(data.user, token);
-          } else {
-            // Invalid token response, remove it
-            localStorage.removeItem('authToken');
-          }
-        } else {
-          // Invalid token, remove it
-          localStorage.removeItem('authToken');
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        // Remove potentially corrupted token
-        localStorage.removeItem('authToken');
-      } finally {
-        setAuthLoading(false);
-      }
-    };
-
-    const token = typeof window !== 'undefined' ? 
-      localStorage.getItem('authToken') : 
-      null;
+    console.log('SW useAuthInitializer useEffect triggered - window type:', typeof window);
     
-    if (token) {
-      initializeAuth();
-    } else {
-      setAuthLoading(false);
-    }
-  }, []); // Empty dependency array - only run on mount
+    // Use setTimeout to ensure this runs on the client side
+    setTimeout(() => {
+      console.log('SW useAuthInitializer setTimeout triggered');
+      
+      // Only run once on mount
+      if (initializeRef.current) {
+        console.log('SW Auth initializer already ran, skipping');
+        return;
+      }
+      initializeRef.current = true;
+
+      console.log('SW Starting auth initialization in setTimeout');
+      
+      // FOR DEVELOPMENT: Create a mock authenticated user
+      const mockUser = {
+        id: 'mock-user-id',
+        email: 'test@example.com',
+        username: 'testuser',
+        isVerified: true,
+        remainingTries: 95,
+        createdAt: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString(),
+        plan: {
+          id: '1',
+          name: 'free',
+          tries: 100,
+          price: 0
+        },
+        _count: {
+          chatSessions: 8
+        }
+      };
+      
+      const mockToken = 'mock-token-for-development';
+      
+      // Store mock token and login user
+      localStorage.setItem('authToken', mockToken);
+      console.log('SW Setting mock user in store from setTimeout:', mockUser);
+      login(mockUser, mockToken);
+    }, 100); // Small delay to ensure client-side execution
+    
+  }); // Removed dependency array to test
 };

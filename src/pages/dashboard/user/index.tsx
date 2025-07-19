@@ -41,11 +41,13 @@ interface ChatSession {
 }
 
 export default function UserDashboard() {
-  const { user, isLoading: authLoading, logout, updateTries } = useAuth();
+  const { user, isLoading: authLoading, logout, updateTries, isAuthenticated } = useAuth();
   const router = useRouter();
   
   // Debug user data
   console.log("SW Dashboard user data:", user);
+  console.log("SW Dashboard isAuthenticated:", isAuthenticated);
+  console.log("SW Dashboard authLoading:", authLoading);
   
   const [sessions, setSessions] = useState<ChatSession[]>([
     {
@@ -344,13 +346,15 @@ export default function UserDashboard() {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-200">
-                  {user?.username || "Loading..."}
+                  {authLoading ? "Loading..." : (user?.username || "Unknown User")}
                 </p>
                 <p className="text-xs text-gray-400">
-                  {user ? (
+                  {authLoading ? (
+                    "Loading user data..."
+                  ) : user ? (
                     `${user.plan?.name ? user.plan.name.charAt(0).toUpperCase() + user.plan.name.slice(1) : 'Free'} Plan • ${user.remainingTries} remaining`
                   ) : (
-                    "Loading user data..."
+                    "User data unavailable"
                   )}
                 </p>
               </div>

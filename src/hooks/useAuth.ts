@@ -1,12 +1,12 @@
 import { AppDispatch, RootState } from '@/store';
 import {
-    clearUser,
-    setLoading,
-    setToken,
-    setUser,
-    updateUserProfile,
-    updateUserTries,
-    User
+  clearUser,
+  setLoading,
+  setToken,
+  setUser,
+  updateUserProfile,
+  updateUserTries,
+  User
 } from '@/store/slices/authSlice';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
