@@ -115,6 +115,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           active: activeAdmins,
           superAdmins: superAdmins,
           regularAdmins: regularAdmins,
+          current: admins[0] ? {
+            id: admins[0].id,
+            username: admins[0].username,
+            email: admins[0].email,
+            role: admins[0].role,
+            isActive: admins[0].isActive
+          } : undefined,
           list: admins
         },
         chat: {

@@ -27,6 +27,13 @@ interface DashboardStats {
     active: number;
     superAdmins: number;
     regularAdmins: number;
+    current?: {
+      id: string;
+      username: string;
+      email: string;
+      role: 'ADMIN' | 'SUPER_ADMIN';
+      isActive: boolean;
+    };
     list: Array<{
       id: string;
       username: string;
@@ -50,7 +57,7 @@ interface DashboardStats {
 
 export function useDashboardStats() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = async () => {
@@ -64,10 +71,6 @@ export function useDashboardStats() {
       console.log('API Response data:', response.data);
       
       if (response.success) {
-        // The API returns { success: true, data: {...} }
-        // But our api client puts this whole response in response.data
-        // So response.data = { success: true, data: {...} }
-        // We need response.data.data
         const actualData = response.data?.data || response.data;
         console.log('Actual data being set:', actualData);
         setStats(actualData);

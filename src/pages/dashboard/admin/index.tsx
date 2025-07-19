@@ -173,12 +173,16 @@ export default function AdminDashboard() {
               <div className="flex items-center space-x-3">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-purple-600 text-white text-sm">
-                    A
+                    {stats?.admins?.current?.username?.charAt(0).toUpperCase() || 'A'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium text-white">Admin</p>
-                  <p className="text-xs text-slate-400">System Admin</p>
+                  <p className="text-sm font-medium text-white">
+                    {stats?.admins?.current?.username || 'Admin'}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {stats?.admins?.current?.role?.replace('_', ' ') || 'System Admin'}
+                  </p>
                 </div>
               </div>
               <Button variant="ghost" size="sm" className="text-slate-400">
