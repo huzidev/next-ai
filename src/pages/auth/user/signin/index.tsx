@@ -21,15 +21,17 @@ export default function UserSignin() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
-  // Redirect to dashboard when authenticated
+  // Only redirect to dashboard when authenticated AND auth is not loading
   useEffect(() => {
-    if (isAuthenticated) {
+    console.log('SW Signin page - isAuthenticated:', isAuthenticated, 'authLoading:', authLoading);
+    if (isAuthenticated && !authLoading) {
+      console.log('SW Redirecting authenticated user to dashboard');
       router.replace("/dashboard/user");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

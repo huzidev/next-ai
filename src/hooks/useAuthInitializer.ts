@@ -25,7 +25,25 @@ export const useAuthInitializer = () => {
 
       console.log('SW Starting auth initialization in setTimeout');
       
-      // FOR DEVELOPMENT: Create a mock authenticated user
+      // Check for existing token in localStorage
+      const token = localStorage.getItem('authToken');
+      
+      // Clear any mock tokens from previous testing
+      if (token === 'mock-token-for-development') {
+        console.log('SW Clearing mock token from localStorage');
+        localStorage.removeItem('authToken');
+      } else if (token && token !== 'mock-token-for-development') {
+        console.log('SW Found existing token, attempting to restore session');
+        // TODO: Validate token with backend and restore user session
+        // For now, just log that a token was found
+        console.log('SW Token found but automatic session restore not implemented yet');
+      } else {
+        console.log('SW No valid token found, user needs to sign in');
+      }
+      
+      // FOR DEVELOPMENT ONLY - COMMENTED OUT TO FIX AUTO-REDIRECT ISSUE
+      // Uncomment the lines below ONLY when you want to test with a mock user
+      /*
       const mockUser = {
         id: 'mock-user-id',
         email: 'test@example.com',
@@ -46,11 +64,10 @@ export const useAuthInitializer = () => {
       };
       
       const mockToken = 'mock-token-for-development';
-      
-      // Store mock token and login user
       localStorage.setItem('authToken', mockToken);
       console.log('SW Setting mock user in store from setTimeout:', mockUser);
       login(mockUser, mockToken);
+      */
     }, 100); // Small delay to ensure client-side execution
     
   }); // Removed dependency array to test

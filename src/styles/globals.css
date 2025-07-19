@@ -175,4 +175,38 @@ body {
   .header-nav-button-transparent {
     @apply text-slate-300 hover:bg-transparent hover:text-white;
   }
+
+  /* Prevent browser autocomplete from changing input backgrounds */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: transparent !important;
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: #ffffff !important;
+  }
+
+  /* For dark themed inputs specifically */
+  .bg-gray-700:-webkit-autofill,
+  .bg-gray-700:-webkit-autofill:hover,
+  .bg-gray-700:-webkit-autofill:focus,
+  .bg-gray-700:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #374151 inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: #374151 !important;
+    caret-color: #ffffff !important;
+  }
+
+  /* For other gray backgrounds */
+  .bg-gray-800:-webkit-autofill,
+  .bg-gray-800:-webkit-autofill:hover,
+  .bg-gray-800:-webkit-autofill:focus,
+  .bg-gray-800:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #1f2937 inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background-color: #1f2937 !important;
+    caret-color: #ffffff !important;
+  }
 }
