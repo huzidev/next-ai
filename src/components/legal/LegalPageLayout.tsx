@@ -10,7 +10,6 @@ interface LegalPageLayoutProps {
   title: string;
   subtitle?: string;
   sections: LegalSection[];
-  icon?: React.ReactNode;
 }
 
 export const legalStyles = {
@@ -18,7 +17,7 @@ export const legalStyles = {
   contentWrapper: "container mx-auto px-4 py-8 max-w-4xl",
   header: "mb-8",
   headerCenter: "text-center",
-  title: "text-4xl font-bold text-white mb-4",
+  title: "text-4xl font-bold text-white",
   subtitle: "text-gray-400 text-lg",
   card: "bg-gray-800/90 backdrop-blur border-gray-700",
   cardContent: "p-8 space-y-8",
@@ -287,7 +286,7 @@ const renderContent = (section: LegalSection) => {
   }
 };
 
-export default function LegalPageLayout({ title, subtitle, sections, icon }: LegalPageLayoutProps) {
+export default function LegalPageLayout({ title, subtitle, sections }: LegalPageLayoutProps) {
   return (
     <div className={legalStyles.container}>
       <Header />
