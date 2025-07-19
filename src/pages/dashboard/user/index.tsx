@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
+import { NewChatModal } from "@/components/ui/new-chat-modal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -42,6 +43,10 @@ interface ChatSession {
 export default function UserDashboard() {
   const { user, isLoading: authLoading, logout, updateTries } = useAuth();
   const router = useRouter();
+  
+  // Debug user data
+  console.log("SW Dashboard user data:", user);
+  
   const [sessions, setSessions] = useState<ChatSession[]>([
     {
       id: "1",
@@ -56,6 +61,8 @@ export default function UserDashboard() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
+  const [newChatModalOpen, setNewChatModalOpen] = useState<boolean>(false);
+  const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -71,14 +78,61 @@ export default function UserDashboard() {
   }, [activeSession?.messages]);
 
   const createNewSession = () => {
-    const newSession: ChatSession = {
-      id: Date.now().toString(),
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date()
-    };
-    setSessions([newSession, ...sessions]);
-    setActiveSessionId(newSession.id);
+    setNewChatModalOpen(true);
+  };
+
+  const handleCreateChat = async (title: string) => {
+    setIsCreatingChat(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/chat/sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const newSession: ChatSession = {
+          id: data.session.id,
+          title: data.session.title,
+          messages: [],
+          createdAt: new Date(data.session.createdAt)
+        };
+        setSessions([newSession, ...sessions]);
+        setActiveSessionId(newSession.id);
+        
+        // Deduct try for free users
+        if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
+          updateTries(user.remainingTries - 1);
+        }
+
+        toast({
+          title: "Success",
+          description: "New chat session created successfully",
+        });
+      } else if (data.needsUpgrade) {
+        toast({
+          title: "Upgrade Required",
+          description: data.error,
+          variant: "destructive",
+        });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create new chat session",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingChat(false);
+    }
   };
 
   const deleteSession = (sessionId: string) => {
@@ -491,6 +545,13 @@ export default function UserDashboard() {
         onConfirm={confirmDeleteSession}
         onCancel={cancelDelete}
         variant="destructive"
+      />
+
+      <NewChatModal
+        isOpen={newChatModalOpen}
+        onClose={() => setNewChatModalOpen(false)}
+        onCreateChat={handleCreateChat}
+        isCreating={isCreatingChat}
       />
       </div>
     </RouteGuard>

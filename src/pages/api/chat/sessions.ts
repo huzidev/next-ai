@@ -2,24 +2,48 @@ import { verifyToken } from '@/lib/jwt';
 import prisma from '@/utils/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
-    }
+async function getAuthenticatedUser(req: NextApiRequest) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) {
+    return null;
+  }
 
+  try {
     const decoded = verifyToken(token) as any;
     if (!decoded || !decoded.userId) {
-      return res.status(401).json({ message: 'Invalid token' });
+      return null;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      include: {
+        plan: true,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    return null;
+  }
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const user = await getAuthenticatedUser(req);
+    
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        error: 'Unauthorized' 
+      });
     }
 
     if (req.method === 'GET') {
       // Get all chat sessions for the user
       const sessions = await prisma.chatSession.findMany({
         where: { 
-          userId: decoded.userId,
+          userId: user.id,
           isActive: true,
         },
         include: {
@@ -37,13 +61,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'POST') {
+      // Check if user has remaining tries for free plan
+      if (user.plan?.name === 'free' && user.remainingTries <= 0) {
+        return res.status(403).json({
+          success: false,
+          error: 'No remaining tries. Please upgrade your plan.',
+          needsUpgrade: true,
+        });
+      }
+
       // Create a new chat session
       const { title = 'New Chat' } = req.body;
 
       const newSession = await prisma.chatSession.create({
         data: {
           title,
-          userId: decoded.userId,
+          userId: user.id,
         },
         include: {
           messages: true
@@ -61,19 +94,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { sessionId } = req.body;
 
       if (!sessionId) {
-        return res.status(400).json({ message: 'Session ID is required' });
+        return res.status(400).json({ 
+          success: false,
+          error: 'Session ID is required' 
+        });
       }
 
       // Verify the session belongs to the user
       const session = await prisma.chatSession.findFirst({
         where: {
           id: sessionId,
-          userId: decoded.userId,
+          userId: user.id,
         },
       });
 
       if (!session) {
-        return res.status(404).json({ message: 'Session not found' });
+        return res.status(404).json({ 
+          success: false,
+          error: 'Session not found' 
+        });
       }
 
       // Soft delete - set isActive to false
@@ -88,9 +127,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false,
+      error: 'Method not allowed' 
+    });
   } catch (error) {
     console.error('Chat sessions API error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error' 
+    });
   }
 }
