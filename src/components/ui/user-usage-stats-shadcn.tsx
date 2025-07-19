@@ -28,7 +28,7 @@ interface UserUsageStatsShadcnProps {
 const chartConfig = {
   messages: {
     label: "Messages",
-    color: "#3B82F6", // Blue color to match Recharts version
+    color: "#3B82F6",
   },
 } satisfies ChartConfig;
 
