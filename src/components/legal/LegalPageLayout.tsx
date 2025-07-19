@@ -295,11 +295,6 @@ export default function LegalPageLayout({ title, subtitle, sections, icon }: Leg
         {/* Header */}
         <div className={legalStyles.header}>
           <div className={legalStyles.headerCenter}>
-            {icon && (
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-4">
-                {icon}
-              </div>
-            )}
             <h1 className={legalStyles.title}>{title}</h1>
             <p className={legalStyles.subtitle}>
               {subtitle || `Last updated: ${new Date().toLocaleDateString()}`}
