@@ -15,14 +15,13 @@ interface VerificationFormProps {
   onVerify: (
     email: string,
     code: string
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{ success: boolean; error?: string; message: string }>;
   onResend: (
     email: string
-  ) => Promise<{ success: boolean; code?: string; error?: string }>;
+  ) => Promise<{ success: boolean; code?: string; error?: string; message: string }>;
   successRedirectPath: string;
   backLinkText: string;
   backLinkHref: string;
-  variant?: "default" | "purple";
   badge?: React.ReactNode;
   type?: "verification" | "password-reset";
 }
@@ -77,7 +76,7 @@ export default function VerificationForm({
       if (response.success) {
         toast({
           title: "Code Verified",
-          description: response?.,
+          description: response.message,
         });
         // Redirect to success page
         router.push(
@@ -199,7 +198,7 @@ export default function VerificationForm({
               text="Remember your password?"
               linkText={backLinkText}
               linkHref={backLinkHref}
-              variant={variant === "purple" ? "purple" : "blue"}
+              variant="blue"
             />
           )}
         </CardContent>
