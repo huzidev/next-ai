@@ -29,6 +29,7 @@ interface VerificationFormProps {
 
 export default function VerificationForm({
   title,
+  subtitle,
   email,
   onVerify,
   onResend,
@@ -142,7 +143,7 @@ export default function VerificationForm({
         title={title}
         subtitle={
           <>
-            Enter the 6-digit code sent to{" "}
+            {subtitle}{" "}
             <span className="text-blue-300 font-medium">
               {email}
             </span>

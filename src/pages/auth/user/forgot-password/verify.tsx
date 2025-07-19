@@ -1,5 +1,4 @@
 import VerificationForm from "@/components/auth/VerificationForm";
-import Header from "@/components/layout/Header";
 import { api } from "@/lib/api";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -39,10 +38,9 @@ export default function UserVerifyOTP() {
 
   return (
     <div>
-      <Header />
       <VerificationForm
         title="Verify Your Code"
-        subtitle="Enter the 6-digit code sent to your email"
+        subtitle="Enter the 6-digit code sent to"
         email={email}
         onVerify={handleVerify}
         onResend={handleResend}
