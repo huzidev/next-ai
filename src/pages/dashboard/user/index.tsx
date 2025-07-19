@@ -6,6 +6,7 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { NewChatModal } from "@/components/ui/new-chat-modal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -225,23 +226,39 @@ export default function UserDashboard() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual API call to Google Generative AI
-      // const response = await fetch('/api/chat', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ 
-      //     message: userMessage.content,
-      //     sessionId: activeSessionId,
-      //     image: selectedImage 
-      //   })
-      // });
+      // Call the Gemini API to generate AI response
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/chat/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          sessionId: activeSessionId,
+          // Optionally include recent conversation history
+          conversationHistory: activeSession?.messages.slice(-5)
+        }),
+      });
 
-      // Simulate AI response
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const data = await response.json();
+
+      if (!data.success) {
+        if (data.needsUpgrade) {
+          toast({
+            title: "Upgrade Required",
+            description: data.error,
+            variant: "destructive",
+          });
+          return;
+        }
+        throw new Error(data.error);
+      }
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: `I understand you're asking about: "${userMessage.content}". This is a simulated response. In the actual implementation, this would be powered by Google Generative AI and would provide intelligent responses based on your input${selectedImage ? ' and the uploaded image' : ''}.`,
+        content: data.message,
         role: "assistant",
         timestamp: new Date()
       };
@@ -256,7 +273,7 @@ export default function UserDashboard() {
           : session
       ));
 
-      // Deduct credits for free users
+      // Update user's remaining tries in the UI
       if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
         updateTries(user.remainingTries - 1);
       }
@@ -557,6 +574,8 @@ export default function UserDashboard() {
         onCreateChat={handleCreateChat}
         isCreating={isCreatingChat}
       />
+      
+      <Toaster />
       </div>
     </RouteGuard>
   );
