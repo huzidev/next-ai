@@ -23,7 +23,7 @@ export default function TermsOfService() {
           </Button>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">Terms of Service</h1>
+            <h1 className="text-4xl font-bold text-white">Terms of Service</h1>
             <p className="text-gray-400 text-lg">Last updated: {new Date().toLocaleDateString()}</p>
           </div>
         </div>
