@@ -12,9 +12,10 @@ export default function TermsOfService() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div>
+        {/* Header */}
+        <div className="mb-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white">Terms of Service</h1>
+            <h1 className="text-4xl font-bold text-white">Privacy Policy</h1>
             <p className="text-gray-400 text-lg">Last updated: {new Date().toLocaleDateString()}</p>
           </div>
         </div>

@@ -14,15 +14,6 @@ export default function PrivacyPolicy() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          {/* <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-6 text-gray-300 hover:text-white hover:bg-gray-700"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button> */}
-          
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white">Privacy Policy</h1>
             <p className="text-gray-400 text-lg">Last updated: {new Date().toLocaleDateString()}</p>
