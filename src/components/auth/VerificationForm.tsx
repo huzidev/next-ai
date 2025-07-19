@@ -77,7 +77,7 @@ export default function VerificationForm({
       if (response.success) {
         toast({
           title: "Code Verified",
-          description: "Congratulations! Your email has been verified.",
+          description: response?.,
         });
         // Redirect to success page
         router.push(

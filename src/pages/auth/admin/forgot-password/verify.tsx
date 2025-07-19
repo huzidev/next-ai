@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function AdminVerifyOTP() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -22,6 +22,7 @@ export default function AdminVerifyOTP() {
     
     return {
       success: response.success,
+      message: response.message || "Code verified successfully",
       error: response.error
     };
   };

@@ -261,7 +261,6 @@ export async function verifyUserCode(userId: string, code: string): Promise<{ su
 
 export async function generatePasswordResetCode(email: string): Promise<VerificationCodeResponse> {
   try {
-    // Check if user exists
     const user = await getUserByEmail(email);
     if (!user) {
       return {
@@ -287,7 +286,7 @@ export async function generatePasswordResetCode(email: string): Promise<Verifica
     });
 
     // Create new verification code
-    await prisma.verificationCode.create({
+    const res =  await prisma.verificationCode.create({
       data: {
         code,
         userId: user.id,
@@ -295,6 +294,8 @@ export async function generatePasswordResetCode(email: string): Promise<Verifica
       },
     });
 
+    console.log("SW res on create code", res);
+    
     return {
       code,
       message: "Password reset code generated successfully",
