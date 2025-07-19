@@ -39,7 +39,7 @@ export default function AdminVerifyOTP() {
   return (
     <VerificationForm
       title="Verify Admin Code"
-      subtitle="Enter the 6-digit code sent to your email"
+      subtitle="Enter the 6-digit code sent to"
       email={email}
       onVerify={handleVerify}
       onResend={handleResend}

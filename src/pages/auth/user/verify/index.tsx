@@ -41,7 +41,7 @@ export default function UserVerify() {
   return (
     <VerificationForm
       title="Verify Your Email"
-      subtitle={`Enter the 6-digit code sent to ${email}`}
+      subtitle="Enter the 6-digit code sent to"
       email={email}
       onVerify={handleVerify}
       onResend={handleResend}
