@@ -11,16 +11,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
 import {
   Activity,
   Bell,
   Bot,
   Crown,
-  Filter,
   LogOut,
   MessageSquare,
   MoreHorizontal,
   Plus,
+  RefreshCw,
   Search,
   Settings,
   Shield,
@@ -31,94 +32,50 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  isVerified: boolean;
-  isBan: boolean;
-  planId: string;
-  remainingTries: number;
-  createdAt: Date;
-  lastActiveAt?: Date;
-}
-
-interface Admin {
-  id: string;
-  username: string;
-  email: string;
-  role: "ADMIN" | "SUPER_ADMIN";
-  isActive: boolean;
-  createdAt: Date;
-  createdBy?: string;
-}
-
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  const { stats, loading, error, refetch } = useDashboardStats();
 
-  // Mock data
-  const [users] = useState<User[]>([
-    {
-      id: "1",
-      username: "john_doe",
-      email: "john@example.com",
-      isVerified: true,
-      isBan: false,
-      planId: "free",
-      remainingTries: 45,
-      createdAt: new Date("2024-01-15"),
-      lastActiveAt: new Date("2024-01-20")
-    },
-    {
-      id: "2",
-      username: "jane_smith",
-      email: "jane@example.com",
-      isVerified: false,
-      isBan: false,
-      planId: "free",
-      remainingTries: 50,
-      createdAt: new Date("2024-01-18"),
-    },
-    {
-      id: "3",
-      username: "bob_banned",
-      email: "bob@example.com",
-      isVerified: true,
-      isBan: true,
-      planId: "free",
-      remainingTries: 0,
-      createdAt: new Date("2024-01-10"),
-      lastActiveAt: new Date("2024-01-16")
-    }
-  ]);
+  console.log("SW stats", stats);
 
-  const [admins] = useState<Admin[]>([
-    {
-      id: "1",
-      username: "super_admin",
-      email: "super@nextai.com",
-      role: "SUPER_ADMIN",
-      isActive: true,
-      createdAt: new Date("2024-01-01")
-    },
-    {
-      id: "2",
-      username: "admin_user",
-      email: "admin@nextai.com",
-      role: "ADMIN",
-      isActive: true,
-      createdAt: new Date("2024-01-05"),
-      createdBy: "1"
-    }
-  ]);
+  // Handle loading state
+  if (loading && !stats) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin text-purple-400 mx-auto mb-4" />
+          <p className="text-white">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <Button onClick={refetch} variant="outline" className="text-white">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) return null;
 
   const handleUserAction = (userId: string, action: "ban" | "unban" | "verify" | "unverify") => {
     toast({
       title: "Action Completed",
       description: `User has been ${action}ed successfully`,
     });
+    // Refresh data after action
+    setTimeout(() => refetch(), 1000);
   };
 
   const createAdmin = () => {
@@ -128,18 +85,10 @@ export default function AdminDashboard() {
     });
   };
 
-  const filteredUsers = users.filter(user => 
+  const filteredUsers = stats?.users?.recent?.filter(user => 
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const stats = {
-    totalUsers: users.length,
-    verifiedUsers: users.filter(u => u.isVerified).length,
-    bannedUsers: users.filter(u => u.isBan).length,
-    activeToday: users.filter(u => u.lastActiveAt && 
-      new Date(u.lastActiveAt).toDateString() === new Date().toDateString()).length
-  };
+  ) || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -148,91 +97,92 @@ export default function AdminDashboard() {
         <div className="w-80 bg-slate-800/50 border-r border-slate-700 flex flex-col backdrop-blur">
           {/* Header */}
           <div className="p-4 border-b border-slate-700">
-            <div className="flex items-center space-x-2 mb-4">
-              <Bot className="h-8 w-8 text-purple-400" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Next-AI
-              </span>
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold text-white">Admin Panel</h1>
+                <p className="text-sm text-slate-400">Next-AI Dashboard</p>
+              </div>
             </div>
-            
-            <Badge variant="secondary" className="bg-purple-900/50 text-purple-300 border-purple-400">
-              <Crown className="h-3 w-3 mr-1" />
-              Admin Dashboard
-            </Badge>
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 p-4 space-y-2">
-            <Button
-              variant={activeTab === "overview" ? "secondary" : "ghost"}
-              className="w-full justify-start text-white hover:bg-slate-700"
-              onClick={() => setActiveTab("overview")}
-            >
-              <Activity className="h-4 w-4 mr-2" />
-              Overview
-            </Button>
-            
-            <Button
-              variant={activeTab === "users" ? "secondary" : "ghost"}
-              className="w-full justify-start text-white hover:bg-slate-700"
-              onClick={() => setActiveTab("users")}
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Users
-            </Button>
-            
-            <Button
-              variant={activeTab === "admins" ? "secondary" : "ghost"}
-              className="w-full justify-start text-white hover:bg-slate-700"
-              onClick={() => setActiveTab("admins")}
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              Admins
-            </Button>
-            
-            <Button
-              variant={activeTab === "messages" ? "secondary" : "ghost"}
-              className="w-full justify-start text-white hover:bg-slate-700"
-              onClick={() => setActiveTab("messages")}
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Messages
-              <Badge variant="destructive" className="ml-auto">5</Badge>
-            </Button>
-            
-            <Button
-              variant={activeTab === "settings" ? "secondary" : "ghost"}
-              className="w-full justify-start text-white hover:bg-slate-700"
-              onClick={() => setActiveTab("settings")}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
+          <div className="flex-1 p-4">
+            <nav className="space-y-2">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === "overview"
+                    ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+                    : "text-slate-300 hover:bg-slate-700/50"
+                }`}
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span>Overview</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("users")}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === "users"
+                    ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+                    : "text-slate-300 hover:bg-slate-700/50"
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                <span>Users</span>
+                <Badge variant="secondary" className="ml-auto">
+                  {stats?.users?.total || 0}
+                </Badge>
+              </button>
+              <button
+                onClick={() => setActiveTab("admins")}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === "admins"
+                    ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+                    : "text-slate-300 hover:bg-slate-700/50"
+                }`}
+              >
+                <Shield className="h-4 w-4" />
+                <span>Admins</span>
+                <Badge variant="secondary" className="ml-auto">
+                  {stats?.admins?.total || 0}
+                </Badge>
+              </button>
+              <button
+                onClick={() => setActiveTab("chats")}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === "chats"
+                    ? "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+                    : "text-slate-300 hover:bg-slate-700/50"
+                }`}
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>AI Chats</span>
+                <Badge variant="secondary" className="ml-auto">
+                  {stats?.chat?.activeSessions || 0}
+                </Badge>
+              </button>
+            </nav>
           </div>
 
-          {/* Admin Profile */}
+          {/* Footer */}
           <div className="p-4 border-t border-slate-700">
-            <div className="flex items-center space-x-3">
-              <Avatar>
-                <AvatarFallback className="bg-purple-600">
-                  <Crown className="h-4 w-4 text-white" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white">Super Admin</p>
-                <p className="text-xs text-slate-400">admin@nextai.com</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-purple-600 text-white text-sm">
+                    A
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium text-white">Admin</p>
+                  <p className="text-xs text-slate-400">System Admin</p>
+                </div>
               </div>
-            </div>
-            
-            <div className="mt-3 space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start border-slate-600 text-slate-300">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-                <Badge variant="destructive" className="ml-auto">8</Badge>
-              </Button>
-              <Button variant="outline" size="sm" className="w-full justify-start border-slate-600 text-slate-300">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
+              <Button variant="ghost" size="sm" className="text-slate-400">
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -240,233 +190,246 @@ export default function AdminDashboard() {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <div className="p-6 border-b border-slate-700 bg-slate-800/30 backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-white capitalize">
-                  {activeTab === "overview" ? "Dashboard Overview" : activeTab}
-                </h1>
-                <p className="text-slate-400 mt-1">
-                  {activeTab === "overview" && "Monitor and manage your Next-AI platform"}
-                  {activeTab === "users" && "Manage user accounts and permissions"}
-                  {activeTab === "admins" && "Manage admin accounts and roles"}
-                  {activeTab === "messages" && "View and respond to user messages"}
-                  {activeTab === "settings" && "Configure platform settings"}
-                </p>
-              </div>
-              
-              {activeTab === "admins" && (
-                <Button 
-                  onClick={createAdmin}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Admin
-                </Button>
-              )}
+          {/* Top Bar */}
+          <div className="h-16 bg-slate-800/30 border-b border-slate-700 flex items-center justify-between px-6 backdrop-blur">
+            <div>
+              <h2 className="text-xl font-semibold text-white capitalize">{activeTab}</h2>
+              <p className="text-sm text-slate-400">Real-time dashboard statistics</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button onClick={refetch} variant="outline" size="sm" disabled={loading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button variant="ghost" size="sm" className="text-slate-300">
+                <Bell className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-slate-300">
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          {/* Content Area */}
+          <div className="flex-1 p-6 overflow-auto">
             {activeTab === "overview" && (
               <div className="space-y-6">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-slate-400">Total Users</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Total Users</CardTitle>
+                      <Users className="h-4 w-4 text-blue-400" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
-                      <div className="flex items-center text-sm text-green-400">
-                        <TrendingUp className="h-4 w-4 mr-1" />
-                        +12% from last month
-                      </div>
+                      <div className="text-2xl font-bold text-white">{stats?.users?.total || 0}</div>
+                      <p className="text-xs text-slate-400">
+                        {stats?.users?.verified || 0} verified, {stats?.users?.banned || 0} banned
+                      </p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-slate-400">Verified Users</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Verified Users</CardTitle>
+                      <UserCheck className="h-4 w-4 text-green-400" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-white">{stats.verifiedUsers}</div>
-                      <div className="text-sm text-slate-400">
-                        {Math.round((stats.verifiedUsers / stats.totalUsers) * 100)}% verification rate
-                      </div>
+                      <div className="text-2xl font-bold text-white">{stats?.users?.verified || 0}</div>
+                      <p className="text-xs text-slate-400">
+                        {stats?.users?.total ? Math.round(((stats?.users?.verified || 0) / stats.users.total) * 100) : 0}% verification rate
+                      </p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-slate-400">Active Today</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Active Today</CardTitle>
+                      <Activity className="h-4 w-4 text-purple-400" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-white">{stats.activeToday}</div>
-                      <div className="text-sm text-slate-400">Users active today</div>
+                      <div className="text-2xl font-bold text-white">{stats?.users?.activeToday || 0}</div>
+                      <p className="text-xs text-slate-400">Users active in last 24h</p>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-slate-400">Banned Users</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Total Admins</CardTitle>
+                      <Shield className="h-4 w-4 text-yellow-400" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-white">{stats.bannedUsers}</div>
-                      <div className="text-sm text-red-400">Requires attention</div>
+                      <div className="text-2xl font-bold text-white">{stats?.admins?.total || 0}</div>
+                      <p className="text-xs text-slate-400">
+                        {stats?.admins?.superAdmins || 0} super, {stats?.admins?.regularAdmins || 0} regular
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
 
-                {/* Recent Activity */}
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">Recent Activity</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                        <span className="text-slate-300">User john_doe verified their account</span>
-                        <span className="text-xs text-slate-500 ml-auto">2 hours ago</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                        <span className="text-slate-300">New admin created by super_admin</span>
-                        <span className="text-xs text-slate-500 ml-auto">4 hours ago</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                        <span className="text-slate-300">User bob_banned was banned</span>
-                        <span className="text-xs text-slate-500 ml-auto">1 day ago</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* AI Chat Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="bg-slate-800/50 border-slate-700">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Chat Sessions</CardTitle>
+                      <MessageSquare className="h-4 w-4 text-blue-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-white">{stats?.chat?.totalSessions || 0}</div>
+                      <p className="text-xs text-slate-400">{stats?.chat?.activeSessions || 0} active</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-slate-800/50 border-slate-700">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Total Messages</CardTitle>
+                      <Bot className="h-4 w-4 text-green-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-white">{stats?.chat?.totalMessages || 0}</div>
+                      <p className="text-xs text-slate-400">{stats?.chat?.todayMessages || 0} today</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-slate-800/50 border-slate-700">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-slate-200">Banned Users</CardTitle>
+                      <UserX className="h-4 w-4 text-red-400" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-white">{stats?.users?.banned || 0}</div>
+                      <p className="text-xs text-slate-400">Temporarily suspended</p>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             )}
 
             {activeTab === "users" && (
               <div className="space-y-6">
-                {/* Search and Filters */}
-                <div className="flex items-center space-x-4">
-                  <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                {/* Search and Actions */}
+                <div className="flex items-center justify-between">
+                  <div className="relative w-64">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                     <Input
                       placeholder="Search users..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
+                      className="pl-10 bg-slate-800/50 border-slate-700 text-white"
                     />
                   </div>
-                  <Button variant="outline" className="border-slate-600 text-slate-300">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filters
-                  </Button>
                 </div>
 
                 {/* Users Table */}
                 <Card className="bg-slate-800/50 border-slate-700">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-slate-700">
-                        <TableHead className="text-slate-300">User</TableHead>
-                        <TableHead className="text-slate-300">Status</TableHead>
-                        <TableHead className="text-slate-300">Plan</TableHead>
-                        <TableHead className="text-slate-300">Tries Left</TableHead>
-                        <TableHead className="text-slate-300">Joined</TableHead>
-                        <TableHead className="text-slate-300">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredUsers.map((user) => (
-                        <TableRow key={user.id} className="border-slate-700">
-                          <TableCell>
-                            <div>
-                              <div className="font-medium text-white">{user.username}</div>
-                              <div className="text-sm text-slate-400">{user.email}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Badge variant={user.isVerified ? "default" : "secondary"}>
-                                {user.isVerified ? "Verified" : "Unverified"}
-                              </Badge>
-                              {user.isBan && (
-                                <Badge variant="destructive">Banned</Badge>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="border-slate-600 text-slate-300">
-                              {user.planId}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-slate-300">{user.remainingTries}</TableCell>
-                          <TableCell className="text-slate-300">
-                            {user.createdAt.toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="text-slate-300">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent className="bg-slate-800 border-slate-700">
-                                {!user.isVerified && (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleUserAction(user.id, "verify")}
-                                    className="text-slate-300 hover:bg-slate-700"
-                                  >
-                                    <UserCheck className="h-4 w-4 mr-2" />
-                                    Verify User
-                                  </DropdownMenuItem>
-                                )}
-                                {user.isVerified && (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleUserAction(user.id, "unverify")}
-                                    className="text-slate-300 hover:bg-slate-700"
-                                  >
-                                    <UserX className="h-4 w-4 mr-2" />
-                                    Unverify User
-                                  </DropdownMenuItem>
-                                )}
-                                {!user.isBan ? (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleUserAction(user.id, "ban")}
-                                    className="text-red-400 hover:bg-slate-700"
-                                  >
-                                    <UserX className="h-4 w-4 mr-2" />
-                                    Ban User
-                                  </DropdownMenuItem>
-                                ) : (
-                                  <DropdownMenuItem 
-                                    onClick={() => handleUserAction(user.id, "unban")}
-                                    className="text-green-400 hover:bg-slate-700"
-                                  >
-                                    <UserCheck className="h-4 w-4 mr-2" />
-                                    Unban User
-                                  </DropdownMenuItem>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
+                  <CardHeader>
+                    <CardTitle className="text-white">Recent Users</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-slate-700">
+                          <TableHead className="text-slate-300">User</TableHead>
+                          <TableHead className="text-slate-300">Status</TableHead>
+                          <TableHead className="text-slate-300">Plan</TableHead>
+                          <TableHead className="text-slate-300">Tries</TableHead>
+                          <TableHead className="text-slate-300">Joined</TableHead>
+                          <TableHead className="text-slate-300">Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredUsers.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} className="text-center text-slate-400 py-8">
+                              {stats?.users?.recent?.length === 0 ? "No users found" : `No users match search "${searchTerm}"`}
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredUsers.map((user) => (
+                          <TableRow key={user.id} className="border-slate-700">
+                            <TableCell>
+                              <div className="flex items-center space-x-3">
+                                <Avatar>
+                                  <AvatarFallback className="bg-purple-600 text-white">
+                                    {user.username.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium text-white">{user.username}</div>
+                                  <div className="text-sm text-slate-400">{user.email}</div>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Badge variant={user.isVerified ? "default" : "secondary"}>
+                                  {user.isVerified ? "Verified" : "Unverified"}
+                                </Badge>
+                                {user.isBan && (
+                                  <Badge variant="destructive">Banned</Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-slate-300">
+                              {user.plan?.name || "Free"}
+                            </TableCell>
+                            <TableCell className="text-slate-300">
+                              {user.remainingTries}
+                            </TableCell>
+                            <TableCell className="text-slate-300">
+                              {new Date(user.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
+                                  <DropdownMenuItem
+                                    onClick={() => handleUserAction(user.id, user.isVerified ? "unverify" : "verify")}
+                                    className="text-slate-300"
+                                  >
+                                    {user.isVerified ? "Unverify" : "Verify"}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUserAction(user.id, user.isBan ? "unban" : "ban")}
+                                    className="text-slate-300"
+                                  >
+                                    {user.isBan ? "Unban" : "Ban"}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
                 </Card>
               </div>
             )}
 
             {activeTab === "admins" && (
               <div className="space-y-6">
+                {/* Admin Actions */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium text-white">Admin Management</h3>
+                    <p className="text-sm text-slate-400">Manage administrative access</p>
+                  </div>
+                  <Button onClick={createAdmin} className="bg-purple-600 hover:bg-purple-700">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Admin
+                  </Button>
+                </div>
+
+                {/* Admins Table */}
                 <Card className="bg-slate-800/50 border-slate-700">
                   <CardHeader>
-                    <CardTitle className="text-white">Admin Accounts</CardTitle>
+                    <CardTitle className="text-white">Administrators</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Table>
@@ -475,38 +438,62 @@ export default function AdminDashboard() {
                           <TableHead className="text-slate-300">Admin</TableHead>
                           <TableHead className="text-slate-300">Role</TableHead>
                           <TableHead className="text-slate-300">Status</TableHead>
-                          <TableHead className="text-slate-300">Created</TableHead>
                           <TableHead className="text-slate-300">Created By</TableHead>
+                          <TableHead className="text-slate-300">Created</TableHead>
+                          <TableHead className="text-slate-300">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {admins.map((admin) => (
+                        {(stats?.admins?.list || []).map((admin) => (
                           <TableRow key={admin.id} className="border-slate-700">
                             <TableCell>
-                              <div>
-                                <div className="font-medium text-white">{admin.username}</div>
-                                <div className="text-sm text-slate-400">{admin.email}</div>
+                              <div className="flex items-center space-x-3">
+                                <Avatar>
+                                  <AvatarFallback className="bg-purple-600 text-white">
+                                    {admin.username.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium text-white">{admin.username}</div>
+                                  <div className="text-sm text-slate-400">{admin.email}</div>
+                                </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge 
-                                variant={admin.role === "SUPER_ADMIN" ? "default" : "secondary"}
-                                className={admin.role === "SUPER_ADMIN" ? "bg-purple-600" : ""}
-                              >
+                              <Badge variant={admin.role === "SUPER_ADMIN" ? "default" : "secondary"}>
                                 {admin.role === "SUPER_ADMIN" && <Crown className="h-3 w-3 mr-1" />}
                                 {admin.role.replace("_", " ")}
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <Badge variant={admin.isActive ? "default" : "secondary"}>
+                              <Badge variant={admin.isActive ? "default" : "destructive"}>
                                 {admin.isActive ? "Active" : "Inactive"}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-slate-300">
-                              {admin.createdAt.toLocaleDateString()}
+                              {admin.creator?.username || "System"}
                             </TableCell>
                             <TableCell className="text-slate-300">
-                              {admin.createdBy ? "Super Admin" : "System"}
+                              {new Date(admin.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
+                                  <DropdownMenuItem className="text-slate-300">
+                                    Edit Admin
+                                  </DropdownMenuItem>
+                                  {admin.role !== "SUPER_ADMIN" && (
+                                    <DropdownMenuItem className="text-red-400">
+                                      Deactivate
+                                    </DropdownMenuItem>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -517,45 +504,36 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {activeTab === "messages" && (
+            {activeTab === "chats" && (
               <div className="space-y-6">
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">User Messages</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12">
-                      <MessageSquare className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-white mb-2">
-                        Real-time messaging
-                      </h3>
-                      <p className="text-slate-400">
-                        Socket.IO powered messaging system will be integrated here
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {activeTab === "settings" && (
-              <div className="space-y-6">
-                <Card className="bg-slate-800/50 border-slate-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">Platform Settings</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12">
-                      <Settings className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-white mb-2">
-                        Settings Panel
-                      </h3>
-                      <p className="text-slate-400">
-                        Platform configuration options will be available here
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="bg-slate-800/50 border-slate-700">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center">
+                        <MessageSquare className="h-5 w-5 mr-2 text-blue-400" />
+                        Chat Statistics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Total Sessions:</span>
+                        <span className="text-white font-medium">{stats?.chat?.totalSessions || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Active Sessions:</span>
+                        <span className="text-white font-medium">{stats?.chat?.activeSessions || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Total Messages:</span>
+                        <span className="text-white font-medium">{stats?.chat?.totalMessages || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Today's Messages:</span>
+                        <span className="text-white font-medium">{stats?.chat?.todayMessages || 0}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             )}
           </div>
