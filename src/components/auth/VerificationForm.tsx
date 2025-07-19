@@ -18,7 +18,7 @@ interface VerificationFormProps {
   ) => Promise<{ success: boolean; error?: string; message: string }>;
   onResend: (
     email: string
-  ) => Promise<{ success: boolean; code?: string; error?: string; message: string }>;
+  ) => Promise<{ success: boolean; code?: string; error?: string }>;
   successRedirectPath: string;
   backLinkText: string;
   backLinkHref: string;
