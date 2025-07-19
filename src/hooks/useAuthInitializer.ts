@@ -11,6 +11,15 @@ export const useAuthInitializer = () => {
     if (initializeRef.current) return;
     initializeRef.current = true;
 
+    // Clear any corrupted tokens first
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('authToken');
+      if (token && (token === 'undefined' || token === 'null' || token.length < 10)) {
+        console.log('Clearing corrupted token');
+        localStorage.removeItem('authToken');
+      }
+    }
+
     const initializeAuth = async () => {
       setAuthLoading(true);
       
@@ -24,6 +33,8 @@ export const useAuthInitializer = () => {
           return;
         }
 
+        console.log('Initializing auth with token:', token.substring(0, 20) + '...');
+
         // Fetch user profile with the stored token
         const response = await fetch('/api/user/profile', {
           headers: {
@@ -32,23 +43,25 @@ export const useAuthInitializer = () => {
           },
         });
 
+        console.log('Profile response status:', response.status);
+
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.user) {
             login(data.user, token);
           } else {
-            // Invalid token, remove it
+            // Invalid token response, remove it
             localStorage.removeItem('authToken');
-            setAuthLoading(false);
           }
         } else {
           // Invalid token, remove it
           localStorage.removeItem('authToken');
-          setAuthLoading(false);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
+        // Remove potentially corrupted token
         localStorage.removeItem('authToken');
+      } finally {
         setAuthLoading(false);
       }
     };

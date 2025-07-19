@@ -59,6 +59,7 @@ export default function UserSignin() {
       console.log("SW response on verifycation page", response);
 
       if (response.success) {
+        console.log('Signin success, token:', response.data.token?.substring(0, 20) + '...');
         // Update authentication state
         login(response.data.user, response.data.token);
         

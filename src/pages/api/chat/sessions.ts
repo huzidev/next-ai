@@ -11,12 +11,12 @@ async function getAuthenticatedUser(req: NextApiRequest) {
 
   try {
     const decoded = verifyToken(token) as any;
-    if (!decoded || !decoded.userId) {
+    if (!decoded || !decoded.id) {
       return null;
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: decoded.id },
       include: {
         plan: true,
       },

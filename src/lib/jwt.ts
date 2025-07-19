@@ -7,7 +7,9 @@ export function generateToken(userId: string) {
   const value = {
     id: userId,
   };
-  return jwt.sign(value, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign(value, JWT_SECRET, { expiresIn: "1h" });
+  console.log('Generated token for user:', userId, 'Token:', token.substring(0, 20) + '...');
+  return token;
 }
 
 // Verify JWT Token

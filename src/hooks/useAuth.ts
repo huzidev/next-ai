@@ -22,8 +22,8 @@ export const useAuth = () => {
 
   const logout = () => {
     dispatch(clearUser());
-    // Redirect to home page
-    router.push('/');
+    // Redirect to home page and replace history to prevent going back
+    router.replace('/');
   };
 
   const updateTries = (tries: number) => {

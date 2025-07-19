@@ -11,16 +11,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const token = req.headers.authorization?.replace('Bearer ', '');
     
     if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'No token provided' 
+      });
     }
 
+    console.log('Token received:', token.substring(0, 20) + '...');
+    
     const decoded = verifyToken(token) as any;
-    if (!decoded || !decoded.userId) {
-      return res.status(401).json({ message: 'Invalid token' });
+    console.log('Token decoded:', decoded);
+    
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid token' 
+      });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
+      where: { id: decoded.id },
       include: {
         plan: true,
         _count: {

@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -15,16 +15,19 @@ export function RouteGuard({
 }: RouteGuardProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !hasRedirected) {
       if (requireAuth && !isAuthenticated) {
+        setHasRedirected(true);
         router.replace(redirectTo);
       } else if (!requireAuth && isAuthenticated) {
+        setHasRedirected(true);
         router.replace('/dashboard/user');
       }
     }
-  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router]);
+  }, [isAuthenticated, isLoading, requireAuth, redirectTo, router, hasRedirected]);
 
   // Show loading while checking authentication
   if (isLoading) {
