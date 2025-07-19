@@ -27,6 +27,7 @@ export const useAuthInitializer = () => {
       
       // Check for existing token in localStorage
       const token = localStorage.getItem('authToken');
+      console.log('SW Token from localStorage:', token ? token.substring(0, 20) + '...' : 'No token found');
       
       // Clear any mock tokens from previous testing
       if (token === 'mock-token-for-development') {
@@ -34,11 +35,36 @@ export const useAuthInitializer = () => {
         localStorage.removeItem('authToken');
       } else if (token && token !== 'mock-token-for-development') {
         console.log('SW Found existing token, attempting to restore session');
-        // TODO: Validate token with backend and restore user session
-        // For now, just log that a token was found
-        console.log('SW Token found but automatic session restore not implemented yet');
+        // Validate token with backend and restore user session
+        setAuthLoading(true);
+        
+        fetch('/api/user/profile', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.user) {
+            console.log('SW Successfully restored user session:', data.user);
+            login(data.user, token);
+          } else {
+            console.log('SW Token validation failed, clearing invalid token');
+            localStorage.removeItem('authToken');
+          }
+        })
+        .catch(error => {
+          console.error('SW Error validating token:', error);
+          localStorage.removeItem('authToken');
+        })
+        .finally(() => {
+          setAuthLoading(false);
+        });
       } else {
         console.log('SW No valid token found, user needs to sign in');
+        setAuthLoading(false);
       }
       
       // FOR DEVELOPMENT ONLY - COMMENTED OUT TO FIX AUTO-REDIRECT ISSUE

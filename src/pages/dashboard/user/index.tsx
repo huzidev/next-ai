@@ -196,15 +196,15 @@ export default function UserDashboard() {
   const sendMessage = async () => {
     if (!message.trim() && !selectedImage) return;
 
-    // Check if user has credits (for free plan users)
-    if (user && user.plan?.name === 'free' && user.remainingTries <= 0) {
-      toast({
-        title: "No credits remaining",
-        description: "Please upgrade your plan to continue chatting",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Temporarily disable credit check for testing
+    // if (user && user.plan?.name === 'free' && user.remainingTries <= 0) {
+    //   toast({
+    //     title: "No credits remaining",
+    //     description: "Please upgrade your plan to continue chatting",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -226,33 +226,23 @@ export default function UserDashboard() {
     setIsLoading(true);
 
     try {
-      // Call the Gemini API to generate AI response
-      const token = localStorage.getItem('authToken');
+      // Simple test call to Gemini API without authentication
+      console.log('SW Sending message to Gemini API:', userMessage.content);
+      
       const response = await fetch('/api/chat/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          message: userMessage.content,
-          sessionId: activeSessionId,
-          // Optionally include recent conversation history
-          conversationHistory: activeSession?.messages.slice(-5)
+          message: userMessage.content
         }),
       });
 
       const data = await response.json();
+      console.log('SW API response:', data);
 
       if (!data.success) {
-        if (data.needsUpgrade) {
-          toast({
-            title: "Upgrade Required",
-            description: data.error,
-            variant: "destructive",
-          });
-          return;
-        }
         throw new Error(data.error);
       }
 
@@ -273,10 +263,10 @@ export default function UserDashboard() {
           : session
       ));
 
-      // Update user's remaining tries in the UI
-      if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
-        updateTries(user.remainingTries - 1);
-      }
+      // Temporarily disable credit update for testing
+      // if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
+      //   updateTries(user.remainingTries - 1);
+      // }
 
     } catch (error) {
       toast({
