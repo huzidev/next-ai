@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Database, ExternalLink, Eye, Github, Linkedin, Lock, Twitter } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -33,7 +33,6 @@ export default function PrivacyPolicy() {
             {/* Introduction */}
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4 flex items-center">
-                <Eye className="h-6 w-6 mr-3 text-blue-400" />
                 1. Introduction
               </h2>
               <p className="text-gray-300 leading-relaxed">
@@ -97,7 +96,6 @@ export default function PrivacyPolicy() {
             {/* Information We Collect */}
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4 flex items-center">
-                <Database className="h-6 w-6 mr-3 text-green-400" />
                 3. Information We Collect
               </h2>
               
@@ -185,7 +183,6 @@ export default function PrivacyPolicy() {
             {/* Data Protection */}
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4 flex items-center">
-                <Lock className="h-6 w-6 mr-3 text-yellow-400" />
                 5. How We Protect Your Data
               </h2>
               <div className="bg-gray-700/50 p-6 rounded-lg">
