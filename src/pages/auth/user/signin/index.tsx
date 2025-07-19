@@ -3,9 +3,10 @@ import AuthHeader from "@/components/auth/AuthHeader";
 import FormLayout from "@/components/auth/FormLayout";
 import SigninForm from "@/components/auth/SigninForm";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type FormData = {
   email: string;
@@ -20,7 +21,15 @@ export default function UserSignin() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
+  const { login, isAuthenticated } = useAuth();
   const router = useRouter();
+
+  // Redirect to dashboard when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/dashboard/user");
+    }
+  }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -50,13 +59,16 @@ export default function UserSignin() {
       console.log("SW response on verifycation page", response);
 
       if (response.success) {
+        // Update authentication state
+        login(response.data.user, response.data.token);
+        
         toast({
           title: "Welcome",
           description:
             response.message || "You have been signed in successfully",
         });
 
-        router.push("/dashboard/user");
+        // Don't redirect here - let the useEffect handle it
       } else {
         // Check if the error is due to unverified account
         if (response.needsVerification) {
