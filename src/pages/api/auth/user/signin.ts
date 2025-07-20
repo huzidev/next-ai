@@ -64,6 +64,8 @@ export default async function handler(
       },
     });
 
+    console.log("SW what is userWithPlan when signedIn", userWithPlan);
+
     return res.status(200).json({ 
       success: true,
       data: {
