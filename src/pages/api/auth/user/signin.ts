@@ -44,8 +44,11 @@ export default async function handler(
       });
     }
 
+    console.log("SW what is userId for signin", user.id);
+
     // Generate JWT token
     const token = generateToken(user.id);
+    console.log("SW what is token when signedIn", token);
     setCookie(token, res);
 
     // Get user with plan information

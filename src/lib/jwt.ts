@@ -8,7 +8,7 @@ export function generateToken(userId: string) {
     id: userId,
   };
   const token = jwt.sign(value, JWT_SECRET, { expiresIn: "1h" });
-  console.log('Generated token for user:', userId, 'Token:', token.substring(0, 20) + '...');
+  console.log('SW Generated token for user:', userId, 'Token:', token.substring(0, 20) + '...');
   return token;
 }
 
