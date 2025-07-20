@@ -1,4 +1,3 @@
-import { RouteGuard } from "@/components/auth/RouteGuard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -293,8 +292,7 @@ export default function UserDashboard() {
   };
 
   return (
-    <RouteGuard requireAuth={true}>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="flex h-screen">
         {/* Sidebar */}
         <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col">
@@ -572,7 +570,6 @@ export default function UserDashboard() {
       />
       
       <Toaster />
-      </div>
-    </RouteGuard>
+    </div>
   );
 }

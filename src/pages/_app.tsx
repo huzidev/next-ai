@@ -1,3 +1,4 @@
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Toaster } from "@/components/ui/toaster";
 import { useAuthInitializer } from '@/hooks/useAuthInitializer';
 import { store } from '@/store';
@@ -10,10 +11,10 @@ function AppContent({ Component, pageProps }: { Component: AppProps['Component']
   useAuthInitializer();
   
   return (
-    <>
+    <AuthGuard>
       <Component {...pageProps} />
       <Toaster />
-    </>
+    </AuthGuard>
   );
 }
 

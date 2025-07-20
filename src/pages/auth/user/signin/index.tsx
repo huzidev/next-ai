@@ -1,7 +1,6 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import FormLayout from "@/components/auth/FormLayout";
-import { RouteGuard } from "@/components/auth/RouteGuard";
 import SigninForm from "@/components/auth/SigninForm";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -102,28 +101,26 @@ export default function UserSignin() {
   };
 
   return (
-    <RouteGuard requireAuth={false}>
-      <FormLayout>
-        <AuthHeader title="Sign In" subtitle="Access your AI-powered workspace" />
+    <FormLayout>
+      <AuthHeader title="Sign In" subtitle="Access your AI-powered workspace" />
 
-        <SigninForm
-          formData={formData}
-          isLoading={isLoading}
-          showPassword={showPassword}
-          onFormDataChange={handleChange}
-          onSubmit={handleSubmit}
-          onTogglePassword={() => setShowPassword(!showPassword)}
-          variant="user"
-        />
+      <SigninForm
+        formData={formData}
+        isLoading={isLoading}
+        showPassword={showPassword}
+        onFormDataChange={handleChange}
+        onSubmit={handleSubmit}
+        onTogglePassword={() => setShowPassword(!showPassword)}
+        variant="user"
+      />
 
-        <AuthFooter
-          helpText="Need help?"
-          links={[
-            { href: "/support", text: "Contact Support" },
-            { href: "/auth/admin/signin", text: "Admin Login" },
-          ]}
-        />
-      </FormLayout>
-    </RouteGuard>
+      <AuthFooter
+        helpText="Need help?"
+        links={[
+          { href: "/support", text: "Contact Support" },
+          { href: "/auth/admin/signin", text: "Admin Login" },
+        ]}
+      />
+    </FormLayout>
   );
 }
