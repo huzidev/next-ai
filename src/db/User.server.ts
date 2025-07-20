@@ -367,7 +367,10 @@ export async function authenticateUser(email: string, password: string): Promise
 
     // Check if user is verified
     if (!user.isVerified) {
-      return { user: null, message: "Please verify your email address before signing in" };
+      return {
+        user: null,
+        message: "Please verify your email address before signing in",
+      };
     }
 
     // Check if user is banned
