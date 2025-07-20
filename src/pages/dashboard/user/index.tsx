@@ -38,6 +38,7 @@ interface ChatSession {
   title: string;
   messages: Message[];
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export default function UserDashboard() {
@@ -55,17 +56,11 @@ export default function UserDashboard() {
     console.log("SW Dashboard useEffect - localStorage token:", typeof window !== 'undefined' ? localStorage.getItem('authToken')?.substring(0, 20) + '...' : 'N/A');
   }, [user]);
   
-  const [sessions, setSessions] = useState<ChatSession[]>([
-    {
-      id: "1",
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date()
-    }
-  ]);
-  const [activeSessionId, setActiveSessionId] = useState<string>("1");
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingSessions, setIsLoadingSessions] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
@@ -76,6 +71,73 @@ export default function UserDashboard() {
   const { toast } = useToast();
 
   const activeSession = sessions.find(s => s.id === activeSessionId);
+
+  // Load chat sessions from database
+  const loadChatSessions = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.log('No auth token found');
+        setIsLoadingSessions(false);
+        return;
+      }
+
+      const response = await fetch('/api/chat/sessions', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const formattedSessions: ChatSession[] = data.sessions.map((session: any) => ({
+          id: session.id,
+          title: session.title,
+          createdAt: new Date(session.createdAt),
+          updatedAt: new Date(session.updatedAt),
+          messages: session.messages.map((msg: any) => ({
+            id: msg.id,
+            content: msg.content,
+            role: msg.role,
+            timestamp: new Date(msg.createdAt),
+            imageUrl: msg.imageUrl,
+          })),
+        }));
+
+        setSessions(formattedSessions);
+        
+        // Set active session to the most recent one or leave empty if none exist
+        if (formattedSessions.length > 0) {
+          setActiveSessionId(formattedSessions[0].id);
+        }
+      } else {
+        console.error('Failed to load sessions:', data.error);
+        toast({
+          title: "Error",
+          description: "Failed to load chat sessions",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error loading sessions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load chat sessions",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingSessions(false);
+    }
+  };
+
+  // Load sessions when component mounts and user is available
+  useEffect(() => {
+    if (user && !authLoading) {
+      loadChatSessions();
+    }
+  }, [user, authLoading]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -109,15 +171,12 @@ export default function UserDashboard() {
           id: data.session.id,
           title: data.session.title,
           messages: [],
-          createdAt: new Date(data.session.createdAt)
+          createdAt: new Date(data.session.createdAt),
+          updatedAt: new Date(data.session.updatedAt)
         };
-        setSessions([newSession, ...sessions]);
+        setSessions(prev => [newSession, ...prev]);
         setActiveSessionId(newSession.id);
-        
-        // Deduct try for free users
-        if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
-          updateTries(user.remainingTries - 1);
-        }
+        setNewChatModalOpen(false);
 
         toast({
           title: "Success",
@@ -158,29 +217,83 @@ export default function UserDashboard() {
     setDeleteModalOpen(true);
   };
 
-  const confirmDeleteSession = () => {
+  const confirmDeleteSession = async () => {
     if (!sessionToDelete) return;
 
-    const updatedSessions = sessions.filter(s => s.id !== sessionToDelete);
-    setSessions(updatedSessions);
-    
-    if (sessionToDelete === activeSessionId) {
-      setActiveSessionId(updatedSessions[0].id);
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/chat/sessions', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sessionId: sessionToDelete }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const updatedSessions = sessions.filter(s => s.id !== sessionToDelete);
+        setSessions(updatedSessions);
+        
+        if (sessionToDelete === activeSessionId) {
+          setActiveSessionId(updatedSessions.length > 0 ? updatedSessions[0].id : null);
+        }
+
+        toast({
+          title: "Chat deleted",
+          description: "The chat session has been deleted successfully",
+        });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete chat session",
+        variant: "destructive",
+      });
+    } finally {
+      // Close modal and reset state
+      setDeleteModalOpen(false);
+      setSessionToDelete(null);
     }
-
-    // Close modal and reset state
-    setDeleteModalOpen(false);
-    setSessionToDelete(null);
-
-    toast({
-      title: "Chat deleted",
-      description: "The chat session has been deleted successfully",
-    });
   };
 
   const cancelDelete = () => {
     setDeleteModalOpen(false);
     setSessionToDelete(null);
+  };
+
+  const saveMessageToDatabase = async (sessionId: string, content: string, role: 'user' | 'assistant', imageUrl?: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/chat/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sessionId,
+          content,
+          role,
+          imageUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      return data.message;
+    } catch (error) {
+      console.error('Error saving message:', error);
+      throw error;
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,16 +313,14 @@ export default function UserDashboard() {
 
   const sendMessage = async () => {
     if (!message.trim() && !selectedImage) return;
-
-    // Temporarily disable credit check for testing
-    // if (user && user.plan?.name === 'free' && user.remainingTries <= 0) {
-    //   toast({
-    //     title: "No credits remaining",
-    //     description: "Please upgrade your plan to continue chatting",
-    //     variant: "destructive",
-    //   });
-    //   return;
-    // }
+    if (!activeSessionId) {
+      toast({
+        title: "Error",
+        description: "No active chat session",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -219,20 +330,29 @@ export default function UserDashboard() {
       imageUrl: selectedImage ? URL.createObjectURL(selectedImage) : undefined
     };
 
-    // Update session with user message
+    // Update local state immediately for better UX
     setSessions(prev => prev.map(session => 
       session.id === activeSessionId 
         ? { ...session, messages: [...session.messages, userMessage] }
         : session
     ));
 
+    const userMessageContent = message;
     setMessage("");
     setSelectedImage(null);
     setIsLoading(true);
 
     try {
-      // Simple test call to Gemini API without authentication
-      console.log('SW Sending message to Gemini API:', userMessage.content);
+      // Save user message to database
+      await saveMessageToDatabase(
+        activeSessionId, 
+        userMessageContent, 
+        'user', 
+        userMessage.imageUrl
+      );
+
+      // Generate AI response
+      console.log('SW Sending message to Gemini API:', userMessageContent);
       
       const response = await fetch('/api/chat/generate', {
         method: 'POST',
@@ -240,7 +360,7 @@ export default function UserDashboard() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: userMessage.content
+          message: userMessageContent
         }),
       });
 
@@ -258,22 +378,39 @@ export default function UserDashboard() {
         timestamp: new Date()
       };
 
+      // Save AI response to database
+      await saveMessageToDatabase(
+        activeSessionId, 
+        data.message, 
+        'assistant'
+      );
+
+      // Update local state with AI response
       setSessions(prev => prev.map(session => 
         session.id === activeSessionId 
           ? { 
               ...session, 
               messages: [...session.messages, aiMessage],
-              title: session.messages.length === 1 ? userMessage.content.slice(0, 30) + "..." : session.title
+              title: session.messages.length === 1 ? userMessageContent.slice(0, 30) + "..." : session.title
             }
           : session
       ));
 
-      // Temporarily disable credit update for testing
-      // if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
-      //   updateTries(user.remainingTries - 1);
-      // }
+      // Update user tries (the API already handles this when saving user messages)
+      if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
+        updateTries(user.remainingTries - 1);
+      }
 
     } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Remove the user message from local state if there was an error
+      setSessions(prev => prev.map(session => 
+        session.id === activeSessionId 
+          ? { ...session, messages: session.messages.filter(msg => msg.id !== userMessage.id) }
+          : session
+      ));
+
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -313,39 +450,55 @@ export default function UserDashboard() {
 
           {/* Chat Sessions */}
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className={`p-3 rounded-lg cursor-pointer transition-colors group ${
-                  session.id === activeSessionId 
-                    ? "bg-blue-600/20 border border-blue-500/30" 
-                    : "bg-gray-700 hover:bg-gray-600"
-                }`}
-                onClick={() => setActiveSessionId(session.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-200 truncate">
-                      {session.title}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {session.messages.length} messages
-                    </p>
+            {isLoadingSessions ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-3 bg-gray-700 rounded-lg animate-pulse">
+                    <div className="h-4 bg-gray-600 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-600 rounded w-1/2"></div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteSession(session.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
+                ))}
               </div>
-            ))}
+            ) : sessions.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">
+                <p className="text-sm">No chat sessions yet</p>
+                <p className="text-xs">Create your first chat to get started</p>
+              </div>
+            ) : (
+              sessions.map((session) => (
+                <div
+                  key={session.id}
+                  className={`p-3 rounded-lg cursor-pointer transition-colors group ${
+                    session.id === activeSessionId 
+                      ? "bg-blue-600/20 border border-blue-500/30" 
+                      : "bg-gray-700 hover:bg-gray-600"
+                  }`}
+                  onClick={() => setActiveSessionId(session.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-200 truncate">
+                        {session.title}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {session.messages.length} messages
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSession(session.id);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="p-4 border-t border-gray-600">
@@ -434,7 +587,31 @@ export default function UserDashboard() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {activeSession?.messages.length === 0 ? (
+            {isLoadingSessions ? (
+              <div className="text-center py-12">
+                <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center animate-pulse">
+                  <Bot className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-200 mb-2">
+                  Loading your chats...
+                </h3>
+                <p className="text-gray-400 max-w-md mx-auto">
+                  Please wait while we load your chat sessions.
+                </p>
+              </div>
+            ) : !activeSession ? (
+              <div className="text-center py-12">
+                <div className="p-4 bg-gray-700 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Bot className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-200 mb-2">
+                  No chat selected
+                </h3>
+                <p className="text-gray-400 max-w-md mx-auto">
+                  Create a new chat or select an existing one to start chatting.
+                </p>
+              </div>
+            ) : activeSession.messages.length === 0 ? (
               <div className="text-center py-12">
                 <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <Bot className="h-8 w-8 text-blue-600" />
@@ -447,7 +624,7 @@ export default function UserDashboard() {
                 </p>
               </div>
             ) : (
-              activeSession?.messages.map((msg) => (
+              activeSession.messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
@@ -518,9 +695,9 @@ export default function UserDashboard() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
+                  placeholder={activeSession ? "Type your message..." : "Select or create a chat to start messaging..."}
                   className="pr-12"
-                  disabled={isLoading}
+                  disabled={isLoading || !activeSession}
                 />
                 <input
                   type="file"
@@ -534,13 +711,14 @@ export default function UserDashboard() {
                   size="sm"
                   className="absolute right-1 top-1 h-8 w-8 p-0"
                   onClick={() => fileInputRef.current?.click()}
+                  disabled={!activeSession}
                 >
                   <Upload className="h-4 w-4" />
                 </Button>
               </div>
               <Button
                 onClick={sendMessage}
-                disabled={isLoading || (!message.trim() && !selectedImage)}
+                disabled={isLoading || (!message.trim() && !selectedImage) || !activeSession}
                 className="px-4"
               >
                 <Send className="h-4 w-4" />

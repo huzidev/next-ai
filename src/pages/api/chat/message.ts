@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const decoded = verifyToken(token) as any;
-    if (!decoded || !decoded.userId) {
+    if (!decoded || !decoded.id) {
       return res.status(401).json({ message: 'Invalid token' });
     }
 
@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = await prisma.chatSession.findFirst({
       where: {
         id: sessionId,
-        userId: decoded.userId,
+        userId: decoded.id,
         isActive: true,
       },
     });
@@ -74,7 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Deduct tries for the user
       await prisma.user.update({
-        where: { id: decoded.userId },
+        where: { id: decoded.id },
         data: {
           remainingTries: {
             decrement: 1,
