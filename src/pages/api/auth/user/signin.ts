@@ -25,16 +25,25 @@ export default async function handler(
   }
 
   try {
-    const { user, message } = await authenticateUser(email, password);
+    const { user, message, state } = await authenticateUser(email, password);
 
     if (!user) {
       // Check if the error is specifically about unverified email
-      if (message === "Please verify your email address before signing in") {
+      if (state === "not-verified") {
         return res.status(403).json({ 
           success: false, 
           error: message,
           needsVerification: true,
           email: email
+        });
+      }
+      
+      // Check if user is banned
+      if (state === "banned") {
+        return res.status(403).json({ 
+          success: false, 
+          error: message,
+          userBanned: true
         });
       }
       

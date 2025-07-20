@@ -357,12 +357,12 @@ export async function resetPassword(email: string, code: string, newPassword: st
   }
 }
 
-export async function authenticateUser(email: string, password: string): Promise<{ user: User | null; message: string }> {
+export async function authenticateUser(email: string, password: string): Promise<{ user: User | null; message: string; state?: string }> {
   try {
     // Find user by email
     const user = await getUserByEmail(email);
     if (!user) {
-      return { user: null, message: "Invalid email or password" };
+      return { user: null, message: "Invalid email or password", state: "invalid-credentials" };
     }
 
     // Check if user is verified
@@ -370,18 +370,19 @@ export async function authenticateUser(email: string, password: string): Promise
       return {
         user: null,
         message: "Please verify your email address before signing in",
+        state: "not-verified"
       };
     }
 
     // Check if user is banned
     if (user.isBan) {
-      return { user: null, message: "Your account has been suspended" };
+      return { user: null, message: "Your account has been suspended", state: "banned" };
     }
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return { user: null, message: "Invalid email or password" };
+      return { user: null, message: "Invalid email or password", state: "invalid-credentials" };
     }
 
     // Update last active timestamp
@@ -390,9 +391,9 @@ export async function authenticateUser(email: string, password: string): Promise
       data: { lastActiveAt: new Date() },
     });
 
-    return { user, message: "Authentication successful" };
+    return { user, message: "Authentication successful", state: "success" };
   } catch (e: unknown) {
     console.log("Error authenticating user:", (e as Error).stack);
-    return { user: null, message: "Authentication failed" };
+    return { user: null, message: "Authentication failed", state: "error" };
   }
 }
