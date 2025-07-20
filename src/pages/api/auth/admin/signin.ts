@@ -41,11 +41,11 @@ export default async function handler(
     return res.status(200).json({ 
       success: true,
       data: {
-      id,
-      username,
-      email: adminEmail,
-      role,
-      isActive,
+        id,
+        username,
+        email: adminEmail,
+        role,
+        isActive,
       },
       message: "Admin signed in successfully"
     });
