@@ -1,12 +1,13 @@
 import AuthFooter from "@/components/auth/AuthFooter";
 import AuthHeader from "@/components/auth/AuthHeader";
 import FormLayout from "@/components/auth/FormLayout";
+import { RouteGuard } from "@/components/auth/RouteGuard";
 import SigninForm from "@/components/auth/SigninForm";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type FormData = {
   email: string;
@@ -21,17 +22,8 @@ export default function UserSignin() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
-  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
-
-  // Only redirect to dashboard when authenticated AND auth is not loading
-  useEffect(() => {
-    console.log('SW Signin page - isAuthenticated:', isAuthenticated, 'authLoading:', authLoading);
-    if (isAuthenticated && !authLoading) {
-      console.log('SW Redirecting authenticated user to dashboard');
-      router.replace("/dashboard/user");
-    }
-  }, [isAuthenticated, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -59,11 +51,16 @@ export default function UserSignin() {
       const response = await api.post("/api/auth/user/signin", formData);
 
       console.log("SW response on verifycation page", response);
+      console.log("SW response.data:", response.data);
+      console.log("SW response.data.data:", response.data?.data);
+      console.log("SW response.data.data.user:", response.data?.data?.user);
+      console.log("SW response.data.data.token:", response.data?.data?.token);
 
       if (response.success) {
-        console.log('Signin success, token:', response.data.token?.substring(0, 20) + '...');
+        console.log('Signin success, token:', response.data.data.token?.substring(0, 20) + '...');
+        console.log('Signin success, user data:', response.data.data.user);
         // Update authentication state
-        login(response.data.user, response.data.token);
+        login(response.data.data.user, response.data.data.token);
         
         toast({
           title: "Welcome",
@@ -71,7 +68,7 @@ export default function UserSignin() {
             response.message || "You have been signed in successfully",
         });
 
-        // Don't redirect here - let the useEffect handle it
+        // RouteGuard will handle the redirect to dashboard
       } else {
         // Check if the error is due to unverified account
         if (response.needsVerification) {
@@ -105,26 +102,28 @@ export default function UserSignin() {
   };
 
   return (
-    <FormLayout>
-      <AuthHeader title="Sign In" subtitle="Access your AI-powered workspace" />
+    <RouteGuard requireAuth={false}>
+      <FormLayout>
+        <AuthHeader title="Sign In" subtitle="Access your AI-powered workspace" />
 
-      <SigninForm
-        formData={formData}
-        isLoading={isLoading}
-        showPassword={showPassword}
-        onFormDataChange={handleChange}
-        onSubmit={handleSubmit}
-        onTogglePassword={() => setShowPassword(!showPassword)}
-        variant="user"
-      />
+        <SigninForm
+          formData={formData}
+          isLoading={isLoading}
+          showPassword={showPassword}
+          onFormDataChange={handleChange}
+          onSubmit={handleSubmit}
+          onTogglePassword={() => setShowPassword(!showPassword)}
+          variant="user"
+        />
 
-      <AuthFooter
-        helpText="Need help?"
-        links={[
-          { href: "/support", text: "Contact Support" },
-          { href: "/auth/admin/signin", text: "Admin Login" },
-        ]}
-      />
-    </FormLayout>
+        <AuthFooter
+          helpText="Need help?"
+          links={[
+            { href: "/support", text: "Contact Support" },
+            { href: "/auth/admin/signin", text: "Admin Login" },
+          ]}
+        />
+      </FormLayout>
+    </RouteGuard>
   );
 }

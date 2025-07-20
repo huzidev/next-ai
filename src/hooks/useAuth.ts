@@ -16,8 +16,12 @@ export const useAuth = () => {
   const router = useRouter();
   const { user, isLoading, isAuthenticated, token } = useSelector((state: RootState) => state.auth);
 
+  console.log("SW what is user in useAuth", user);
+
   const login = (userData: User, authToken: string) => {
+    console.log("SW useAuth login called with:", userData, authToken?.substring(0, 20) + '...');
     dispatch(setUser({ user: userData, token: authToken }));
+    console.log("SW useAuth login dispatch completed");
   };
 
   const logout = () => {

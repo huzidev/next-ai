@@ -1,3 +1,4 @@
+import { RouteGuard } from "@/components/auth/RouteGuard";
 import Main from "@/components/home/Main";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
@@ -15,12 +16,14 @@ const geistMono = Geist_Mono({
 
 export default function Home() {
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <Header />
-      <Main />
-      <Footer />
-    </div>
+    <RouteGuard requireAuth={false}>
+      <div
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 font-[family-name:var(--font-geist-sans)]`}
+      >
+        <Header />
+        <Main />
+        <Footer />
+      </div>
+    </RouteGuard>
   );
 }

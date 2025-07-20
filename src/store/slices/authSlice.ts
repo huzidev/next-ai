@@ -29,7 +29,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoading: true, // Start with loading true to check for existing session
   isAuthenticated: false,
   token: null,
 };
@@ -39,6 +39,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<{ user: User; token: string }>) => {
+      console.log("SW authSlice setUser called with:", action.payload);
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
@@ -46,7 +47,9 @@ const authSlice = createSlice({
       // Store token in localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem('authToken', action.payload.token);
+        console.log("SW authSlice stored token in localStorage:", action.payload.token?.substring(0, 20) + '...');
       }
+      console.log("SW authSlice setUser completed, state.user:", state.user);
     },
     clearUser: (state) => {
       state.user = null;
