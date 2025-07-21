@@ -10,6 +10,7 @@ export default function Footer() {
           </div>
           <p className="text-sm text-slate-600">
             © 2025 Next-AI. Powered by Google Generative AI.
+            huzidev
           </p>
         </div>
       </div>
