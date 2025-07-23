@@ -143,8 +143,6 @@ export const api = {
 // Helper function to get authorization headers
 export function getAuthHeaders(token?: string): Record<string, string> {
   const headers: Record<string, string> = {};
-  
-  console.log("SW token", token);
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
