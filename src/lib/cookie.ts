@@ -1,4 +1,4 @@
-import { serialize, parse } from 'cookie';
+import { parse, serialize } from 'cookie';
 
 interface ConfigValues {
     httpOnly: boolean;
@@ -16,6 +16,7 @@ const config: ConfigValues = {
 
 // Function to set the JWT in cookie
 export function setCookie(token: string, res: any) {
+  console.log("SW token", token);
   const cookie = serialize('token', token, {
     ...config,
     maxAge: 60 * 60, // 1 hour
