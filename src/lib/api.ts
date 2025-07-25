@@ -235,10 +235,12 @@ async function authenticatedRequest<T = any>(config: ApiRequestConfig, token?: s
 
 // Helper function for authenticated requests
 export const authApi = {
+  // Authenticated GET request  
   get: <T = any>(endpoint: string, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'GET' }, token);
   },
 
+  // Authenticated POST request
   post: <T = any>(endpoint: string, body?: any, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'POST', body }, token);
   },
@@ -247,7 +249,6 @@ export const authApi = {
     return authenticatedRequest<T>({ endpoint, method: 'PUT', body }, token);
   },
 
-  // Delete request
   delete: <T = any>(endpoint: string, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'DELETE' }, token);
   },
