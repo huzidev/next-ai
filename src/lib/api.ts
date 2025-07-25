@@ -247,6 +247,7 @@ export const authApi = {
     return authenticatedRequest<T>({ endpoint, method: 'PUT', body }, token);
   },
 
+  // Delete request
   delete: <T = any>(endpoint: string, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'DELETE' }, token);
   },
