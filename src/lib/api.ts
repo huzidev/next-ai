@@ -245,10 +245,12 @@ export const authApi = {
     return authenticatedRequest<T>({ endpoint, method: 'POST', body }, token);
   },
 
+  // Authenticated PUT request
   put: <T = any>(endpoint: string, body?: any, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'PUT', body }, token);
   },
 
+  // Authenticated DELETE request
   delete: <T = any>(endpoint: string, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'DELETE' }, token);
   },
