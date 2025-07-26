@@ -27,25 +27,21 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-700 bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-slate-900/60">
       <div className="container mx-auto flex h-16 items-center justify-between">
         <Logo />
-
         {showNav && (
           <nav className="flex items-center space-x-4">
-            <Link href="/auth/user/signin">
-              <Button
-                variant="ghost"
-                className="text-slate-300 hover:text-white hover:bg-transparent"
-              >
-                User Login
-              </Button>
-            </Link>
-            <Link href="/auth/admin/signin">
-              <Button
-                variant="ghost"
-                className="text-slate-300 hover:text-white hover:bg-transparent"
-              >
-                Admin Login
-              </Button>
-            </Link>
+            {[
+              { href: "/auth/user/signin", label: "User Login" },
+              { href: "/auth/admin/signin", label: "Admin Login" },
+            ].map(({ href, label }) => (
+              <Link href={href} key={href}>
+                <Button
+                  variant="ghost"
+                  className="text-slate-300 hover:text-white hover:bg-transparent"
+                >
+                  {label}
+                </Button>
+              </Link>
+            ))}
           </nav>
         )}
       </div>
