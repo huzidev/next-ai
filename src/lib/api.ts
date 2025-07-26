@@ -192,8 +192,6 @@ async function authenticatedRequest<T = any>(config: ApiRequestConfig, token?: s
     let responseData;
     const contentType = response.headers.get('content-type');
     
-    console.log("SW API Response:", contentType);
-
     if (contentType && contentType.includes('application/json')) {
       responseData = await response.json();
     } else {
