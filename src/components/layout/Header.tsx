@@ -21,7 +21,7 @@ export default function Header() {
     "/legal/terms-of-service",
   ];
 
-  const showNav = !hideNavRoutes.includes(pathname);
+  const showNav: boolean = !hideNavRoutes.includes(pathname);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-700 bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-slate-900/60">
