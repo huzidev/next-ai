@@ -255,6 +255,7 @@ export const authApi = {
     return authenticatedRequest<T>({ endpoint, method: 'DELETE' }, token);
   },
 
+  // Authenticated PATCH request
   patch: <T = any>(endpoint: string, body?: any, token?: string): Promise<ApiResponse<T>> => {
     return authenticatedRequest<T>({ endpoint, method: 'PATCH', body }, token);
   }
