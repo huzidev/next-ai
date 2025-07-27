@@ -26,7 +26,7 @@ export function PlansTab({ user, onChangePlan }: PlansTabProps) {
           <div className="border border-gray-700 rounded-lg p-6 bg-gray-700/30 relative">
             {user?.plan?.name === 'free' && (
               <Badge className="absolute -top-2 left-4 bg-green-600 text-white">
-                Current Plan
+                Current Plan (Active)
               </Badge>
             )}
             <div className="text-center space-y-4">
