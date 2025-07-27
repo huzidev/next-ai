@@ -46,11 +46,17 @@ export function UserUsageStatsShadcn({ className }: UserUsageStatsShadcnProps) {
     try {
       setLoading(true);
       setError(null);
+      
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('Authentication required');
+        return;
+      }
 
       const response = await fetch('/api/user/usage-stats', {
         method: 'GET',
-        credentials: 'include', // Include cookies
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });

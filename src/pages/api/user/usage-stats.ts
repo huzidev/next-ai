@@ -1,20 +1,14 @@
 import { verifyToken } from '@/lib/jwt';
-import prisma from '@/utils/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+// Force recompilation with comment change
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
-    // Try cookie-based authentication first
-    let token = req.cookies.token;
-    
-    // Fallback to header-based authentication
-    if (!token) {
-      token = req.headers.authorization?.replace('Bearer ', '');
-    }
+    const token = req.headers.authorization?.replace('Bearer ', '');
     
     if (!token) {
       return res.status(401).json({ 
@@ -23,38 +17,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const decoded = verifyToken(token) as any;
+    console.log('Token received:', token.substring(0, 20) + '...');
     
-    // Handle mock token for development
-    if (token === 'mock-token-for-development') {
-      console.log('Using mock token, returning mock usage stats');
-      
-      const mockUsageStats = {
-        totalChatSessions: 8,
-        totalMessages: 45,
-        recentMessages: 23,
-        recentSessions: 5,
-        todayMessages: 3,
-        remainingTries: 95,
-        planName: 'Free',
-        chartData: [
-          { date: '2025-07-13', messages: 2, day: 'Sun' },
-          { date: '2025-07-14', messages: 5, day: 'Mon' },
-          { date: '2025-07-15', messages: 8, day: 'Tue' },
-          { date: '2025-07-16', messages: 3, day: 'Wed' },
-          { date: '2025-07-17', messages: 7, day: 'Thu' },
-          { date: '2025-07-18', messages: 6, day: 'Fri' },
-          { date: '2025-07-19', messages: 3, day: 'Sat' }
-        ],
-        usageThisMonth: 23,
-        averageDaily: 4
-      };
-
-      return res.status(200).json({
-        success: true,
-        data: mockUsageStats
-      });
-    }
+    const decoded = verifyToken(token) as any;
+    console.log('Token decoded:', decoded);
     
     if (!decoded || !decoded.id) {
       return res.status(401).json({ 
@@ -64,128 +30,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const userId = decoded.id;
+    console.log('User ID from token:', userId);
 
-    // Get user's chat sessions count
-    const totalChatSessions = await prisma.chatSession.count({
-      where: { userId: userId }
-    });
-
-    // Get user's total messages count
-    const totalMessages = await prisma.aiMessage.count({
-      where: {
-        chatSession: {
-          userId: userId
-        }
-      }
-    });
-
-    // Get messages from last 7 days for chart
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const dailyUsage = await prisma.aiMessage.groupBy({
-      by: ['createdAt'],
-      where: {
-        chatSession: {
-          userId: userId
-        },
-        createdAt: {
-          gte: sevenDaysAgo
-        }
-      },
-      _count: {
-        id: true
-      }
-    });
-
-    // Process daily usage for chart (last 7 days)
-    const chartData = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      const messagesForDay = dailyUsage.filter((item: any) => 
-        item.createdAt.toISOString().split('T')[0] === dateStr
-      ).reduce((sum: number, item: any) => sum + item._count.id, 0);
-
-      chartData.push({
-        date: dateStr,
-        messages: messagesForDay,
-        day: date.toLocaleDateString('en-US', { weekday: 'short' })
-      });
-    }
-
-    // Get user's recent activity (last 30 days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const recentMessages = await prisma.aiMessage.count({
-      where: {
-        chatSession: {
-          userId: userId
-        },
-        createdAt: {
-          gte: thirtyDaysAgo
-        }
-      }
-    });
-
-    const recentSessions = await prisma.chatSession.count({
-      where: {
-        userId: userId,
-        createdAt: {
-          gte: thirtyDaysAgo
-        }
-      }
-    });
-
-    // Get today's usage
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const todayMessages = await prisma.aiMessage.count({
-      where: {
-        chatSession: {
-          userId: userId
-        },
-        createdAt: {
-          gte: today
-        }
-      }
-    });
-
-    // Get user info for remaining tries and plan
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        plan: true
-      }
-    });
-
-    const usageStats = {
-      totalChatSessions,
-      totalMessages,
-      recentMessages,
-      recentSessions,
-      todayMessages,
-      remainingTries: user?.remainingTries || 0,
-      planName: user?.plan?.name || 'Free',
-      chartData,
-      usageThisMonth: recentMessages,
-      averageDaily: Math.round(recentMessages / 30)
+    // For now, return mock data to test if authentication works
+    const mockUsageStats = {
+      totalChatSessions: 8,
+      totalMessages: 45,
+      recentMessages: 23,
+      recentSessions: 5,
+      todayMessages: 3,
+      remainingTries: 95,
+      planName: 'Free',
+      chartData: [
+        { date: '2025-07-21', messages: 2, day: 'Mon' },
+        { date: '2025-07-22', messages: 5, day: 'Tue' },
+        { date: '2025-07-23', messages: 8, day: 'Wed' },
+        { date: '2025-07-24', messages: 3, day: 'Thu' },
+        { date: '2025-07-25', messages: 7, day: 'Fri' },
+        { date: '2025-07-26', messages: 6, day: 'Sat' },
+        { date: '2025-07-27', messages: 3, day: 'Sun' }
+      ],
+      usageThisMonth: 23,
+      averageDaily: 4
     };
+
+    console.log('Returning mock usage stats for user:', userId);
 
     res.status(200).json({
       success: true,
-      data: usageStats
+      data: mockUsageStats
     });
 
   } catch (error) {
     console.error('Usage stats fetch error:', error);
     res.status(500).json({ 
       success: false,
-      message: 'Internal server error' 
+      message: 'Internal server error',
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 }

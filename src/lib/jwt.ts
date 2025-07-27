@@ -15,9 +15,11 @@ export function generateToken(userId: string) {
 // Verify JWT Token
 export function verifyToken(token: string) {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    const result = jwt.verify(token, JWT_SECRET);
+    console.log('SW JWT verification successful for token:', token.substring(0, 20) + '...');
+    return result;
   } catch (error: unknown) {
-    console.error("Error  : ", error);
+    console.error("SW JWT verification error for token:", token.substring(0, 20) + '...', error);
     return null;
   }
 }

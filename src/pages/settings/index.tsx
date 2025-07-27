@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserUsageStats } from "@/components/ui/user-usage-stats";
 import { UserUsageStatsShadcn } from "@/components/ui/user-usage-stats-shadcn";
 import { useAuth } from "@/hooks/useAuth";
 import { AlertTriangle, ArrowLeft, Calendar, Clock, CreditCard, Crown, Edit3, Key, Settings, User, Verified } from "lucide-react";
@@ -122,10 +121,9 @@ export default function UserSettings() {
           )}
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 lg:w-3/4">
+            <TabsList className="grid w-full grid-cols-4 lg:w-3/4">
               <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="usage">Usage (Recharts)</TabsTrigger>
-              <TabsTrigger value="shadcn-charts">Usage (Shadcn)</TabsTrigger>
+              <TabsTrigger value="usage">Usage</TabsTrigger>
               <TabsTrigger value="plans">Plans</TabsTrigger>
               <TabsTrigger value="account">Account</TabsTrigger>
             </TabsList>
@@ -227,11 +225,6 @@ export default function UserSettings() {
 
             {/* Usage Tab */}
             <TabsContent value="usage" className="space-y-6">
-              <UserUsageStats />
-            </TabsContent>
-
-            {/* Shadcn Charts Tab */}
-            <TabsContent value="shadcn-charts" className="space-y-6">
               <UserUsageStatsShadcn />
             </TabsContent>
 
