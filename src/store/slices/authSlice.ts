@@ -8,6 +8,7 @@ export interface User {
   planId?: string;
   remainingTries: number;
   createdAt: string;
+  updatedAt?: string;
   lastActiveAt?: string;
   plan?: {
     id: string;
