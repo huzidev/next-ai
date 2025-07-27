@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChangePasswordModal } from "@/components/ui/change-password-modal";
+import { DeleteAccountModal } from "@/components/ui/delete-account-modal";
 import { EditProfileModal } from "@/components/ui/edit-profile-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserUsageStatsShadcn } from "@/components/ui/user-usage-stats-shadcn";
@@ -28,6 +29,7 @@ export default function UserSettings() {
   const [loading, setLoading] = useState(true);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
 
   // Debug user data
   console.log("SW Settings user data:", user);
@@ -133,13 +135,33 @@ export default function UserSettings() {
   };
 
   const handleDeleteAccount = () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm(
-      'Are you sure you want to delete your account? This action cannot be undone.'
-    );
-    if (confirmed) {
-      console.log('Delete account confirmed');
-      // Here you would call an API to delete the account
+    setIsDeleteAccountOpen(true);
+  };
+
+  const handleConfirmDeleteAccount = async () => {
+    try {
+      const response = await fetch('/api/user/delete-account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.ok) {
+        console.log('Account deleted successfully');
+        // Clear local storage and redirect to home
+        localStorage.removeItem('token');
+        router.replace('/');
+        return true;
+      } else {
+        const error = await response.json();
+        console.error('Account deletion failed:', error.message);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      return false;
     }
   };
 
@@ -632,6 +654,14 @@ export default function UserSettings() {
           isOpen={isChangePasswordOpen}
           onClose={() => setIsChangePasswordOpen(false)}
           onUpdate={handleUpdatePassword}
+        />
+
+        {/* Delete Account Modal */}
+        <DeleteAccountModal
+          isOpen={isDeleteAccountOpen}
+          onClose={() => setIsDeleteAccountOpen(false)}
+          onConfirm={handleConfirmDeleteAccount}
+          username={user?.username}
         />
       </div>
     </RouteGuard>
