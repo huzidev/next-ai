@@ -132,12 +132,6 @@ export function UserUsageStatsShadcn({ className }: UserUsageStatsShadcnProps) {
             />
             <ChartTooltip 
               content={<ChartTooltipContent />}
-              contentStyle={{
-                backgroundColor: '#1F2937',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                color: '#F9FAFB'
-              }}
             />
             <Bar dataKey="messages" fill="#3B82F6" />
           </BarChart>
@@ -159,12 +153,6 @@ export function UserUsageStatsShadcn({ className }: UserUsageStatsShadcnProps) {
             />
             <ChartTooltip 
               content={<ChartTooltipContent />}
-              contentStyle={{
-                backgroundColor: '#1F2937',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                color: '#F9FAFB'
-              }}
             />
             <Line type="monotone" dataKey="messages" stroke="#3B82F6" strokeWidth={3} dot={{ fill: '#3B82F6', r: 4 }} />
           </LineChart>
@@ -192,12 +180,6 @@ export function UserUsageStatsShadcn({ className }: UserUsageStatsShadcnProps) {
             />
             <ChartTooltip 
               content={<ChartTooltipContent />}
-              contentStyle={{
-                backgroundColor: '#1F2937',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                color: '#F9FAFB'
-              }}
             />
             <Area 
               type="monotone" 
