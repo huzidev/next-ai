@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EditProfileModal } from "@/components/ui/edit-profile-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserUsageStatsShadcn } from "@/components/ui/user-usage-stats-shadcn";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,10 +21,11 @@ interface UserStats {
 }
 
 export default function UserSettings() {
-  const { user, isAuthenticated, logout, isLoading: authLoading } = useAuth();
+  const { user, isAuthenticated, logout, isLoading: authLoading, updateProfile } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   // Debug user data
   console.log("SW Settings user data:", user);
@@ -57,8 +59,33 @@ export default function UserSettings() {
   };
 
   const handleEditProfile = () => {
-    // Navigate to edit profile page or open modal
-    console.log('Edit profile');
+    setIsEditProfileOpen(true);
+  };
+
+  const handleUpdateProfile = async (profileData: Partial<typeof user>) => {
+    try {
+      const response = await fetch('/api/user/update-profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        updateProfile(result.user);
+        return true;
+      } else {
+        const error = await response.json();
+        console.error('Profile update failed:', error.message);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      return false;
+    }
   };
 
   const handleChangePlan = () => {
@@ -486,6 +513,14 @@ export default function UserSettings() {
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Edit Profile Modal */}
+        <EditProfileModal
+          isOpen={isEditProfileOpen}
+          onClose={() => setIsEditProfileOpen(false)}
+          user={user}
+          onUpdate={handleUpdateProfile}
+        />
       </div>
     </RouteGuard>
   );
