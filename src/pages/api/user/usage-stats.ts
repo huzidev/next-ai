@@ -8,7 +8,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    // Try cookie-based authentication first
+    let token = req.cookies.token;
+    
+    // Fallback to header-based authentication
+    if (!token) {
+      token = req.headers.authorization?.replace('Bearer ', '');
+    }
     
     if (!token) {
       return res.status(401).json({ 
