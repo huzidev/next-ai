@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChangePasswordModal } from "@/components/ui/change-password-modal";
 import { EditProfileModal } from "@/components/ui/edit-profile-modal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserUsageStatsShadcn } from "@/components/ui/user-usage-stats-shadcn";
@@ -26,6 +27,7 @@ export default function UserSettings() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   // Debug user data
   console.log("SW Settings user data:", user);
@@ -88,8 +90,57 @@ export default function UserSettings() {
     }
   };
 
+  const handleUpdatePassword = async (passwordData: { currentPassword: string; newPassword: string }) => {
+    try {
+      const response = await fetch('/api/user/change-password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(passwordData),
+      });
+
+      if (response.ok) {
+        console.log('Password updated successfully');
+        return true;
+      } else {
+        const error = await response.json();
+        console.error('Password update failed:', error.message);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      return false;
+    }
+  };
+
   const handleChangePlan = () => {
     router.push('/plans');
+  };
+
+  const handleChangePassword = () => {
+    setIsChangePasswordOpen(true);
+  };
+
+  const handleUpdateProfileFromAccount = () => {
+    setIsEditProfileOpen(true);
+  };
+
+  const handleAccountActivity = () => {
+    // Could show a modal with account activity or navigate to activity page
+    console.log('Show account activity');
+  };
+
+  const handleDeleteAccount = () => {
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your account? This action cannot be undone.'
+    );
+    if (confirmed) {
+      console.log('Delete account confirmed');
+      // Here you would call an API to delete the account
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -460,35 +511,77 @@ export default function UserSettings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700">
-                      <Key className="h-4 w-4 mr-2" />
-                      Change Password
-                      {stats?.passwordLastChanged && (
-                        <span className="ml-auto text-xs text-gray-500">
-                          Last changed: {stats.passwordLastChanged}
-                        </span>
-                      )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleChangePassword}
+                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 px-6 py-4"
+                    >
+                      <div className="flex items-center w-full">
+                        <Key className="h-6 w-6 mr-4 text-blue-400 flex-shrink-0" />
+                        <div className="text-left flex-1">
+                          <div className="font-medium text-base">Change Password</div>
+                          {stats?.passwordLastChanged && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              Last changed: {stats.passwordLastChanged}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700">
-                      <User className="h-4 w-4 mr-2" />
-                      Update Profile
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={handleUpdateProfileFromAccount}
+                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 px-6 py-4"
+                    >
+                      <div className="flex items-center w-full">
+                        <User className="h-6 w-6 mr-4 text-green-400 flex-shrink-0" />
+                        <div className="text-left flex-1">
+                          <div className="font-medium text-base">Update Profile</div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Edit username and email
+                          </div>
+                        </div>
+                      </div>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700">
-                      <Clock className="h-4 w-4 mr-2" />
-                      Account Activity
-                      {user?.lastActiveAt && (
-                        <span className="ml-auto text-xs text-gray-500">
-                          Last active: {new Date(user.lastActiveAt).toLocaleDateString()}
-                        </span>
-                      )}
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={handleAccountActivity}
+                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 px-6 py-4"
+                    >
+                      <div className="flex items-center w-full">
+                        <Clock className="h-6 w-6 mr-4 text-purple-400 flex-shrink-0" />
+                        <div className="text-left flex-1">
+                          <div className="font-medium text-base">Account Activity</div>
+                          {user?.lastActiveAt ? (
+                            <div className="text-xs text-gray-500 mt-1">
+                              Last active: {new Date(user.lastActiveAt).toLocaleDateString()}
+                            </div>
+                          ) : (
+                            <div className="text-xs text-gray-500 mt-1">
+                              View recent account activity
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </Button>
+                    
                     <Button 
                       variant="destructive" 
-                      className="w-full justify-start"
                       onClick={logout}
+                      className="justify-start h-20 px-6 py-4"
                     >
-                      Sign Out
+                      <div className="flex items-center w-full">
+                        <ArrowLeft className="h-6 w-6 mr-4 flex-shrink-0" />
+                        <div className="text-left flex-1">
+                          <div className="font-medium text-base">Sign Out</div>
+                          <div className="text-xs opacity-75 mt-1">
+                            Log out of your account
+                          </div>
+                        </div>
+                      </div>
                     </Button>
                   </div>
                 </CardContent>
@@ -505,8 +598,20 @@ export default function UserSettings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="destructive" className="w-full">
-                    Delete Account
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleDeleteAccount}
+                    className="justify-start h-20 px-6 py-4 w-full max-w-md"
+                  >
+                    <div className="flex items-center w-full">
+                      <AlertTriangle className="h-6 w-6 mr-4 flex-shrink-0" />
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-base">Delete Account</div>
+                        <div className="text-xs opacity-75 mt-1">
+                          Permanently delete your account and all data
+                        </div>
+                      </div>
+                    </div>
                   </Button>
                 </CardContent>
               </Card>
@@ -520,6 +625,13 @@ export default function UserSettings() {
           onClose={() => setIsEditProfileOpen(false)}
           user={user}
           onUpdate={handleUpdateProfile}
+        />
+
+        {/* Change Password Modal */}
+        <ChangePasswordModal
+          isOpen={isChangePasswordOpen}
+          onClose={() => setIsChangePasswordOpen(false)}
+          onUpdate={handleUpdatePassword}
         />
       </div>
     </RouteGuard>
