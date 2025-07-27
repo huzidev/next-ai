@@ -537,14 +537,14 @@ export default function UserSettings() {
                     <Button 
                       variant="outline" 
                       onClick={handleChangePassword}
-                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 px-6 py-4"
+                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 p-0 overflow-hidden"
                     >
-                      <div className="flex items-center w-full">
+                      <div className="flex items-center w-full h-full px-6 py-4">
                         <Key className="h-6 w-6 mr-4 text-blue-400 flex-shrink-0" />
-                        <div className="text-left flex-1">
-                          <div className="font-medium text-base">Change Password</div>
+                        <div className="text-left flex-1 min-w-0">
+                          <div className="font-medium text-base truncate">Change Password</div>
                           {stats?.passwordLastChanged && (
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-gray-500 mt-1 truncate">
                               Last changed: {stats.passwordLastChanged}
                             </div>
                           )}
@@ -555,13 +555,13 @@ export default function UserSettings() {
                     <Button 
                       variant="outline" 
                       onClick={handleUpdateProfileFromAccount}
-                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 px-6 py-4"
+                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 p-0 overflow-hidden"
                     >
-                      <div className="flex items-center w-full">
+                      <div className="flex items-center w-full h-full px-6 py-4">
                         <User className="h-6 w-6 mr-4 text-green-400 flex-shrink-0" />
-                        <div className="text-left flex-1">
-                          <div className="font-medium text-base">Update Profile</div>
-                          <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-left flex-1 min-w-0">
+                          <div className="font-medium text-base truncate">Update Profile</div>
+                          <div className="text-xs text-gray-500 mt-1 truncate">
                             Edit username and email
                           </div>
                         </div>
@@ -571,18 +571,18 @@ export default function UserSettings() {
                     <Button 
                       variant="outline" 
                       onClick={handleAccountActivity}
-                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 px-6 py-4"
+                      className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 p-0 overflow-hidden"
                     >
-                      <div className="flex items-center w-full">
+                      <div className="flex items-center w-full h-full px-6 py-4">
                         <Clock className="h-6 w-6 mr-4 text-purple-400 flex-shrink-0" />
-                        <div className="text-left flex-1">
-                          <div className="font-medium text-base">Account Activity</div>
+                        <div className="text-left flex-1 min-w-0">
+                          <div className="font-medium text-base truncate">Account Activity</div>
                           {user?.lastActiveAt ? (
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-gray-500 mt-1 truncate">
                               Last active: {new Date(user.lastActiveAt).toLocaleDateString()}
                             </div>
                           ) : (
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-gray-500 mt-1 truncate">
                               View recent account activity
                             </div>
                           )}
@@ -593,13 +593,13 @@ export default function UserSettings() {
                     <Button 
                       variant="destructive" 
                       onClick={logout}
-                      className="justify-start h-20 px-6 py-4"
+                      className="justify-start h-20 p-0 overflow-hidden"
                     >
-                      <div className="flex items-center w-full">
+                      <div className="flex items-center w-full h-full px-6 py-4">
                         <ArrowLeft className="h-6 w-6 mr-4 flex-shrink-0" />
-                        <div className="text-left flex-1">
-                          <div className="font-medium text-base">Sign Out</div>
-                          <div className="text-xs opacity-75 mt-1">
+                        <div className="text-left flex-1 min-w-0">
+                          <div className="font-medium text-base truncate">Sign Out</div>
+                          <div className="text-xs opacity-75 mt-1 truncate">
                             Log out of your account
                           </div>
                         </div>
@@ -623,13 +623,13 @@ export default function UserSettings() {
                   <Button 
                     variant="destructive" 
                     onClick={handleDeleteAccount}
-                    className="justify-start h-20 px-6 py-4 w-full max-w-md"
+                    className="justify-start h-20 p-0 w-full max-w-md overflow-hidden"
                   >
-                    <div className="flex items-center w-full">
+                    <div className="flex items-center w-full h-full px-6 py-4">
                       <AlertTriangle className="h-6 w-6 mr-4 flex-shrink-0" />
-                      <div className="text-left flex-1">
-                        <div className="font-medium text-base">Delete Account</div>
-                        <div className="text-xs opacity-75 mt-1">
+                      <div className="text-left flex-1 min-w-0">
+                        <div className="font-medium text-base truncate">Delete Account</div>
+                        <div className="text-xs opacity-75 mt-1 truncate">
                           Permanently delete your account and all data
                         </div>
                       </div>
