@@ -221,32 +221,23 @@ export default function UserSettings() {
             </Card>
           )}
 
-          <Tabs defaultValue="profile" className="space-y-6">
+            {/* Tab links as array of objects, mapped to TabsTrigger */}
+            <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4 lg:w-3/4 bg-gray-800 border border-gray-700 p-1 rounded-lg">
-              <TabsTrigger 
-                value="profile" 
+              {[
+              { value: "profile", label: "Profile" },
+              { value: "usage", label: "Usage" },
+              { value: "plans", label: "Plans" },
+              { value: "account", label: "Account" },
+              ].map(tab => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
                 className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-400 hover:text-white transition-colors"
               >
-                Profile
+                {tab.label}
               </TabsTrigger>
-              <TabsTrigger 
-                value="usage"
-                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-400 hover:text-white transition-colors"
-              >
-                Usage
-              </TabsTrigger>
-              <TabsTrigger 
-                value="plans"
-                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-400 hover:text-white transition-colors"
-              >
-                Plans
-              </TabsTrigger>
-              <TabsTrigger 
-                value="account"
-                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-400 hover:text-white transition-colors"
-              >
-                Account
-              </TabsTrigger>
+              ))}
             </TabsList>
 
             {/* Profile Tab */}
