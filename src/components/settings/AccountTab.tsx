@@ -122,7 +122,7 @@ export function AccountTab({
         <CardHeader>
           <CardTitle className="text-red-400 flex items-center">
             <AlertTriangle className="h-5 w-5 mr-2" />
-            Danger Zone
+            Danger Zone (Admin Only)
           </CardTitle>
           <CardDescription className="text-gray-400">
             Irreversible actions that affect your account
