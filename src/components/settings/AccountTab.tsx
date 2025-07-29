@@ -75,7 +75,7 @@ export function AccountTab({
         <CardHeader>
           <CardTitle className="text-white flex items-center">
             <Settings className="h-5 w-5 mr-2 text-blue-400" />
-            Account Management
+            Account Management (User)
           </CardTitle>
           <CardDescription className="text-gray-400">
             Manage your account settings and security
