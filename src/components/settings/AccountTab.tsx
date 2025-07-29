@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, ArrowLeft, Clock, Key, Settings, User } from "lucide-react";
+import { ReactNode } from "react";
 
 interface AccountTabProps {
   user: any;
@@ -12,6 +13,51 @@ interface AccountTabProps {
   onAccountActivity: () => void;
   onDeleteAccount: () => void;
   onLogout: () => void;
+}
+
+interface ActionButtonProps {
+  icon: ReactNode;
+  title: string;
+  subtitle?: string;
+  onClick: () => void;
+  variant?: "outline" | "destructive";
+  className?: string;
+}
+
+function ActionButton({ 
+  icon, 
+  title, 
+  subtitle, 
+  onClick, 
+  variant = "outline",
+  className = ""
+}: ActionButtonProps) {
+  const baseClasses = "justify-start h-20 p-0 overflow-hidden";
+  const variantClasses = variant === "outline" 
+    ? "border-gray-600 text-gray-200 hover:bg-gray-700" 
+    : "";
+  
+  return (
+    <Button 
+      variant={variant}
+      onClick={onClick}
+      className={`${baseClasses} ${variantClasses} ${className}`}
+    >
+      <div className="flex items-center w-full h-full px-6 py-4">
+        <div className="mr-4 flex-shrink-0">
+          {icon}
+        </div>
+        <div className="text-left flex-1 min-w-0">
+          <div className="font-medium text-base truncate">{title}</div>
+          {subtitle && (
+            <div className="text-xs text-gray-500 mt-1 truncate opacity-75">
+              {subtitle}
+            </div>
+          )}
+        </div>
+      </div>
+    </Button>
+  );
 }
 
 export function AccountTab({
@@ -37,77 +83,37 @@ export function AccountTab({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button 
-              variant="outline" 
+            <ActionButton
+              icon={<Key className="h-6 w-6 text-blue-400" />}
+              title="Change Password"
+              subtitle={stats?.passwordLastChanged ? `Last changed: ${stats.passwordLastChanged}` : undefined}
               onClick={onChangePassword}
-              className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 p-0 overflow-hidden"
-            >
-              <div className="flex items-center w-full h-full px-6 py-4">
-                <Key className="h-6 w-6 mr-4 text-blue-400 flex-shrink-0" />
-                <div className="text-left flex-1 min-w-0">
-                  <div className="font-medium text-base truncate">Change Password</div>
-                  {stats?.passwordLastChanged && (
-                    <div className="text-xs text-gray-500 mt-1 truncate">
-                      Last changed: {stats.passwordLastChanged}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Button>
+            />
             
-            <Button 
-              variant="outline" 
+            <ActionButton
+              icon={<User className="h-6 w-6 text-green-400" />}
+              title="Update Profile"
+              subtitle="Edit username and email"
               onClick={onUpdateProfile}
-              className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 p-0 overflow-hidden"
-            >
-              <div className="flex items-center w-full h-full px-6 py-4">
-                <User className="h-6 w-6 mr-4 text-green-400 flex-shrink-0" />
-                <div className="text-left flex-1 min-w-0">
-                  <div className="font-medium text-base truncate">Update Profile</div>
-                  <div className="text-xs text-gray-500 mt-1 truncate">
-                    Edit username and email
-                  </div>
-                </div>
-              </div>
-            </Button>
+            />
             
-            <Button 
-              variant="outline" 
+            <ActionButton
+              icon={<Clock className="h-6 w-6 text-purple-400" />}
+              title="Account Activity"
+              subtitle={user?.lastActiveAt 
+                ? `Last active: ${new Date(user.lastActiveAt).toLocaleDateString()}`
+                : "View recent account activity"
+              }
               onClick={onAccountActivity}
-              className="justify-start border-gray-600 text-gray-200 hover:bg-gray-700 h-20 p-0 overflow-hidden"
-            >
-              <div className="flex items-center w-full h-full px-6 py-4">
-                <Clock className="h-6 w-6 mr-4 text-purple-400 flex-shrink-0" />
-                <div className="text-left flex-1 min-w-0">
-                  <div className="font-medium text-base truncate">Account Activity</div>
-                  {user?.lastActiveAt ? (
-                    <div className="text-xs text-gray-500 mt-1 truncate">
-                      Last active: {new Date(user.lastActiveAt).toLocaleDateString()}
-                    </div>
-                  ) : (
-                    <div className="text-xs text-gray-500 mt-1 truncate">
-                      View recent account activity
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Button>
+            />
             
-            <Button 
-              variant="destructive" 
+            <ActionButton
+              icon={<ArrowLeft className="h-6 w-6" />}
+              title="Sign Out"
+              subtitle="Log out of your account"
               onClick={onLogout}
-              className="justify-start h-20 p-0 overflow-hidden"
-            >
-              <div className="flex items-center w-full h-full px-6 py-4">
-                <ArrowLeft className="h-6 w-6 mr-4 flex-shrink-0" />
-                <div className="text-left flex-1 min-w-0">
-                  <div className="font-medium text-base truncate">Sign Out</div>
-                  <div className="text-xs opacity-75 mt-1 truncate">
-                    Log out of your account
-                  </div>
-                </div>
-              </div>
-            </Button>
+              variant="destructive"
+            />
           </div>
         </CardContent>
       </Card>
@@ -123,21 +129,14 @@ export function AccountTab({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button 
-            variant="destructive" 
+          <ActionButton
+            icon={<AlertTriangle className="h-6 w-6" />}
+            title="Delete Account"
+            subtitle="Permanently delete your account and all data"
             onClick={onDeleteAccount}
-            className="justify-start h-20 p-0 w-full max-w-md overflow-hidden"
-          >
-            <div className="flex items-center w-full h-full px-6 py-4">
-              <AlertTriangle className="h-6 w-6 mr-4 flex-shrink-0" />
-              <div className="text-left flex-1 min-w-0">
-                <div className="font-medium text-base truncate">Delete Account</div>
-                <div className="text-xs opacity-75 mt-1 truncate">
-                  Permanently delete your account and all data
-                </div>
-              </div>
-            </div>
-          </Button>
+            variant="destructive"
+            className="w-full max-w-md"
+          />
         </CardContent>
       </Card>
     </div>
