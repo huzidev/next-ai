@@ -143,9 +143,7 @@ export default function VerificationForm({
         subtitle={
           <>
             {subtitle}{" "}
-            <span className="text-blue-300 font-medium">
-              {email}
-            </span>
+            <span className="text-blue-300 font-medium">{email}</span>
           </>
         }
       />
