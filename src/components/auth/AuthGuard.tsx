@@ -83,7 +83,7 @@ export function AuthGuard({
   loginRedirect = '/',
   dashboardRedirect = '/dashboard/user'
 }: AuthGuardProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
   const [hasRedirected, setHasRedirected] = useState(false);
 
@@ -113,15 +113,30 @@ export function AuthGuard({
   /**
    * Determine what action to take based on current route and auth status
    */
-  const getRouteAction = (currentPath: string, isAuth: boolean) => {
-    // Check if route is protected (requires authentication)
+  const getRouteAction = (currentPath: string, isAuth: boolean, userExists: boolean, isVerified: boolean) => {
+    // Special case: if user exists but is not verified, and not on verification page
+    if (userExists && !isVerified && !currentPath.includes('/auth/user/verify')) {
+      return 'redirect-to-verify';
+    }
+    
+    // Check if route is protected (requires authentication AND verification)
     if (isRouteMatch(config.protected, currentPath)) {
+      if (!userExists) return 'redirect-to-login';
+      if (!isVerified) return 'redirect-to-verify';
       return isAuth ? 'allow' : 'redirect-to-login';
     }
     
     // Check if route is public-only (should redirect authenticated users)
     if (isRouteMatch(config.publicOnly, currentPath)) {
-      return isAuth ? 'redirect-to-dashboard' : 'allow';
+      // If on verification page and user is verified, redirect to dashboard
+      if (currentPath.includes('/auth/user/verify') && isVerified) {
+        return 'redirect-to-dashboard';
+      }
+      // If user exists and verified, redirect to dashboard (except verification page)
+      if (userExists && isVerified && !currentPath.includes('/auth/user/verify')) {
+        return 'redirect-to-dashboard';
+      }
+      return 'allow';
     }
     
     // Check if route is public (accessible to everyone)
@@ -130,6 +145,8 @@ export function AuthGuard({
     }
     
     // Default: treat unknown routes as protected
+    if (!userExists) return 'redirect-to-login';
+    if (!isVerified) return 'redirect-to-verify';
     return isAuth ? 'allow' : 'redirect-to-login';
   };
 
@@ -147,9 +164,13 @@ export function AuthGuard({
     }
 
     const currentPath = router.asPath;
-    const action = getRouteAction(currentPath, isAuthenticated);
+    const userExists = !!user;
+    const isVerified = user?.isVerified || false;
+    const action = getRouteAction(currentPath, isAuthenticated, userExists, isVerified);
 
     console.log('AuthGuard: Current path:', currentPath);
+    console.log('AuthGuard: User exists:', userExists);
+    console.log('AuthGuard: Is verified:', isVerified);
     console.log('AuthGuard: Is authenticated:', isAuthenticated);
     console.log('AuthGuard: Action:', action);
 
@@ -159,6 +180,12 @@ export function AuthGuard({
         console.log('AuthGuard: Redirecting to login page...');
         setHasRedirected(true);
         router.replace(loginRedirect);
+        break;
+        
+      case 'redirect-to-verify':
+        console.log('AuthGuard: Redirecting to verification page...');
+        setHasRedirected(true);
+        router.replace('/auth/user/verify');
         break;
         
       case 'redirect-to-dashboard':
@@ -174,7 +201,7 @@ export function AuthGuard({
       default:
         console.warn('AuthGuard: Unknown action:', action);
     }
-  }, [isAuthenticated, isLoading, router.asPath, hasRedirected, loginRedirect, dashboardRedirect, config]);
+  }, [isAuthenticated, isLoading, user, router.asPath, hasRedirected, loginRedirect, dashboardRedirect, config]);
 
   // Reset redirect flag when route changes
   useEffect(() => {
@@ -222,7 +249,7 @@ export function AuthGuard({
  */
 export function useRouteAuth(routeConfig: Partial<RouteConfig> = {}) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   const config: RouteConfig = {
     protected: [...defaultRouteConfig.protected, ...(routeConfig.protected || [])],
@@ -239,20 +266,26 @@ export function useRouteAuth(routeConfig: Partial<RouteConfig> = {}) {
   };
 
   const currentPath = router.asPath;
+  const userExists = !!user;
+  const isVerified = user?.isVerified || false;
   const isProtectedRoute = isRouteMatch(config.protected, currentPath);
   const isPublicOnlyRoute = isRouteMatch(config.publicOnly, currentPath);
   const isPublicRoute = isRouteMatch(config.public, currentPath);
+
+  const shouldHaveAccess = !isLoading && (
+    (isProtectedRoute && isAuthenticated && isVerified) ||
+    (isPublicOnlyRoute && (!userExists || !isVerified || currentPath.includes('/auth/user/verify'))) ||
+    isPublicRoute
+  );
 
   return {
     isProtectedRoute,
     isPublicOnlyRoute,
     isPublicRoute,
-    shouldHaveAccess: !isLoading && (
-      (isProtectedRoute && isAuthenticated) ||
-      (isPublicOnlyRoute && !isAuthenticated) ||
-      isPublicRoute
-    ),
-    isLoading
+    shouldHaveAccess,
+    isLoading,
+    userExists,
+    isVerified
   };
 }
 

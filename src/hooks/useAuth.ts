@@ -1,12 +1,12 @@
 import { AppDispatch, RootState } from '@/store';
 import {
-  clearUser,
-  setLoading,
-  setToken,
-  setUser,
-  updateUserProfile,
-  updateUserTries,
-  User
+    clearUser,
+    setLoading,
+    setToken,
+    setUser,
+    updateUserProfile,
+    updateUserTries,
+    User
 } from '@/store/slices/authSlice';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,8 +24,42 @@ export const useAuth = () => {
     console.log("SW useAuth login dispatch completed");
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Call logout API to clear server-side cookies
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('Error calling logout API:', error);
+      // Continue with client-side cleanup even if API call fails
+    }
+
+    // Clear Redux state and localStorage
     dispatch(clearUser());
+    
+    // Additional cleanup: clear any remaining authentication data
+    if (typeof window !== 'undefined') {
+      // Clear localStorage items
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('friendshipStatus'); // Clear friendship status cache
+      
+      // Clear sessionStorage items
+      sessionStorage.clear();
+      
+      // Clear any other cached data that might cause conflicts
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('auth_') || key.startsWith('user_') || key.startsWith('session_')) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+    
     // Redirect to home page and replace history to prevent going back
     router.replace('/');
   };
