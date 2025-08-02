@@ -1,8 +1,3 @@
-/**
- * Utility function to format time periods in a human-readable format
- * @param date - The date to format
- * @returns A string representing how long ago the date was
- */
 export function formatTimeAgo(date: Date | string): string {
   const now = new Date();
   const targetDate = typeof date === 'string' ? new Date(date) : date;
@@ -32,11 +27,6 @@ export function formatTimeAgo(date: Date | string): string {
   }
 }
 
-/**
- * Format a date for display in notifications
- * @param date - The date to format
- * @returns A formatted date string
- */
 export function formatNotificationDate(date: Date | string): string {
   const targetDate = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();

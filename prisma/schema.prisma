@@ -41,6 +41,7 @@ model Admin {
   sentMessages      ChatMessage[]      @relation("AdminSentMessages")
   receivedMessages  ChatMessage[]      @relation("AdminReceivedMessages")
   notifications     Notification[]
+  resolvedContacts  Contact[]          @relation("ContactResolver")
 
   @@index([email])
   @@index([role])
@@ -64,6 +65,7 @@ model User {
   sentMessages      ChatMessage[]      @relation("UserSentMessages")
   receivedMessages  ChatMessage[]      @relation("UserReceivedMessages")
   notifications     Notification[]
+  contacts          Contact[]
 
   @@index([email])
   @@index([isVerified])
@@ -168,4 +170,27 @@ model Notification {
   @@index([isRead])
   @@index([createdAt])
   @@index([type])
+}
+
+// Contact Requests from Users
+model Contact {
+  id          String           @id @default(uuid())
+  name        String
+  username    String
+  email       String
+  subject     String?
+  message     String
+  userId      String?          // Optional: if user is logged in
+  isResolved  Boolean          @default(false)
+  resolvedBy  String?          // Admin ID who resolved the request
+  resolvedAt  DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  resolver    Admin?           @relation("ContactResolver", fields: [resolvedBy], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([email])
+  @@index([isResolved])
+  @@index([createdAt])
 }

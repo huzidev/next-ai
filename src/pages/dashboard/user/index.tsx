@@ -1,27 +1,27 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { NewChatModal } from "@/components/ui/new-chat-modal";
+import { NotificationButton } from "@/components/ui/notification-button";
 import { Notification, NotificationsSidebar } from "@/components/ui/notifications-sidebar";
+import { ProfileDropdown } from "@/components/ui/profile-dropdown";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  Bell,
   Bot,
   Image as ImageIcon,
-  LogOut,
-  MessageSquare,
+  Megaphone,
   Plus,
   Send,
   Settings,
   Sparkles,
   Trash2,
   Upload,
-  User
+  User,
+  Users
 } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
@@ -590,32 +590,6 @@ export default function UserDashboard() {
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
-            
-            <div className="mt-3 space-y-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700"
-                onClick={() => setNotificationsSidebarOpen(true)}
-              >
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-                {unreadNotifications > 0 && (
-                  <Badge variant="destructive" className="ml-auto">
-                    {unreadNotifications}
-                  </Badge>
-                )}
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700"
-                onClick={logout}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -624,32 +598,82 @@ export default function UserDashboard() {
           {/* Chat Header */}
           <div className="p-4 border-b border-gray-600 bg-gray-800">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <Sparkles className="h-5 w-5 text-blue-400" />
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Sparkles className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-semibold text-white">
+                      {activeSession?.title || "New Chat"}
+                    </h1>
+                    <p className="text-sm text-gray-400">
+                      Powered by Google Generative AI
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-lg font-semibold text-white">
-                    {activeSession?.title || "New Chat"}
-                  </h1>
-                  <p className="text-sm text-gray-400">
-                    Powered by Google Generative AI
-                  </p>
-                </div>
+                
+                <Tabs defaultValue="announcements" className="w-auto">
+                  <TabsList>
+                    <TabsTrigger 
+                      value="announcements"
+                      asChild
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push('/announcements')}
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                      >
+                        <Megaphone className="h-4 w-4 mr-2" />
+                        Announcements
+                      </Button>
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="users"
+                      asChild
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push('/users')}
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Users
+                      </Button>
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="support"
+                      asChild
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push('/contact')}
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                      >
+                        <User className="h-4 w-4 mr-2" />
+                        Support
+                      </Button>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
               
-              <Tabs defaultValue="chat" className="w-auto">
-                <TabsList>
-                  <TabsTrigger value="chat">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Chat
-                  </TabsTrigger>
-                  <TabsTrigger value="support">
-                    <User className="h-4 w-4 mr-2" />
-                    Support
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className="flex items-center space-x-3">
+                <NotificationButton
+                  hasUnread={unreadNotifications > 0}
+                  unreadCount={unreadNotifications}
+                  onClick={() => setNotificationsSidebarOpen(true)}
+                />
+                
+                <ProfileDropdown
+                  user={user}
+                  authLoading={authLoading}
+                  onLogout={logout}
+                />
+              </div>
             </div>
           </div>
 
