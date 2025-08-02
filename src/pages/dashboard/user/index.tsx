@@ -645,11 +645,31 @@ export default function UserDashboard() {
         <div className="w-80 bg-gray-800 border-r border-gray-700 flex flex-col">
           {/* Header */}
           <div className="p-4 border-b border-gray-600">
-            <div className="flex items-center space-x-2 mb-4">
-              <Bot className="h-8 w-8 text-blue-400" />
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                Next-AI
-              </span>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <Bot className="h-8 w-8 text-blue-400" />
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                  Next-AI
+                </span>
+              </div>
+              
+              {/* Chat Mode Toggle */}
+              <div className="flex items-center space-x-2 bg-gray-700/50 rounded-lg p-2">
+                <div className="flex items-center space-x-2 text-xs text-gray-300">
+                  <span className={chatMode === 'ai' ? 'text-white font-medium' : ''}>
+                    AI ({aiChatCount})
+                  </span>
+                  <button
+                    onClick={() => setChatMode(chatMode === 'ai' ? 'user' : 'ai')}
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    {chatMode === 'ai' ? <ToggleLeft className="h-5 w-5" /> : <ToggleRight className="h-5 w-5" />}
+                  </button>
+                  <span className={chatMode === 'user' ? 'text-white font-medium' : ''}>
+                    Users ({userChatCount})
+                  </span>
+                </div>
+              </div>
             </div>
             
             <Button onClick={createNewSession} className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
@@ -839,24 +859,6 @@ export default function UserDashboard() {
                   unreadCount={unreadNotifications}
                   onClick={() => setNotificationsSidebarOpen(true)}
                 />
-                
-                {/* Chat Mode Toggle */}
-                <div className="flex items-center space-x-2 bg-gray-700/50 rounded-lg p-2">
-                  <div className="flex items-center space-x-2 text-xs text-gray-300">
-                    <span className={chatMode === 'ai' ? 'text-white font-medium' : ''}>
-                      AI ({aiChatCount})
-                    </span>
-                    <button
-                      onClick={() => setChatMode(chatMode === 'ai' ? 'user' : 'ai')}
-                      className="text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                      {chatMode === 'ai' ? <ToggleLeft className="h-5 w-5" /> : <ToggleRight className="h-5 w-5" />}
-                    </button>
-                    <span className={chatMode === 'user' ? 'text-white font-medium' : ''}>
-                      Users ({userChatCount})
-                    </span>
-                  </div>
-                </div>
                 
                 <ProfileDropdown
                   user={user}
