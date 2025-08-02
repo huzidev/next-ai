@@ -18,6 +18,8 @@ import {
   Send,
   Settings,
   Sparkles,
+  ToggleLeft,
+  ToggleRight,
   Trash2,
   Upload,
   User,
@@ -59,6 +61,7 @@ export default function UserDashboard() {
   }, [user]);
   
   const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [userChats, setUserChats] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -69,6 +72,7 @@ export default function UserDashboard() {
   const [newChatModalOpen, setNewChatModalOpen] = useState<boolean>(false);
   const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
   const [notificationsSidebarOpen, setNotificationsSidebarOpen] = useState<boolean>(false);
+  const [chatMode, setChatMode] = useState<'ai' | 'user'>('ai'); // New state for chat mode toggle
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
@@ -107,8 +111,13 @@ export default function UserDashboard() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const activeSession = sessions.find(s => s.id === activeSessionId);
+  const activeSession = [...sessions, ...userChats].find(s => s.id === activeSessionId);
   const unreadNotifications = notifications.filter(n => !n.isRead).length;
+  
+  // Compute current sessions and counts based on chat mode
+  const currentSessions = chatMode === 'ai' ? sessions : userChats;
+  const aiChatCount = sessions.length;
+  const userChatCount = userChats.length;
 
   // Load chat sessions from database
   const loadChatSessions = async () => {
@@ -170,12 +179,70 @@ export default function UserDashboard() {
     }
   };
 
+  // Load user chats (mock for now - will be replaced with actual API)
+  const loadUserChats = async () => {
+    try {
+      // Mock user chats for now
+      const mockUserChats: ChatSession[] = [
+        {
+          id: 'user-chat-1',
+          title: 'Chat with @john_doe',
+          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+          updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+          messages: [
+            {
+              id: '1',
+              content: 'Hey! How are you doing?',
+              role: 'user',
+              timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
+            },
+            {
+              id: '2',
+              content: 'I\'m doing great, thanks for asking!',
+              role: 'assistant',
+              timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
+            }
+          ]
+        },
+        {
+          id: 'user-chat-2',
+          title: 'Chat with @alice_smith',
+          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          updatedAt: new Date(Date.now() - 20 * 60 * 60 * 1000),
+          messages: [
+            {
+              id: '3',
+              content: 'Did you finish the project?',
+              role: 'user',
+              timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
+            }
+          ]
+        }
+      ];
+      
+      setUserChats(mockUserChats);
+    } catch (error) {
+      console.error('Error loading user chats:', error);
+    }
+  };
+
   // Load sessions when component mounts and user is available
   useEffect(() => {
     if (user && !authLoading) {
       loadChatSessions();
+      loadUserChats();
     }
   }, [user, authLoading]);
+
+  // Handle chat mode change
+  useEffect(() => {
+    // Reset active session when switching modes
+    if (currentSessions.length > 0) {
+      setActiveSessionId(currentSessions[0].id);
+    } else {
+      setActiveSessionId(null);
+    }
+  }, [chatMode]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -192,47 +259,67 @@ export default function UserDashboard() {
   const handleCreateChat = async (title: string) => {
     setIsCreatingChat(true);
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/chat/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title }),
-      });
+      if (chatMode === 'ai') {
+        // Create AI chat
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/chat/sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ title }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (data.success) {
-        const newSession: ChatSession = {
-          id: data.session.id,
-          title: data.session.title,
+        if (data.success) {
+          const newSession: ChatSession = {
+            id: data.session.id,
+            title: data.session.title,
+            messages: [],
+            createdAt: new Date(data.session.createdAt),
+            updatedAt: new Date(data.session.updatedAt)
+          };
+          setSessions(prev => [newSession, ...prev]);
+          setActiveSessionId(newSession.id);
+          setNewChatModalOpen(false);
+
+          toast({
+            title: "Success",
+            description: "New AI chat session created successfully",
+          });
+        } else if (data.needsUpgrade) {
+          toast({
+            title: "Upgrade Required",
+            description: data.error,
+            variant: "destructive",
+          });
+        } else {
+          throw new Error(data.error);
+        }
+      } else {
+        // Create user chat (mock for now)
+        const newUserChat: ChatSession = {
+          id: `user-chat-${Date.now()}`,
+          title: title,
           messages: [],
-          createdAt: new Date(data.session.createdAt),
-          updatedAt: new Date(data.session.updatedAt)
+          createdAt: new Date(),
+          updatedAt: new Date()
         };
-        setSessions(prev => [newSession, ...prev]);
-        setActiveSessionId(newSession.id);
+        setUserChats(prev => [newUserChat, ...prev]);
+        setActiveSessionId(newUserChat.id);
         setNewChatModalOpen(false);
 
         toast({
           title: "Success",
-          description: "New chat session created successfully",
+          description: "New user chat session created successfully",
         });
-      } else if (data.needsUpgrade) {
-        toast({
-          title: "Upgrade Required",
-          description: data.error,
-          variant: "destructive",
-        });
-      } else {
-        throw new Error(data.error);
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create new chat session",
+        description: `Failed to create new ${chatMode} chat session`,
         variant: "destructive",
       });
     } finally {
@@ -241,10 +328,10 @@ export default function UserDashboard() {
   };
 
   const deleteSession = (sessionId: string) => {
-    if (sessions.length === 1) {
+    if (currentSessions.length === 1) {
       toast({
         title: "Cannot delete",
-        description: "You must have at least one chat session",
+        description: `You must have at least one ${chatMode} chat session`,
         variant: "destructive",
       });
       return;
@@ -259,37 +346,53 @@ export default function UserDashboard() {
     if (!sessionToDelete) return;
 
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/chat/sessions', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ sessionId: sessionToDelete }),
-      });
+      if (chatMode === 'ai') {
+        // Delete AI chat from database
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/api/chat/sessions', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ sessionId: sessionToDelete }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (data.success) {
-        const updatedSessions = sessions.filter(s => s.id !== sessionToDelete);
-        setSessions(updatedSessions);
+        if (data.success) {
+          const updatedSessions = sessions.filter(s => s.id !== sessionToDelete);
+          setSessions(updatedSessions);
+          
+          if (sessionToDelete === activeSessionId) {
+            setActiveSessionId(updatedSessions.length > 0 ? updatedSessions[0].id : null);
+          }
+
+          toast({
+            title: "AI Chat deleted",
+            description: "The AI chat session has been deleted successfully",
+          });
+        } else {
+          throw new Error(data.error);
+        }
+      } else {
+        // Delete user chat (local only for now)
+        const updatedUserChats = userChats.filter(s => s.id !== sessionToDelete);
+        setUserChats(updatedUserChats);
         
         if (sessionToDelete === activeSessionId) {
-          setActiveSessionId(updatedSessions.length > 0 ? updatedSessions[0].id : null);
+          setActiveSessionId(updatedUserChats.length > 0 ? updatedUserChats[0].id : null);
         }
 
         toast({
-          title: "Chat deleted",
-          description: "The chat session has been deleted successfully",
+          title: "User Chat deleted",
+          description: "The user chat session has been deleted successfully",
         });
-      } else {
-        throw new Error(data.error);
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete chat session",
+        description: `Failed to delete ${chatMode} chat session`,
         variant: "destructive",
       });
     } finally {
@@ -354,7 +457,7 @@ export default function UserDashboard() {
     if (!activeSessionId) {
       toast({
         title: "Error",
-        description: "No active chat session",
+        description: `No active ${chatMode} chat session`,
         variant: "destructive",
       });
       return;
@@ -369,11 +472,19 @@ export default function UserDashboard() {
     };
 
     // Update local state immediately for better UX
-    setSessions(prev => prev.map(session => 
-      session.id === activeSessionId 
-        ? { ...session, messages: [...session.messages, userMessage] }
-        : session
-    ));
+    if (chatMode === 'ai') {
+      setSessions(prev => prev.map(session => 
+        session.id === activeSessionId 
+          ? { ...session, messages: [...session.messages, userMessage] }
+          : session
+      ));
+    } else {
+      setUserChats(prev => prev.map(session => 
+        session.id === activeSessionId 
+          ? { ...session, messages: [...session.messages, userMessage] }
+          : session
+      ));
+    }
 
     const userMessageContent = message;
     setMessage("");
@@ -381,73 +492,110 @@ export default function UserDashboard() {
     setIsLoading(true);
 
     try {
-      // Save user message to database
-      await saveMessageToDatabase(
-        activeSessionId, 
-        userMessageContent, 
-        'user', 
-        userMessage.imageUrl
-      );
+      if (chatMode === 'ai') {
+        // AI Chat Logic
+        // Save user message to database
+        await saveMessageToDatabase(
+          activeSessionId, 
+          userMessageContent, 
+          'user', 
+          userMessage.imageUrl
+        );
 
-      // Generate AI response
-      console.log('SW Sending message to Gemini API:', userMessageContent);
-      
-      const response = await fetch('/api/chat/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessageContent
-        }),
-      });
+        // Generate AI response
+        console.log('SW Sending message to Gemini API:', userMessageContent);
+        
+        const response = await fetch('/api/chat/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: userMessageContent
+          }),
+        });
 
-      const data = await response.json();
-      console.log('SW API response:', data);
+        const data = await response.json();
+        console.log('SW API response:', data);
 
-      if (!data.success) {
-        throw new Error(data.error);
-      }
+        if (!data.success) {
+          throw new Error(data.error);
+        }
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: data.message,
-        role: "assistant",
-        timestamp: new Date()
-      };
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: data.message,
+          role: "assistant",
+          timestamp: new Date()
+        };
 
-      // Save AI response to database
-      await saveMessageToDatabase(
-        activeSessionId, 
-        data.message, 
-        'assistant'
-      );
+        // Save AI response to database
+        await saveMessageToDatabase(
+          activeSessionId, 
+          data.message, 
+          'assistant'
+        );
 
-      // Update local state with AI response
-      setSessions(prev => prev.map(session => 
-        session.id === activeSessionId 
-          ? { 
-              ...session, 
-              messages: [...session.messages, aiMessage],
-              title: session.messages.length === 1 ? userMessageContent.slice(0, 30) + "..." : session.title
-            }
-          : session
-      ));
+        // Update local state with AI response
+        setSessions(prev => prev.map(session => 
+          session.id === activeSessionId 
+            ? { 
+                ...session, 
+                messages: [...session.messages, aiMessage],
+                title: session.messages.length === 1 ? userMessageContent.slice(0, 30) + "..." : session.title
+              }
+            : session
+        ));
 
-      // Update user tries (the API already handles this when saving user messages)
-      if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
-        updateTries(user.remainingTries - 1);
+        // Update user tries (the API already handles this when saving user messages)
+        if (user && user.plan?.name === 'free' && user.remainingTries > 0) {
+          updateTries(user.remainingTries - 1);
+        }
+      } else {
+        // User Chat Logic (mock for now)
+        // In a real implementation, this would send the message to the other user
+        console.log('Sending user message:', userMessageContent);
+        
+        // Mock response for user chat
+        setTimeout(() => {
+          const userResponse: Message = {
+            id: (Date.now() + 1).toString(),
+            content: "Thanks for your message! (This is a mock response)",
+            role: "assistant",
+            timestamp: new Date()
+          };
+
+          setUserChats(prev => prev.map(session => 
+            session.id === activeSessionId 
+              ? { 
+                  ...session, 
+                  messages: [...session.messages, userResponse],
+                  title: session.messages.length === 1 ? userMessageContent.slice(0, 30) + "..." : session.title
+                }
+              : session
+          ));
+          setIsLoading(false);
+        }, 1000);
+        return;
       }
 
     } catch (error) {
       console.error('Error sending message:', error);
       
       // Remove the user message from local state if there was an error
-      setSessions(prev => prev.map(session => 
-        session.id === activeSessionId 
-          ? { ...session, messages: session.messages.filter(msg => msg.id !== userMessage.id) }
-          : session
-      ));
+      if (chatMode === 'ai') {
+        setSessions(prev => prev.map(session => 
+          session.id === activeSessionId 
+            ? { ...session, messages: session.messages.filter(msg => msg.id !== userMessage.id) }
+            : session
+        ));
+      } else {
+        setUserChats(prev => prev.map(session => 
+          session.id === activeSessionId 
+            ? { ...session, messages: session.messages.filter(msg => msg.id !== userMessage.id) }
+            : session
+        ));
+      }
 
       toast({
         title: "Error",
@@ -455,7 +603,9 @@ export default function UserDashboard() {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      if (chatMode === 'ai') {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -504,7 +654,7 @@ export default function UserDashboard() {
             
             <Button onClick={createNewSession} className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              New Chat
+              {chatMode === 'ai' ? 'New AI Chat' : 'New User Chat'}
             </Button>
           </div>
 
@@ -519,13 +669,13 @@ export default function UserDashboard() {
                   </div>
                 ))}
               </div>
-            ) : sessions.length === 0 ? (
+            ) : currentSessions.length === 0 ? (
               <div className="text-center text-gray-400 py-8">
-                <p className="text-sm">No chat sessions yet</p>
-                <p className="text-xs">Create your first chat to get started</p>
+                <p className="text-sm">No {chatMode === 'ai' ? 'AI' : 'user'} chats yet</p>
+                <p className="text-xs">Create your first {chatMode === 'ai' ? 'AI' : 'user'} chat to get started</p>
               </div>
             ) : (
-              sessions.map((session) => (
+              currentSessions.map((session) => (
                 <div
                   key={session.id}
                   className={`p-3 rounded-lg cursor-pointer transition-colors group ${
@@ -537,10 +687,17 @@ export default function UserDashboard() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-200 truncate">
-                        {session.title}
-                      </p>
-                      <p className="text-xs text-gray-400">
+                      <div className="flex items-center space-x-2">
+                        {chatMode === 'ai' ? (
+                          <Bot className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                        ) : (
+                          <User className="h-4 w-4 text-green-400 flex-shrink-0" />
+                        )}
+                        <p className="text-sm font-medium text-gray-200 truncate">
+                          {session.title}
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-400 ml-6">
                         {session.messages.length} messages
                       </p>
                     </div>
@@ -606,10 +763,10 @@ export default function UserDashboard() {
                   </div>
                   <div>
                     <h1 className="text-lg font-semibold text-white">
-                      {activeSession?.title || "New Chat"}
+                      {activeSession?.title || (chatMode === 'ai' ? "New AI Chat" : "New User Chat")}
                     </h1>
                     <p className="text-sm text-gray-400">
-                      Powered by Google Generative AI
+                      {chatMode === 'ai' ? "Powered by Google Generative AI" : "Chat with friends"}
                     </p>
                   </div>
                 </div>
@@ -682,6 +839,24 @@ export default function UserDashboard() {
                   unreadCount={unreadNotifications}
                   onClick={() => setNotificationsSidebarOpen(true)}
                 />
+                
+                {/* Chat Mode Toggle */}
+                <div className="flex items-center space-x-2 bg-gray-700/50 rounded-lg p-2">
+                  <div className="flex items-center space-x-2 text-xs text-gray-300">
+                    <span className={chatMode === 'ai' ? 'text-white font-medium' : ''}>
+                      AI ({aiChatCount})
+                    </span>
+                    <button
+                      onClick={() => setChatMode(chatMode === 'ai' ? 'user' : 'ai')}
+                      className="text-blue-400 hover:text-blue-300 transition-colors"
+                    >
+                      {chatMode === 'ai' ? <ToggleLeft className="h-5 w-5" /> : <ToggleRight className="h-5 w-5" />}
+                    </button>
+                    <span className={chatMode === 'user' ? 'text-white font-medium' : ''}>
+                      Users ({userChatCount})
+                    </span>
+                  </div>
+                </div>
                 
                 <ProfileDropdown
                   user={user}
@@ -802,7 +977,7 @@ export default function UserDashboard() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={activeSession ? "Type your message..." : "Select or create a chat to start messaging..."}
+                  placeholder={activeSession ? "Type your message..." : `Select or create a ${chatMode === 'ai' ? 'AI' : 'user'} chat to start messaging...`}
                   className="pr-12"
                   disabled={isLoading || !activeSession}
                 />
@@ -839,7 +1014,7 @@ export default function UserDashboard() {
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         title="Delete Chat Session"
-        description={`Are you sure you want to delete "${sessions.find(s => s.id === sessionToDelete)?.title}"? This action cannot be undone and all messages in this chat will be permanently lost.`}
+        description={`Are you sure you want to delete "${[...sessions, ...userChats].find(s => s.id === sessionToDelete)?.title}"? This action cannot be undone and all messages in this ${chatMode} chat will be permanently lost.`}
         confirmText="Delete Chat"
         cancelText="Cancel"
         onConfirm={confirmDeleteSession}

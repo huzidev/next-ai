@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, MessageSquare, Search, User, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, Ban, MessageSquare, Search, User, UserPlus, Users } from "lucide-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -80,12 +80,18 @@ export default function UsersPage() {
           // Load friendship statuses if not admin
           if (!isAdmin && user?.id) {
             try {
+              // First load from localStorage
+              const localKey = `friendships_${user.id}`;
+              const localFriendships = JSON.parse(localStorage.getItem(localKey) || '{}');
+              setFriendships(localFriendships);
+              
+              // Then try to load from API (will merge with localStorage data)
               const friendshipsResponse = await fetch('/api/friends/status', {
                 headers: { 'Authorization': `Bearer ${token}` }
               });
               const friendshipsData = await friendshipsResponse.json();
               if (friendshipsData.success) {
-                setFriendships(friendshipsData.friendships);
+                setFriendships(prev => ({ ...prev, ...friendshipsData.friendships }));
               }
             } catch (friendshipError) {
               console.error('Error loading friendships:', friendshipError);
@@ -159,7 +165,18 @@ export default function UsersPage() {
       const data = await response.json();
 
       if (data.success) {
+        // Update local state
         setFriendships(prev => ({ ...prev, [userId]: 'pending_sent' }));
+        
+        // Persist to localStorage for now (until database is working)
+        const currentUserId = user?.id;
+        if (currentUserId) {
+          const key = `friendships_${currentUserId}`;
+          const existingFriendships = JSON.parse(localStorage.getItem(key) || '{}');
+          existingFriendships[userId] = 'pending_sent';
+          localStorage.setItem(key, JSON.stringify(existingFriendships));
+        }
+        
         toast({
           title: "Friend Request Sent",
           description: "Your friend request has been sent successfully."
@@ -202,6 +219,16 @@ export default function UsersPage() {
         variant: "default"
       });
     }
+  };
+
+  const getChatButtonIcon = (userId: string) => {
+    const status = friendships[userId] || 'none';
+    return status === 'accepted' ? MessageSquare : Ban;
+  };
+
+  const isChatDisabled = (userId: string) => {
+    const status = friendships[userId] || 'none';
+    return status !== 'accepted';
   };
 
   const getFriendButtonText = (userId: string) => {
@@ -393,11 +420,15 @@ export default function UsersPage() {
                                 </Button>
                                 <Button
                                   size="sm"
-                                  variant="outline"
+                                  variant={isChatDisabled(userData.id) ? "secondary" : "outline"}
                                   onClick={() => openChat(userData)}
-                                  className="text-xs"
+                                  disabled={isChatDisabled(userData.id)}
+                                  className={`text-xs ${isChatDisabled(userData.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                  <MessageSquare className="h-3 w-3 mr-1" />
+                                  {(() => {
+                                    const IconComponent = getChatButtonIcon(userData.id);
+                                    return <IconComponent className="h-3 w-3 mr-1" />;
+                                  })()}
                                   Chat
                                 </Button>
                               </div>
