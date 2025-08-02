@@ -21,6 +21,7 @@ import {
   Trash2,
   Upload,
   User,
+  UserCheck,
   Users
 } from "lucide-react";
 import { useRouter } from "next/router";
@@ -627,6 +628,20 @@ export default function UserDashboard() {
                       >
                         <Megaphone className="h-4 w-4 mr-2" />
                         Announcements
+                      </Button>
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="friends"
+                      asChild
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push('/friends')}
+                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                      >
+                        <UserCheck className="h-4 w-4 mr-2" />
+                        Friends
                       </Button>
                     </TabsTrigger>
                     <TabsTrigger 

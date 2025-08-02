@@ -10,13 +10,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { name, username, email, subject, message } = req.body;
+    const { username, email, subject, message } = req.body;
 
     // Validate required fields
-    if (!name || !email || !message) {
+    if (!username || !email || !message) {
       return res.status(400).json({ 
         success: false, 
-        error: 'Name, email, and message are required' 
+        error: 'Username, email, and message are required' 
       });
     }
 
@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Create contact record
     const contact = await prisma.contact.create({
       data: {
-        name,
+        name: username, // Use username as name
         username: username || '',
         email,
         subject: subject || '',

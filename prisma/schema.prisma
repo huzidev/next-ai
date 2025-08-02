@@ -25,6 +25,13 @@ enum NotificationType {
   ADMIN_ACTION
 }
 
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
 model Admin {
   id                String             @id @default(uuid())
   username          String             @unique
@@ -66,6 +73,8 @@ model User {
   receivedMessages  ChatMessage[]      @relation("UserReceivedMessages")
   notifications     Notification[]
   contacts          Contact[]
+  sentFriendRequests     Friendship[]  @relation("FriendshipRequester")
+  receivedFriendRequests Friendship[]  @relation("FriendshipReceiver")
 
   @@index([email])
   @@index([isVerified])
@@ -193,4 +202,21 @@ model Contact {
   @@index([email])
   @@index([isResolved])
   @@index([createdAt])
+}
+
+// Friendship System
+model Friendship {
+  id          String           @id @default(uuid())
+  requesterId String
+  receiverId  String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  requester   User             @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver    User             @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, receiverId])
+  @@index([requesterId])
+  @@index([receiverId])
+  @@index([status])
 }

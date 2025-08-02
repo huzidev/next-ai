@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Search, User, Users } from "lucide-react";
+import { ArrowLeft, MessageSquare, Search, User, UserPlus, Users } from "lucide-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -23,6 +23,11 @@ interface UserData {
   planName: string;
   remainingTries: number;
   lastActiveAt: string | null;
+  friendshipStatus?: 'none' | 'pending_sent' | 'pending_received' | 'accepted' | 'blocked';
+}
+
+interface FriendshipData {
+  [userId: string]: 'none' | 'pending_sent' | 'pending_received' | 'accepted' | 'blocked';
 }
 
 export default function UsersPage() {
@@ -34,6 +39,8 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState<UserData[]>([]);
+  const [friendships, setFriendships] = useState<FriendshipData>({});
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Load users
   useEffect(() => {
@@ -43,6 +50,19 @@ export default function UsersPage() {
         if (!token) {
           router.push('/auth/user/signin');
           return;
+        }
+
+        // Check if user is admin
+        try {
+          const adminResponse = await fetch('/api/admin/verify', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (adminResponse.ok) {
+            setIsAdmin(true);
+          }
+        } catch (adminError) {
+          // User is not admin, continue as regular user
+          setIsAdmin(false);
         }
 
         const response = await fetch('/api/users', {
@@ -56,6 +76,21 @@ export default function UsersPage() {
         if (data.success) {
           setUsers(data.users);
           setFilteredUsers(data.users);
+
+          // Load friendship statuses if not admin
+          if (!isAdmin && user?.id) {
+            try {
+              const friendshipsResponse = await fetch('/api/friends/status', {
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              const friendshipsData = await friendshipsResponse.json();
+              if (friendshipsData.success) {
+                setFriendships(friendshipsData.friendships);
+              }
+            } catch (friendshipError) {
+              console.error('Error loading friendships:', friendshipError);
+            }
+          }
         } else {
           throw new Error(data.error || 'Failed to load users');
         }
@@ -71,8 +106,10 @@ export default function UsersPage() {
       }
     };
 
-    loadUsers();
-  }, [router, toast]);
+    if (user) {
+      loadUsers();
+    }
+  }, [router, toast, user, isAdmin]);
 
   // Filter users based on search term
   useEffect(() => {
@@ -105,6 +142,98 @@ export default function UsersPage() {
     if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
     if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
     return `${Math.floor(diffInDays / 365)} years ago`;
+  };
+
+  const sendFriendRequest = async (userId: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/friends/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ receiverId: userId })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFriendships(prev => ({ ...prev, [userId]: 'pending_sent' }));
+        toast({
+          title: "Friend Request Sent",
+          description: "Your friend request has been sent successfully."
+        });
+      } else {
+        throw new Error(data.error || 'Failed to send friend request');
+      }
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send friend request. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const openChat = (targetUser: UserData) => {
+    const friendshipStatus = friendships[targetUser.id] || 'none';
+    
+    if (friendshipStatus === 'accepted') {
+      // Open chat with friend
+      router.push(`/chat/${targetUser.id}`);
+    } else if (friendshipStatus === 'pending_sent') {
+      toast({
+        title: "Request Pending",
+        description: `${targetUser.username} hasn't accepted your friend request yet.`,
+        variant: "default"
+      });
+    } else if (friendshipStatus === 'pending_received') {
+      toast({
+        title: "Friend Request",
+        description: `Accept ${targetUser.username}'s friend request to start chatting.`,
+        variant: "default"
+      });
+    } else {
+      toast({
+        title: "Not Friends",
+        description: `${targetUser.username} is not your friend. Send a friend request first.`,
+        variant: "default"
+      });
+    }
+  };
+
+  const getFriendButtonText = (userId: string) => {
+    const status = friendships[userId] || 'none';
+    switch (status) {
+      case 'pending_sent':
+        return 'Request Sent';
+      case 'pending_received':
+        return 'Accept Request';
+      case 'accepted':
+        return 'Friends';
+      case 'blocked':
+        return 'Blocked';
+      default:
+        return 'Add Friend';
+    }
+  };
+
+  const getFriendButtonVariant = (userId: string) => {
+    const status = friendships[userId] || 'none';
+    switch (status) {
+      case 'pending_sent':
+        return 'secondary';
+      case 'pending_received':
+        return 'default';
+      case 'accepted':
+        return 'outline';
+      case 'blocked':
+        return 'destructive';
+      default:
+        return 'default';
+    }
   };
 
   return (
@@ -190,11 +319,12 @@ export default function UsersPage() {
                       <TableRow className="border-gray-700">
                         <TableHead className="text-gray-300">User</TableHead>
                         <TableHead className="text-gray-300">Email</TableHead>
-                        <TableHead className="text-gray-300">Plan</TableHead>
-                        <TableHead className="text-gray-300">Credits</TableHead>
+                        {isAdmin && <TableHead className="text-gray-300">Plan</TableHead>}
+                        {isAdmin && <TableHead className="text-gray-300">Credits</TableHead>}
                         <TableHead className="text-gray-300">Status</TableHead>
                         <TableHead className="text-gray-300">Last Active</TableHead>
                         <TableHead className="text-gray-300">Joined</TableHead>
+                        {!isAdmin && <TableHead className="text-gray-300">Actions</TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -211,20 +341,24 @@ export default function UsersPage() {
                             </div>
                           </TableCell>
                           <TableCell className="text-gray-300">{userData.email}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-blue-400 border-blue-400">
-                              {userData.planName}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <span className={`font-medium ${
-                              userData.remainingTries < 10 ? 'text-red-400' : 
-                              userData.remainingTries < 20 ? 'text-yellow-400' : 
-                              'text-green-400'
-                            }`}>
-                              {userData.remainingTries}
-                            </span>
-                          </TableCell>
+                          {isAdmin && (
+                            <TableCell>
+                              <Badge variant="outline" className="text-blue-400 border-blue-400">
+                                {userData.planName}
+                              </Badge>
+                            </TableCell>
+                          )}
+                          {isAdmin && (
+                            <TableCell>
+                              <span className={`font-medium ${
+                                userData.remainingTries < 10 ? 'text-red-400' : 
+                                userData.remainingTries < 20 ? 'text-yellow-400' : 
+                                'text-green-400'
+                              }`}>
+                                {userData.remainingTries}
+                              </span>
+                            </TableCell>
+                          )}
                           <TableCell>
                             <div className="flex space-x-1">
                               <Badge 
@@ -244,6 +378,31 @@ export default function UsersPage() {
                           <TableCell className="text-gray-300">
                             {formatDate(userData.createdAt)}
                           </TableCell>
+                          {!isAdmin && userData.id !== user?.id && (
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant={getFriendButtonVariant(userData.id) as any}
+                                  onClick={() => sendFriendRequest(userData.id)}
+                                  disabled={friendships[userData.id] === 'pending_sent' || friendships[userData.id] === 'blocked'}
+                                  className="text-xs"
+                                >
+                                  <UserPlus className="h-3 w-3 mr-1" />
+                                  {getFriendButtonText(userData.id)}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => openChat(userData)}
+                                  className="text-xs"
+                                >
+                                  <MessageSquare className="h-3 w-3 mr-1" />
+                                  Chat
+                                </Button>
+                              </div>
+                            </TableCell>
+                          )}
                         </TableRow>
                       ))}
                     </TableBody>

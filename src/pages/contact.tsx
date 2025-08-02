@@ -17,7 +17,6 @@ export default function ContactPage() {
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
-    name: '',
     username: '',
     email: '',
     subject: '',
@@ -30,7 +29,6 @@ export default function ContactPage() {
     if (user && !authLoading) {
       setFormData(prev => ({
         ...prev,
-        name: user.username || '',
         username: user.username || '',
         email: user.email || ''
       }));
@@ -48,7 +46,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.username || !formData.email || !formData.message) {
       toast({
         title: "Missing Fields",
         description: "Please fill in all required fields.",
@@ -80,7 +78,6 @@ export default function ContactPage() {
         
         // Reset form
         setFormData({
-          name: user?.username || '',
           username: user?.username || '',
           email: user?.email || '',
           subject: '',
@@ -137,37 +134,20 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-gray-200">
-                        Full Name <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="Enter your full name"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="username" className="text-gray-200">
-                        Username
-                      </Label>
-                      <Input
-                        id="username"
-                        name="username"
-                        type="text"
-                        value={formData.username}
-                        onChange={handleInputChange}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="Enter your username"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="username" className="text-gray-200">
+                      Username <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="username"
+                      name="username"
+                      type="text"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="Enter your username"
+                      required
+                    />
                   </div>
 
                   <div className="space-y-2">
