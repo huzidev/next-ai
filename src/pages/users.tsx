@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Toaster } from "@/components/ui/toaster";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, Ban, MessageSquare, Search, User, UserPlus, Users } from "lucide-react";
@@ -231,6 +232,22 @@ export default function UsersPage() {
     return status !== 'accepted';
   };
 
+  const getChatTooltipText = (userId: string) => {
+    const status = friendships[userId] || 'none';
+    switch (status) {
+      case 'pending_sent':
+        return 'Chat disabled - Friend request pending';
+      case 'pending_received':
+        return 'Chat disabled - Accept friend request to chat';
+      case 'blocked':
+        return 'Chat disabled - User is blocked';
+      case 'none':
+        return 'Chat disabled - Send friend request to chat';
+      default:
+        return 'Chat unavailable';
+    }
+  };
+
   const getFriendButtonText = (userId: string) => {
     const status = friendships[userId] || 'none';
     switch (status) {
@@ -270,12 +287,13 @@ export default function UsersPage() {
         <meta name="description" content="View all registered users" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-              <Button
+      <TooltipProvider>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+          <div className="container mx-auto px-4 py-8">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-4">
+                <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.back()}
@@ -286,7 +304,7 @@ export default function UsersPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-white">All Users</h1>
-                <p className="text-gray-400">View all registered users (excluding admins)</p>
+                <p className="text-gray-400">View all registered users)</p>
               </div>
             </div>
             
@@ -418,19 +436,42 @@ export default function UsersPage() {
                                   <UserPlus className="h-3 w-3 mr-1" />
                                   {getFriendButtonText(userData.id)}
                                 </Button>
-                                <Button
-                                  size="sm"
-                                  variant={isChatDisabled(userData.id) ? "secondary" : "outline"}
-                                  onClick={() => openChat(userData)}
-                                  disabled={isChatDisabled(userData.id)}
-                                  className={`text-xs ${isChatDisabled(userData.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                  {(() => {
-                                    const IconComponent = getChatButtonIcon(userData.id);
-                                    return <IconComponent className="h-3 w-3 mr-1" />;
-                                  })()}
-                                  Chat
-                                </Button>
+                                {isChatDisabled(userData.id) ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        onClick={() => openChat(userData)}
+                                        disabled={true}
+                                        className="text-xs opacity-50 cursor-not-allowed"
+                                      >
+                                        {(() => {
+                                          const IconComponent = getChatButtonIcon(userData.id);
+                                          return <IconComponent className="h-3 w-3 mr-1" />;
+                                        })()}
+                                        Chat
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>{getChatTooltipText(userData.id)}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => openChat(userData)}
+                                    disabled={false}
+                                    className="text-xs"
+                                  >
+                                    {(() => {
+                                      const IconComponent = getChatButtonIcon(userData.id);
+                                      return <IconComponent className="h-3 w-3 mr-1" />;
+                                    })()}
+                                    Chat
+                                  </Button>
+                                )}
                               </div>
                             </TableCell>
                           )}
@@ -446,6 +487,7 @@ export default function UsersPage() {
       </div>
 
       <Toaster />
+      </TooltipProvider>
     </>
   );
 }
