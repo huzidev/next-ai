@@ -328,7 +328,7 @@ export default function UserDashboard() {
 
         toast({
           title: "Success",
-          description: "New user chat session created successfully",
+          description: "New chat session created successfully",
         });
       }
     } catch (error) {
@@ -377,7 +377,7 @@ export default function UserDashboard() {
     if (currentSessions.length === 1) {
       toast({
         title: "Cannot delete",
-        description: `You must have at least one ${chatMode} chat session`,
+        description: `You must have at least one chat session`,
         variant: "destructive",
       });
       return;
@@ -431,8 +431,8 @@ export default function UserDashboard() {
         }
 
         toast({
-          title: "User Chat deleted",
-          description: "The user chat session has been deleted successfully",
+          title: "Friend Chat deleted",
+          description: "The chat session has been deleted successfully",
         });
       }
     } catch (error) {
@@ -712,7 +712,7 @@ export default function UserDashboard() {
                     {chatMode === 'ai' ? <ToggleLeft className="h-5 w-5" /> : <ToggleRight className="h-5 w-5" />}
                   </button>
                   <span className={chatMode === 'user' ? 'text-white font-medium' : ''}>
-                    Users ({userChatCount})
+                    Friends ({userChatCount})
                   </span>
                 </div>
               </div>
@@ -720,7 +720,7 @@ export default function UserDashboard() {
             
             <Button onClick={createNewSession} className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              {chatMode === 'ai' ? 'New AI Chat' : 'New User Chat'}
+              New Chat
             </Button>
           </div>
 
@@ -737,8 +737,8 @@ export default function UserDashboard() {
               </div>
             ) : currentSessions.length === 0 ? (
               <div className="text-center text-gray-400 py-8">
-                <p className="text-sm">No {chatMode === 'ai' ? 'AI' : 'user'} chats yet</p>
-                <p className="text-xs">Create your first {chatMode === 'ai' ? 'AI' : 'user'} chat to get started</p>
+                <p className="text-sm">No {chatMode === 'ai' ? 'AI' : 'friend'} chats yet</p>
+                <p className="text-xs">Create your first chat to get started</p>
               </div>
             ) : (
               currentSessions.map((session) => (
@@ -829,7 +829,7 @@ export default function UserDashboard() {
                   </div>
                   <div>
                     <h1 className="text-lg font-semibold text-white">
-                      {activeSession?.title || (chatMode === 'ai' ? "New AI Chat" : "New User Chat")}
+                      {activeSession?.title || "New Chat"}
                     </h1>
                     <p className="text-sm text-gray-400">
                       {chatMode === 'ai' ? "Powered by Google Generative AI" : "Chat with friends"}
@@ -1025,7 +1025,7 @@ export default function UserDashboard() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={activeSession ? "Type your message..." : `Select or create a ${chatMode === 'ai' ? 'AI' : 'user'} chat to start messaging...`}
+                  placeholder={activeSession ? "Type your message..." : `Select or create a chat to start messaging...`}
                   className="pr-12"
                   disabled={isLoading || !activeSession}
                 />
@@ -1082,6 +1082,7 @@ export default function UserDashboard() {
         onClose={() => setSelectFriendModalOpen(false)}
         onSelectFriend={handleSelectFriend}
         isLoading={isCreatingChat}
+        existingUserChats={userChats}
       />
 
       <NotificationsSidebar

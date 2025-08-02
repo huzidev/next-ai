@@ -20,13 +20,15 @@ interface SelectFriendModalProps {
   onClose: () => void;
   onSelectFriend: (friend: Friend) => void;
   isLoading?: boolean;
+  existingUserChats?: { title: string }[]; // Add existing chats to filter out friends
 }
 
 export function SelectFriendModal({
   isOpen,
   onClose,
   onSelectFriend,
-  isLoading = false
+  isLoading = false,
+  existingUserChats = []
 }: SelectFriendModalProps) {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [allFriends, setAllFriends] = useState<Friend[]>([]); // Track all friends for stats
@@ -34,12 +36,12 @@ export function SelectFriendModal({
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingFriends, setLoadingFriends] = useState(false);
 
-  // Load friends when modal opens
+  // Load friends when modal opens or when existing chats change
   useEffect(() => {
     if (isOpen) {
       loadFriends();
     }
-  }, [isOpen]);
+  }, [isOpen, existingUserChats]);
 
   // Filter friends based on search term
   useEffect(() => {
@@ -68,7 +70,7 @@ export function SelectFriendModal({
           email: 'alice@example.com',
           isOnline: false,
           lastActive: '2 hours ago',
-          hasActiveChat: true // This friend already has an active chat
+          hasActiveChat: false
         },
         {
           id: 'friend-3',
@@ -95,9 +97,17 @@ export function SelectFriendModal({
         }
       ];
 
+      // Check which friends already have active chats based on existing chat titles
+      const friendsWithActiveChats = mockFriends.map(friend => {
+        const hasActiveChat = existingUserChats.some(chat => 
+          chat.title.toLowerCase().includes(friend.username.toLowerCase())
+        );
+        return { ...friend, hasActiveChat };
+      });
+
       // Filter out friends who already have active chats
-      const availableFriends = mockFriends.filter(friend => !friend.hasActiveChat);
-      setAllFriends(mockFriends);
+      const availableFriends = friendsWithActiveChats.filter(friend => !friend.hasActiveChat);
+      setAllFriends(friendsWithActiveChats);
       setFriends(availableFriends);
     } catch (error) {
       console.error('Error loading friends:', error);
