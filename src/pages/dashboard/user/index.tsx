@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { NewChatModal } from "@/components/ui/new-chat-modal";
+import { Notification, NotificationsSidebar } from "@/components/ui/notifications-sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
@@ -66,11 +67,47 @@ export default function UserDashboard() {
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
   const [newChatModalOpen, setNewChatModalOpen] = useState<boolean>(false);
   const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
+  const [notificationsSidebarOpen, setNotificationsSidebarOpen] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: '1',
+      title: 'Welcome to Next-AI!',
+      message: 'Start chatting with our AI assistant to get help with your questions.',
+      type: 'success',
+      isRead: false,
+      createdAt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    },
+    {
+      id: '2',
+      title: 'Plan Upgrade Available',
+      message: 'Upgrade to Pro plan to get 500 AI conversations per month and priority support.',
+      type: 'info',
+      isRead: false,
+      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+    },
+    {
+      id: '3',
+      title: 'Low Credits Warning',
+      message: 'You have 5 credits remaining. Consider upgrading your plan to continue chatting.',
+      type: 'warning',
+      isRead: true,
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+    },
+    {
+      id: '4',
+      title: 'New Feature: Image Upload',
+      message: 'You can now upload images in your conversations for AI analysis!',
+      type: 'update',
+      isRead: true,
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+    },
+  ]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const activeSession = sessions.find(s => s.id === activeSessionId);
+  const unreadNotifications = notifications.filter(n => !n.isRead).length;
 
   // Load chat sessions from database
   const loadChatSessions = async () => {
@@ -428,6 +465,28 @@ export default function UserDashboard() {
     }
   };
 
+  // Notification handlers
+  const handleNotificationClick = (notification: Notification) => {
+    if (notification.actionUrl) {
+      router.push(notification.actionUrl);
+    }
+    setNotificationsSidebarOpen(false);
+  };
+
+  const handleMarkAsRead = (notificationId: string) => {
+    setNotifications(prev => 
+      prev.map(n => 
+        n.id === notificationId ? { ...n, isRead: true } : n
+      )
+    );
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => 
+      prev.map(n => ({ ...n, isRead: true }))
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="flex h-screen">
@@ -533,10 +592,19 @@ export default function UserDashboard() {
             </div>
             
             <div className="mt-3 space-y-2">
-              <Button variant="outline" size="sm" className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start border-gray-600 text-gray-200 hover:bg-gray-700"
+                onClick={() => setNotificationsSidebarOpen(true)}
+              >
                 <Bell className="h-4 w-4 mr-2" />
                 Notifications
-                <Badge variant="destructive" className="ml-auto">3</Badge>
+                {unreadNotifications > 0 && (
+                  <Badge variant="destructive" className="ml-auto">
+                    {unreadNotifications}
+                  </Badge>
+                )}
               </Button>
               <Button 
                 variant="outline" 
@@ -745,6 +813,15 @@ export default function UserDashboard() {
         onClose={() => setNewChatModalOpen(false)}
         onCreateChat={handleCreateChat}
         isCreating={isCreatingChat}
+      />
+
+      <NotificationsSidebar
+        isOpen={notificationsSidebarOpen}
+        onClose={() => setNotificationsSidebarOpen(false)}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
+        onNotificationClick={handleNotificationClick}
       />
       
       <Toaster />
