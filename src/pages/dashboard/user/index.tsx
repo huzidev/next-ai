@@ -6,6 +6,7 @@ import { NewChatModal } from "@/components/ui/new-chat-modal";
 import { NotificationButton } from "@/components/ui/notification-button";
 import { Notification, NotificationsSidebar } from "@/components/ui/notifications-sidebar";
 import { ProfileDropdown } from "@/components/ui/profile-dropdown";
+import { SelectFriendModal } from "@/components/ui/select-friend-modal";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +46,15 @@ interface ChatSession {
   updatedAt: Date;
 }
 
+interface Friend {
+  id: string;
+  username: string;
+  email: string;
+  isOnline?: boolean;
+  lastActive?: string;
+  hasActiveChat?: boolean;
+}
+
 export default function UserDashboard() {
   const { user, isLoading: authLoading, logout, updateTries, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -70,6 +80,7 @@ export default function UserDashboard() {
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
   const [newChatModalOpen, setNewChatModalOpen] = useState<boolean>(false);
+  const [selectFriendModalOpen, setSelectFriendModalOpen] = useState<boolean>(false);
   const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
   const [notificationsSidebarOpen, setNotificationsSidebarOpen] = useState<boolean>(false);
   const [chatMode, setChatMode] = useState<'ai' | 'user'>('ai'); // New state for chat mode toggle
@@ -253,7 +264,11 @@ export default function UserDashboard() {
   }, [activeSession?.messages]);
 
   const createNewSession = () => {
-    setNewChatModalOpen(true);
+    if (chatMode === 'ai') {
+      setNewChatModalOpen(true);
+    } else {
+      setSelectFriendModalOpen(true);
+    }
   };
 
   const handleCreateChat = async (title: string) => {
@@ -320,6 +335,37 @@ export default function UserDashboard() {
       toast({
         title: "Error",
         description: `Failed to create new ${chatMode} chat session`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
+
+  const handleSelectFriend = async (friend: Friend) => {
+    setIsCreatingChat(true);
+    try {
+      // Create user chat with selected friend
+      const newUserChat: ChatSession = {
+        id: `user-chat-${Date.now()}`,
+        title: `Chat with @${friend.username}`,
+        messages: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      setUserChats(prev => [newUserChat, ...prev]);
+      setActiveSessionId(newUserChat.id);
+      setSelectFriendModalOpen(false);
+
+      toast({
+        title: "Success",
+        description: `New chat started with @${friend.username}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start chat with friend",
         variant: "destructive",
       });
     } finally {
@@ -1029,6 +1075,13 @@ export default function UserDashboard() {
         onClose={() => setNewChatModalOpen(false)}
         onCreateChat={handleCreateChat}
         isCreating={isCreatingChat}
+      />
+
+      <SelectFriendModal
+        isOpen={selectFriendModalOpen}
+        onClose={() => setSelectFriendModalOpen(false)}
+        onSelectFriend={handleSelectFriend}
+        isLoading={isCreatingChat}
       />
 
       <NotificationsSidebar
