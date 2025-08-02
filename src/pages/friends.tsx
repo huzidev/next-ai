@@ -356,11 +356,12 @@ export default function FriendsPage() {
                             </Button>
                             <Button
                               size="sm"
-                              variant="outline"
+                              variant="destructive"
                               onClick={() => rejectFriendRequest(friend.friendshipId, friend.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white"
                             >
                               <UserX className="h-4 w-4 mr-2" />
-                              Reject
+                              Decline
                             </Button>
                           </>
                         )}

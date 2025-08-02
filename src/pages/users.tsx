@@ -2,13 +2,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Toaster } from "@/components/ui/toaster";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Ban, MessageSquare, Search, User, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, Ban, ChevronDown, MessageSquare, Search, User, UserPlus, Users, X } from "lucide-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -195,6 +196,95 @@ export default function UsersPage() {
     }
   };
 
+  const acceptFriendRequest = async (userId: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/friends/accept-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ requesterId: userId })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setFriendships(prev => ({ ...prev, [userId]: 'accepted' }));
+        
+        // Persist to localStorage
+        const currentUserId = user?.id;
+        if (currentUserId) {
+          const key = `friendships_${currentUserId}`;
+          const existingFriendships = JSON.parse(localStorage.getItem(key) || '{}');
+          existingFriendships[userId] = 'accepted';
+          localStorage.setItem(key, JSON.stringify(existingFriendships));
+        }
+        
+        toast({
+          title: "Friend Request Accepted",
+          description: "You are now friends! You can start chatting."
+        });
+      } else {
+        throw new Error(data.error || 'Failed to accept friend request');
+      }
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to accept friend request. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const declineFriendRequest = async (userId: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/friends/decline-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ requesterId: userId })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setFriendships(prev => ({ ...prev, [userId]: 'none' }));
+        
+        // Persist to localStorage
+        const currentUserId = user?.id;
+        if (currentUserId) {
+          const key = `friendships_${currentUserId}`;
+          const existingFriendships = JSON.parse(localStorage.getItem(key) || '{}');
+          existingFriendships[userId] = 'none';
+          localStorage.setItem(key, JSON.stringify(existingFriendships));
+        }
+        
+        toast({
+          title: "Friend Request Declined",
+          description: "The friend request has been declined.",
+          variant: "destructive"
+        });
+      } else {
+        throw new Error(data.error || 'Failed to decline friend request');
+      }
+    } catch (error) {
+      console.error('Error declining friend request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to decline friend request. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const openChat = (targetUser: UserData) => {
     const friendshipStatus = friendships[targetUser.id] || 'none';
     
@@ -304,13 +394,24 @@ export default function UsersPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-white">All Users</h1>
-                <p className="text-gray-400">View all registered users)</p>
+                <p className="text-gray-400">View all registered users</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 text-gray-400">
-              <Users className="h-5 w-5" />
-              <span>{filteredUsers.length} users</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-gray-400">
+                <Users className="h-5 w-5" />
+                <span>{filteredUsers.length} users</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push('/friends')}
+                className="text-blue-400 border-blue-400 hover:bg-blue-400 hover:text-white"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                View Friend Requests
+              </Button>
             </div>
           </div>
 
@@ -426,16 +527,48 @@ export default function UsersPage() {
                           {!isAdmin && userData.id !== user?.id && (
                             <TableCell>
                               <div className="flex space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant={getFriendButtonVariant(userData.id) as any}
-                                  onClick={() => sendFriendRequest(userData.id)}
-                                  disabled={friendships[userData.id] === 'pending_sent' || friendships[userData.id] === 'blocked'}
-                                  className="text-xs"
-                                >
-                                  <UserPlus className="h-3 w-3 mr-1" />
-                                  {getFriendButtonText(userData.id)}
-                                </Button>
+                                {friendships[userData.id] === 'pending_received' ? (
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        className="text-xs"
+                                      >
+                                        <UserPlus className="h-3 w-3 mr-1" />
+                                        Accept Request
+                                        <ChevronDown className="h-3 w-3 ml-1" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                      <DropdownMenuItem 
+                                        onClick={() => acceptFriendRequest(userData.id)}
+                                        className="text-green-600 focus:text-green-600"
+                                      >
+                                        <UserPlus className="h-4 w-4 mr-2" />
+                                        Accept Request
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={() => declineFriendRequest(userData.id)}
+                                        className="text-red-600 focus:text-red-600"
+                                      >
+                                        <X className="h-4 w-4 mr-2" />
+                                        Decline Request
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant={getFriendButtonVariant(userData.id) as any}
+                                    onClick={() => sendFriendRequest(userData.id)}
+                                    disabled={friendships[userData.id] === 'pending_sent' || friendships[userData.id] === 'blocked'}
+                                    className="text-xs"
+                                  >
+                                    <UserPlus className="h-3 w-3 mr-1" />
+                                    {getFriendButtonText(userData.id)}
+                                  </Button>
+                                )}
                                 {isChatDisabled(userData.id) ? (
                                   <Tooltip>
                                     <TooltipTrigger asChild>
