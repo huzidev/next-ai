@@ -75,13 +75,11 @@ export default function VerificationForm({
 
       if (response.success) {
         toast({
-          title: "Code Verified",
-          description: response.message,
+          title: "Email Verified Successfully!",
+          description: "Your account has been verified. You can now sign in.",
         });
-        // Redirect to success page
-        router.push(
-          `${successRedirectPath}?email=${encodeURIComponent(email)}`
-        );
+        // Redirect to success page without email parameter
+        router.push(successRedirectPath);
       } else {
         toast({
           title: "Invalid Code",

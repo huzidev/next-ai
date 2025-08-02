@@ -49,11 +49,11 @@ export default function UserSignin() {
       // Call signin API using the reusable api utility
       const response = await api.post("/api/auth/user/signin", formData);
 
-      console.log("SW response on verifycation page", response);
-      console.log("SW response.data:", response.data);
-      console.log("SW response.data.data:", response.data?.data);
-      console.log("SW response.data.data.user:", response.data?.data?.user);
-      console.log("SW response.data.data.token:", response.data?.data?.token);
+      console.log("SW response on signin page", response);
+      console.log("SW response.success:", response.success);
+      console.log("SW response.needsVerification:", response.needsVerification);
+      console.log("SW response.email:", response.email);
+      console.log("SW response.error:", response.error);
 
       if (response.success) {
         console.log('Signin success, token:', response.data.data.token?.substring(0, 20) + '...');
@@ -89,7 +89,8 @@ export default function UserSignin() {
           variant: "destructive",
         });
       }
-    } catch {
+    } catch (error) {
+      console.error("SW signin error:", error);
       toast({
         title: "Error",
         description: "Failed to sign in. Please check your credentials.",

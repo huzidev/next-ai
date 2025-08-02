@@ -79,12 +79,17 @@ export default function UserSignup() {
     try {
       const response = await api.post("/api/auth/user/signup", formData);
 
+      console.log("SW signup response:", response);
+      console.log("SW signup response.success:", response.success);
+      console.log("SW signup response.error:", response.error);
+
       if (response.success) {
         toast({
           title: "Account Created!",
           description: "Please check your email for verification code",
         });
 
+        console.log("SW redirecting to verification with email:", formData.email);
         // Redirect to verification page with email
         router.push(
           `/auth/user/verify?email=${encodeURIComponent(formData.email)}`
@@ -97,7 +102,8 @@ export default function UserSignup() {
           variant: "destructive",
         });
       }
-    } catch {
+    } catch (error) {
+      console.error("SW signup error:", error);
       toast({
         title: "Error",
         description: "Failed to create account. Please try again.",
