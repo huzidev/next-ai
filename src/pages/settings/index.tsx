@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChangePasswordModal } from "@/components/ui/change-password-modal";
 import { DeleteAccountModal } from "@/components/ui/delete-account-modal";
 import { EditProfileModal } from "@/components/ui/edit-profile-modal";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { AlertTriangle, ArrowLeft, Crown } from "lucide-react";
 import { useRouter } from "next/router";
@@ -31,6 +30,7 @@ export default function UserSettings() {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
 
   // Debug user data
   console.log("SW Settings user data:", user);
@@ -180,20 +180,57 @@ export default function UserSettings() {
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center space-x-4 mb-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleBack}
-                className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg px-3 py-2"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-            </div>
-            <div className="border-l-4 border-blue-500 pl-6">
-              <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-              <p className="text-gray-400">Manage your account and preferences</p>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleBack}
+                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg px-3 py-2"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+                <div className="border-l-4 border-blue-500 pl-6">
+                  <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
+                  <p className="text-gray-400">Manage your account and preferences</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveTab('profile')}
+                  className={`${activeTab === 'profile' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
+                >
+                  Profile
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveTab('usage')}
+                  className={`${activeTab === 'usage' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
+                >
+                  Usage
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveTab('plans')}
+                  className={`${activeTab === 'plans' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
+                >
+                  Plans
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveTab('account')}
+                  className={`${activeTab === 'account' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
+                >
+                  Account
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -221,27 +258,9 @@ export default function UserSettings() {
             </Card>
           )}
 
-            {/* Tab links as array of objects, mapped to TabsTrigger */}
-            <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:w-3/4 bg-gray-800 border border-gray-700 p-1 rounded-lg">
-              {[
-              { value: "profile", label: "Profile" },
-              { value: "usage", label: "Usage" },
-              { value: "plans", label: "Plans" },
-              { value: "account", label: "Account" },
-              ].map(tab => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-400 hover:text-white transition-colors"
-              >
-                {tab.label}
-              </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* Profile Tab */}
-            <TabsContent value="profile" className="space-y-6">
+          {/* Tab Content */}
+          <div className="space-y-6">
+            {activeTab === 'profile' && (
               <ProfileTab
                 user={user}
                 authLoading={authLoading}
@@ -250,23 +269,20 @@ export default function UserSettings() {
                 onEditProfile={handleEditProfile}
                 onChangePlan={handleChangePlan}
               />
-            </TabsContent>
+            )}
 
-            {/* Usage Tab */}
-            <TabsContent value="usage" className="space-y-6">
+            {activeTab === 'usage' && (
               <UsageTab />
-            </TabsContent>
+            )}
 
-            {/* Plans Tab */}
-            <TabsContent value="plans" className="space-y-6">
+            {activeTab === 'plans' && (
               <PlansTab
                 user={user}
                 onChangePlan={handleChangePlan}
               />
-            </TabsContent>
+            )}
 
-            {/* Account Tab */}
-            <TabsContent value="account" className="space-y-6">
+            {activeTab === 'account' && (
               <AccountTab
                 user={user}
                 stats={stats}
@@ -276,8 +292,8 @@ export default function UserSettings() {
                 onDeleteAccount={handleDeleteAccount}
                 onLogout={logout}
               />
-            </TabsContent>
-          </Tabs>
+            )}
+          </div>
         </div>
 
         {/* Edit Profile Modal */}
