@@ -205,19 +205,19 @@ export default function UserSettings() {
               </div>
               
               <div className="flex items-center space-x-2">
-                {tabs.map((tab) => (
+                {tabs.map(({id, label}) => (
                   <Button
-                    key={tab.id}
+                    key={id}
                     variant="ghost"
                     size="default"
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => setActiveTab(id)}
                     className={`text-lg px-4 py-2 ${
-                      activeTab === tab.id 
+                      activeTab === id 
                         ? 'text-white bg-gray-700' 
                         : 'text-gray-300'
                     } hover:text-white hover:bg-gray-700`}
                   >
-                    {tab.label}
+                    {label}
                   </Button>
                 ))}
               </div>

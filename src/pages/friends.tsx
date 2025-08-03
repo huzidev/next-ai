@@ -215,12 +215,11 @@ export default function FriendsPage() {
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
-                size="sm"
+                size="default"
                 onClick={() => router.back()}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg p-3"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                <ArrowLeft className="h-6 w-6" />
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-white">Friends</h1>
