@@ -194,12 +194,11 @@ export default function UserSettings() {
                   variant="ghost" 
                   size="sm" 
                   onClick={handleBack}
-                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg px-3 py-2"
+                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg p-2"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
+                  <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <div className="border-l-4 border-blue-500 pl-6">
+                <div>
                   <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
                   <p className="text-gray-400">Manage your account and preferences</p>
                 </div>
