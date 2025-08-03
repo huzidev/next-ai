@@ -46,7 +46,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.username || !formData.email || !formData.message) {
+    if (!formData.username || !formData.email || !formData.subject || !formData.message) {
       toast({
         title: "Missing Fields",
         description: "Please fill in all required fields.",
@@ -65,7 +65,10 @@ export default function ContactPage() {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          userId: user?.id
+        })
       });
 
       const data = await response.json();
@@ -192,11 +195,23 @@ export default function ContactPage() {
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}
-                      rows={6}
-                      className="bg-gray-700 border-gray-600 text-white min-h-[120px]"
+                      className="bg-gray-700 border-gray-600 text-white"
                       placeholder="Please describe your issue or question in detail..."
+                      rows={6}
+                      maxLength={500}
                       required
                     />
+                    <div className="flex justify-end">
+                      <span className={`text-xs ${
+                        formData.message.length > 450 
+                          ? 'text-yellow-400' 
+                          : formData.message.length === 500 
+                          ? 'text-red-400' 
+                          : 'text-gray-400'
+                      }`}>
+                        {formData.message.length}/500 characters
+                      </span>
+                    </div>
                   </div>
 
                   <Button
