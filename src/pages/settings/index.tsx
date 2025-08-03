@@ -32,6 +32,14 @@ export default function UserSettings() {
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
 
+  // Tab configuration
+  const tabs = [
+    { id: 'profile', label: 'Profile' },
+    { id: 'usage', label: 'Usage' },
+    { id: 'plans', label: 'Plans' },
+    { id: 'account', label: 'Account' }
+  ];
+
   // Debug user data
   console.log("SW Settings user data:", user);
   console.log("SW Settings isAuthenticated:", isAuthenticated);
@@ -198,38 +206,21 @@ export default function UserSettings() {
               </div>
               
               <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveTab('profile')}
-                  className={`${activeTab === 'profile' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
-                >
-                  Profile
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveTab('usage')}
-                  className={`${activeTab === 'usage' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
-                >
-                  Usage
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveTab('plans')}
-                  className={`${activeTab === 'plans' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
-                >
-                  Plans
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveTab('account')}
-                  className={`${activeTab === 'account' ? 'text-white bg-gray-700' : 'text-gray-300'} hover:text-white hover:bg-gray-700`}
-                >
-                  Account
-                </Button>
+                {tabs.map((tab) => (
+                  <Button
+                    key={tab.id}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`text-base ${
+                      activeTab === tab.id 
+                        ? 'text-white bg-gray-700' 
+                        : 'text-gray-300'
+                    } hover:text-white hover:bg-gray-700`}
+                  >
+                    {tab.label}
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
