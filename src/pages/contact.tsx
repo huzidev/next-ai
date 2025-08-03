@@ -192,6 +192,7 @@ export default function ContactPage() {
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}
+                      rows={6}
                       className="bg-gray-700 border-gray-600 text-white min-h-[120px]"
                       placeholder="Please describe your issue or question in detail..."
                       required
