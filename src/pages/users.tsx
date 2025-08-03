@@ -402,15 +402,6 @@ export default function UsersPage() {
                 <Users className="h-5 w-5" />
                 <span>{filteredUsers.length} users</span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push('/friends')}
-                className="text-blue-400 border-blue-400 hover:bg-blue-400 hover:text-white"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                View Friend Requests
-              </Button>
             </div>
           </div>
 
