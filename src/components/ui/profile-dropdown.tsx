@@ -28,7 +28,7 @@ export function ProfileDropdown({ user, authLoading, onLogout }: ProfileDropdown
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 hover:bg-transparent focus:bg-transparent">
           <Avatar className="h-10 w-10">
             <AvatarFallback className="bg-blue-600 text-white">
               {user?.username ? user.username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
