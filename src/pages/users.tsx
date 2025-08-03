@@ -521,11 +521,10 @@ export default function UsersPage() {
                                   // Show "View Profile" for the user's own profile
                                   <Button
                                     size="sm"
-                                    variant="outline"
+                                    variant="ghost"
                                     onClick={() => router.push('/settings')}
-                                    className="text-xs"
+                                    className="text-xs text-blue-400 hover:text-blue-300 border-0 p-0 h-auto font-normal bg-transparent hover:bg-transparent"
                                   >
-                                    <Eye className="h-3 w-3 mr-1" />
                                     View Profile
                                   </Button>
                                 ) : (
