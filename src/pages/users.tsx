@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Ban, ChevronDown, MessageSquare, Search, User, UserPlus, Users, X } from "lucide-react";
+import { ArrowLeft, Ban, ChevronDown, Eye, MessageSquare, Search, User, UserPlus, Users, X } from "lucide-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -514,60 +514,93 @@ export default function UsersPage() {
                           <TableCell className="text-gray-300">
                             {formatDate(userData.createdAt)}
                           </TableCell>
-                          {!isAdmin && userData.id !== user?.id && (
+                          {!isAdmin && (
                             <TableCell>
                               <div className="flex space-x-2">
-                                {friendships[userData.id] === 'pending_received' ? (
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
+                                {userData.id === user?.id ? (
+                                  // Show "View Profile" for the user's own profile
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => router.push('/settings')}
+                                    className="text-xs"
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    View Profile
+                                  </Button>
+                                ) : (
+                                  // Show friend and chat actions for other users
+                                  <>
+                                    {friendships[userData.id] === 'pending_received' ? (
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                          <Button
+                                            size="sm"
+                                            variant="default"
+                                            className="text-xs"
+                                          >
+                                            <UserPlus className="h-3 w-3 mr-1" />
+                                            Accept Request
+                                            <ChevronDown className="h-3 w-3 ml-1" />
+                                          </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                          <DropdownMenuItem 
+                                            onClick={() => acceptFriendRequest(userData.id)}
+                                            className="text-green-600 focus:text-green-600"
+                                          >
+                                            <UserPlus className="h-4 w-4 mr-2" />
+                                            Accept Request
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem 
+                                            onClick={() => declineFriendRequest(userData.id)}
+                                            className="text-red-600 focus:text-red-600"
+                                          >
+                                            <X className="h-4 w-4 mr-2" />
+                                            Decline Request
+                                          </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                    ) : (
                                       <Button
                                         size="sm"
-                                        variant="default"
+                                        variant={getFriendButtonVariant(userData.id) as any}
+                                        onClick={() => sendFriendRequest(userData.id)}
+                                        disabled={friendships[userData.id] === 'pending_sent' || friendships[userData.id] === 'blocked'}
                                         className="text-xs"
                                       >
                                         <UserPlus className="h-3 w-3 mr-1" />
-                                        Accept Request
-                                        <ChevronDown className="h-3 w-3 ml-1" />
+                                        {getFriendButtonText(userData.id)}
                                       </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                      <DropdownMenuItem 
-                                        onClick={() => acceptFriendRequest(userData.id)}
-                                        className="text-green-600 focus:text-green-600"
-                                      >
-                                        <UserPlus className="h-4 w-4 mr-2" />
-                                        Accept Request
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem 
-                                        onClick={() => declineFriendRequest(userData.id)}
-                                        className="text-red-600 focus:text-red-600"
-                                      >
-                                        <X className="h-4 w-4 mr-2" />
-                                        Decline Request
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                ) : (
-                                  <Button
-                                    size="sm"
-                                    variant={getFriendButtonVariant(userData.id) as any}
-                                    onClick={() => sendFriendRequest(userData.id)}
-                                    disabled={friendships[userData.id] === 'pending_sent' || friendships[userData.id] === 'blocked'}
-                                    className="text-xs"
-                                  >
-                                    <UserPlus className="h-3 w-3 mr-1" />
-                                    {getFriendButtonText(userData.id)}
-                                  </Button>
-                                )}
-                                {isChatDisabled(userData.id) ? (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
+                                    )}
+                                    {isChatDisabled(userData.id) ? (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            onClick={() => openChat(userData)}
+                                            disabled={true}
+                                            className="text-xs opacity-50 cursor-not-allowed"
+                                          >
+                                            {(() => {
+                                              const IconComponent = getChatButtonIcon(userData.id);
+                                              return <IconComponent className="h-3 w-3 mr-1" />;
+                                            })()}
+                                            Chat
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>{getChatTooltipText(userData.id)}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    ) : (
                                       <Button
                                         size="sm"
-                                        variant="secondary"
+                                        variant="outline"
                                         onClick={() => openChat(userData)}
-                                        disabled={true}
-                                        className="text-xs opacity-50 cursor-not-allowed"
+                                        disabled={false}
+                                        className="text-xs"
                                       >
                                         {(() => {
                                           const IconComponent = getChatButtonIcon(userData.id);
@@ -575,25 +608,8 @@ export default function UsersPage() {
                                         })()}
                                         Chat
                                       </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>{getChatTooltipText(userData.id)}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                ) : (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => openChat(userData)}
-                                    disabled={false}
-                                    className="text-xs"
-                                  >
-                                    {(() => {
-                                      const IconComponent = getChatButtonIcon(userData.id);
-                                      return <IconComponent className="h-3 w-3 mr-1" />;
-                                    })()}
-                                    Chat
-                                  </Button>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </TableCell>
