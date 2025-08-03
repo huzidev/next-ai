@@ -173,7 +173,7 @@ export default function ContactPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="subject" className="text-gray-200">
-                      Subject
+                      Subject <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="subject"
@@ -183,6 +183,7 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       className="bg-gray-700 border-gray-600 text-white"
                       placeholder="What is this regarding?"
+                      required
                     />
                   </div>
 
