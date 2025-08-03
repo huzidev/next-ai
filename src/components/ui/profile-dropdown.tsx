@@ -36,7 +36,16 @@ export function ProfileDropdown({ user, authLoading, onLogout }: ProfileDropdown
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 bg-gray-800 border-gray-700" align="end" forceMount>
+      <DropdownMenuContent 
+        className="w-64 !bg-gray-800 !border-gray-700 !text-gray-200" 
+        align="end" 
+        forceMount
+        style={{ 
+          backgroundColor: 'rgb(31, 41, 55)', 
+          borderColor: 'rgb(55, 65, 81)', 
+          color: 'rgb(229, 231, 235)' 
+        }}
+      >
         <div className="flex items-center space-x-3 p-3">
           <Avatar className="h-12 w-12">
             <AvatarFallback className="bg-blue-600 text-white text-lg">
