@@ -7,7 +7,6 @@ import { NotificationButton } from "@/components/ui/notification-button";
 import { Notification, NotificationsSidebar } from "@/components/ui/notifications-sidebar";
 import { ProfileDropdown } from "@/components/ui/profile-dropdown";
 import { SelectFriendModal } from "@/components/ui/select-friend-modal";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -822,84 +821,60 @@ export default function UserDashboard() {
           {/* Chat Header */}
           <div className="p-4 border-b border-gray-600 bg-gray-800">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-blue-500/20 rounded-lg">
-                    <Sparkles className="h-5 w-5 text-blue-400" />
-                  </div>
-                  <div>
-                    <h1 className="text-lg font-semibold text-white">
-                      {activeSession?.title || "New Chat"}
-                    </h1>
-                    <p className="text-sm text-gray-400">
-                      {chatMode === 'ai' ? "Powered by Google Generative AI" : "Chat with friends"}
-                    </p>
-                  </div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg">
+                  <Sparkles className="h-5 w-5 text-blue-400" />
                 </div>
-                
-                <Tabs defaultValue="announcements" className="w-auto">
-                  <TabsList>
-                    <TabsTrigger 
-                      value="announcements"
-                      asChild
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.push('/announcements')}
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-                      >
-                        <Megaphone className="h-4 w-4 mr-2" />
-                        Announcements
-                      </Button>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="friends"
-                      asChild
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.push('/friends')}
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-                      >
-                        <UserCheck className="h-4 w-4 mr-2" />
-                        Friends
-                      </Button>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="users"
-                      asChild
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.push('/users')}
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-                      >
-                        <Users className="h-4 w-4 mr-2" />
-                        Users
-                      </Button>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="support"
-                      asChild
-                    >
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.push('/contact')}
-                        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        Support
-                      </Button>
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <div>
+                  <h1 className="text-lg font-semibold text-white">
+                    {activeSession?.title || "New Chat"}
+                  </h1>
+                  <p className="text-sm text-gray-400">
+                    {chatMode === 'ai' ? "Powered by Google Generative AI" : "Chat with friends"}
+                  </p>
+                </div>
               </div>
               
               <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push('/announcements')}
+                    className="text-gray-300 hover:text-white hover:bg-gray-700"
+                  >
+                    <Megaphone className="h-4 w-4 mr-2" />
+                    Announcements
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push('/friends')}
+                    className="text-gray-300 hover:text-white hover:bg-gray-700"
+                  >
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Friends
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push('/users')}
+                    className="text-gray-300 hover:text-white hover:bg-gray-700"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Users
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push('/contact')}
+                    className="text-gray-300 hover:text-white hover:bg-gray-700"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    Support
+                  </Button>
+                </div>
+                
                 <NotificationButton
                   hasUnread={unreadNotifications > 0}
                   unreadCount={unreadNotifications}
