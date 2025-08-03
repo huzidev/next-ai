@@ -144,8 +144,9 @@ export default function ContactPage() {
                       type="text"
                       value={formData.username}
                       onChange={handleInputChange}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-700 border-gray-600 text-white opacity-75 cursor-not-allowed"
                       placeholder="Enter your username"
+                      readOnly
                       required
                     />
                   </div>
@@ -160,8 +161,9 @@ export default function ContactPage() {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-700 border-gray-600 text-white opacity-75 cursor-not-allowed"
                       placeholder="Enter your email address"
+                      readOnly
                       required
                     />
                   </div>
