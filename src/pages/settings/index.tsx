@@ -192,11 +192,11 @@ export default function UserSettings() {
               <div className="flex items-center space-x-4">
                 <Button 
                   variant="ghost" 
-                  size="sm" 
+                  size="default"
                   onClick={handleBack}
-                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg p-2"
+                  className="text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg p-3"
                 >
-                  <ArrowLeft className="h-5 w-5" />
+                  <ArrowLeft className="h-6 w-6" />
                 </Button>
                 <div>
                   <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
@@ -209,9 +209,9 @@ export default function UserSettings() {
                   <Button
                     key={tab.id}
                     variant="ghost"
-                    size="sm"
+                    size="default"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`text-base ${
+                    className={`text-lg px-4 py-2 ${
                       activeTab === tab.id 
                         ? 'text-white bg-gray-700' 
                         : 'text-gray-300'
