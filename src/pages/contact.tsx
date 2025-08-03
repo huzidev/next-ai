@@ -55,20 +55,37 @@ export default function ContactPage() {
       return;
     }
 
+    if (!user || !user.id) {
+      toast({
+        title: "Authentication Error",
+        description: "User information not available. Please refresh the page and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Debug user data
+    console.log('User object:', user);
+    console.log('User ID:', user?.id);
+
     setIsSubmitting(true);
 
     try {
       const token = localStorage.getItem('authToken');
+      const requestBody = {
+        ...formData,
+        userId: user.id
+      };
+      
+      console.log('Request body being sent:', requestBody);
+      
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        body: JSON.stringify({
-          ...formData,
-          userId: user?.id
-        })
+        body: JSON.stringify(requestBody)
       });
 
       const data = await response.json();
