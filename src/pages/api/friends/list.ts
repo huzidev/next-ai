@@ -26,8 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const userId = decoded.userId;
 
-    // For now, return empty friends list since Prisma client isn't updated yet
-    // TODO: Implement proper friendship queries once Prisma client is regenerated
     const mockFriends = [
       {
         id: 'mock-1',
