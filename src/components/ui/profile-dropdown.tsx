@@ -28,7 +28,7 @@ export function ProfileDropdown({ user, authLoading, onLogout }: ProfileDropdown
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 hover:bg-transparent focus:bg-transparent">
           <Avatar className="h-10 w-10">
             <AvatarFallback className="bg-blue-600 text-white">
               {user?.username ? user.username.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
@@ -36,7 +36,16 @@ export function ProfileDropdown({ user, authLoading, onLogout }: ProfileDropdown
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64 bg-gray-800 border-gray-700" align="end" forceMount>
+      <DropdownMenuContent 
+        className="w-64 !bg-gray-800 !border-gray-700 !text-gray-200" 
+        align="end" 
+        forceMount
+        style={{ 
+          backgroundColor: 'rgb(31, 41, 55)', 
+          borderColor: 'rgb(55, 65, 81)', 
+          color: 'rgb(229, 231, 235)' 
+        }}
+      >
         <div className="flex items-center space-x-3 p-3">
           <Avatar className="h-12 w-12">
             <AvatarFallback className="bg-blue-600 text-white text-lg">
