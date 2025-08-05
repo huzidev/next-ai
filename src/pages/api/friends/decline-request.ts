@@ -31,6 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ success: false, error: 'Requester ID is required' });
     }
 
+    // Find the friendship where requesterId sent request to userId
     const friendship = await prisma.friendship.findFirst({
       where: {
         requesterId: requesterId,
