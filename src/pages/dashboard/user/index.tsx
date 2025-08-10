@@ -82,7 +82,7 @@ export default function UserDashboard() {
   const [selectFriendModalOpen, setSelectFriendModalOpen] = useState<boolean>(false);
   const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
   const [notificationsSidebarOpen, setNotificationsSidebarOpen] = useState<boolean>(false);
-  const [chatMode, setChatMode] = useState<'ai' | 'user'>('ai'); // New state for chat mode toggle
+  const [chatMode, setChatMode] = useState<'ai' | 'user'>('ai'); 
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
