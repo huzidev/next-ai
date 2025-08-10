@@ -63,11 +63,11 @@ export default function UserDashboard() {
   console.log("SW Dashboard isAuthenticated:", isAuthenticated);
   console.log("SW Dashboard authLoading:", authLoading);
   
-  // Monitor user data changes
-  useEffect(() => {
-    console.log("SW Dashboard useEffect - user data changed:", user);
-    console.log("SW Dashboard useEffect - localStorage token:", typeof window !== 'undefined' ? localStorage.getItem('authToken')?.substring(0, 20) + '...' : 'N/A');
-  }, [user]);
+  // // Monitor user data changes
+  // useEffect(() => {
+  //   console.log("SW Dashboard useEffect - user data changed:", user);
+  //   console.log("SW Dashboard useEffect - localStorage token:", typeof window !== 'undefined' ? localStorage.getItem('authToken')?.substring(0, 20) + '...' : 'N/A');
+  // }, [user]);
   
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [userChats, setUserChats] = useState<ChatSession[]>([]);
