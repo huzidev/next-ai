@@ -421,6 +421,7 @@ export default function UserDashboard() {
           throw new Error(data.error);
         }
       } else {
+        // Delete user chat (local only for now)
         const updatedUserChats = userChats.filter(s => s.id !== sessionToDelete);
         setUserChats(updatedUserChats);
         
