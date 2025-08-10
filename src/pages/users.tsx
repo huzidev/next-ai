@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Ban, ChevronDown, Eye, MessageSquare, Search, User, UserPlus, Users, X } from "lucide-react";
+import { ArrowLeft, Ban, ChevronDown, MessageSquare, Search, User, UserPlus, Users, X } from "lucide-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ export default function UsersPage() {
   const { toast } = useToast();
   
   const [users, setUsers] = useState<UserData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState<UserData[]>([]);
   const [friendships, setFriendships] = useState<FriendshipData>({});
