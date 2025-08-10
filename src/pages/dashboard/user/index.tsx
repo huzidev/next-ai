@@ -214,19 +214,6 @@ export default function UserDashboard() {
             }
           ]
         },
-        {
-          id: 'user-chat-2',
-          title: 'Chat with @alice_smith',
-          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-          updatedAt: new Date(Date.now() - 20 * 60 * 60 * 1000),
-          messages: [
-            {
-              id: '3',
-              content: 'Did you finish the project?',
-              role: 'user',
-              timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
-            }
-          ]
         }
       ];
       
