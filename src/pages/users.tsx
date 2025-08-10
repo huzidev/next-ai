@@ -39,10 +39,10 @@ export default function UsersPage() {
   
   const [users, setUsers] = useState<UserData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredUsers, setFilteredUsers] = useState<UserData[]>([]);
   const [friendships, setFriendships] = useState<FriendshipData>({});
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   // Load users
   useEffect(() => {
