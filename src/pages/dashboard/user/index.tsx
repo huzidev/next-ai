@@ -189,6 +189,7 @@ export default function UserDashboard() {
     }
   };
 
+  // Load user chats (mock for now - will be replaced with actual API)
   const loadUserChats = async () => {
     try {
       // Mock user chats for now
