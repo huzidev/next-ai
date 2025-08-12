@@ -22,7 +22,7 @@ export default function ContactPage() {
     subject: '',
     message: ''
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Pre-fill form with user data when available
   useEffect(() => {

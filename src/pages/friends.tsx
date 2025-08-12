@@ -27,8 +27,8 @@ export default function FriendsPage() {
   const { toast } = useToast();
   
   const [friends, setFriends] = useState<Friend[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredFriends, setFilteredFriends] = useState<Friend[]>([]);
   const [activeTab, setActiveTab] = useState<'friends' | 'pending' | 'requests'>('friends');
 
