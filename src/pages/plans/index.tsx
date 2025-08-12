@@ -166,10 +166,10 @@ export default function PlansPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center">
-                      {/* <div className="text-3xl font-bold text-white">
+                      <div className="text-3xl font-bold text-white">
                         ${plan.price}
                         {plan.price > 0 && <span className="text-lg text-gray-400">/month</span>}
-                      </div> */}
+                      </div>
                     </div>
                     
                     <div className="space-y-2">
