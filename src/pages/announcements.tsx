@@ -27,7 +27,7 @@ export default function AnnouncementsPage() {
   const { toast } = useToast();
   
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Mock announcements data (you can replace this with API call)
   useEffect(() => {
