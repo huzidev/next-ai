@@ -98,7 +98,7 @@ export default function AdminDashboard() {
   };
 
   const handleCreateAdminSuccess = () => {
-    refetch();
+    refetch(); // Refresh the dashboard data
   };
 
   const filteredUsers = stats?.users?.recent?.filter(user => 
