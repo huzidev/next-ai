@@ -18,7 +18,7 @@ export default function PlansPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fetchPlans();
