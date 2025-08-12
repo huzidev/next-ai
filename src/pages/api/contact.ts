@@ -29,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
         userId = decoded.userId;
       } catch (jwtError) {
+        // Token is invalid, but we'll still allow the contact form submission
         console.log('Invalid token for contact form, proceeding without user ID');
       }
     }
