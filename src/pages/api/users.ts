@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // Format the response
-    const formattedUsers = users.map(user => ({
+    const formattedUsers = users.map({ id } => ({
       id: user.id,
       username: user.username,
       email: user.email,
