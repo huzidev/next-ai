@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Create contact record
     const contact = await prisma.contact.create({
       data: {
-        name: username, // Use username as name
+        name: username,
         username: username || '',
         email,
         subject: subject || '',
