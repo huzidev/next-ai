@@ -15,8 +15,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-      const userId = decoded.userId;
 
+      // For now, return empty friendships since Prisma client isn't fully working
+      // TODO: Implement proper friendship status check once Prisma client is regenerated
       const friendships: { [key: string]: string } = {};
       
       return res.status(200).json({ 
