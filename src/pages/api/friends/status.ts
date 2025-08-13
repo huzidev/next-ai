@@ -7,7 +7,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Verify JWT token
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) {
       return res.status(401).json({ success: false, error: 'No token provided' });
@@ -15,6 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+      const userId = decoded.userId;
 
       // For now, return empty friendships since Prisma client isn't fully working
       // TODO: Implement proper friendship status check once Prisma client is regenerated
